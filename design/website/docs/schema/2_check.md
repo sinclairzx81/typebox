@@ -1,6 +1,6 @@
 # Schema.Check
 
-The `Check(...)` function returns true if the value matches the schema.
+The Check(...) function returns true if the value matches the schema.
 
 ## Example
 

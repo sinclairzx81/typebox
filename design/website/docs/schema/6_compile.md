@@ -1,6 +1,6 @@
 # Schema.Compile
 
-The `Compile(...)` function to compile JSON Schema into a high performance Validator. 
+The Compile(...) function to compile JSON Schema into a high performance Validator. 
 
 ## Example
 

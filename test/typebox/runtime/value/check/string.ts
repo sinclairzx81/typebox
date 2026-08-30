@@ -78,7 +78,7 @@ Test('Should validate regular expression 1', () => {
   Fail(T, 'bar')
 })
 Test('Should validate regular expression 2', () => {
-  const T = Type.String({ pattern: /<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu })
+  const T = Type.String({ pattern: /<a?:.+?:\d{18}>|\p{Extended_Pictographic}/u })
   Ok(T, '♥️♦️♠️♣️')
 })
 Test('Should validate with minLength constraint', () => {

@@ -1,6 +1,6 @@
 # Schema.Parse
 
-The `Parse(...)` function returns the value if match, otherwise throw.
+The Parse(...) function returns the value if match, otherwise throw.
 
 ## Example
 

@@ -10,6 +10,7 @@ export async function Metrics() {
     'task/metrics/schema_check.ts',
     'task/metrics/schema_compile.ts',
     'task/metrics/schema_errors.ts',
+    'task/metrics/schema_intern.ts',
     'task/metrics/schema_parse.ts',
     'task/metrics/type_all.ts',
     'task/metrics/type_barrel.ts',
