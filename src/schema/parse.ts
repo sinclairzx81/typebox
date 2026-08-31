@@ -47,6 +47,13 @@ export class ParseError {
   ) {}
 }
 // ------------------------------------------------------------------
+// ThrowParseError
+// ------------------------------------------------------------------
+export function ThrowParseError(context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, value: unknown): never {
+  const result = Errors(context, schema, value)
+  throw new ParseError(schema, value, result[1])
+}
+// ------------------------------------------------------------------
 // Parse
 // ------------------------------------------------------------------
 /** Parses a value against the provided schema */
@@ -59,9 +66,6 @@ export function Parse(...args: unknown[]): unknown {
     3: (context, schema, value) => [context, schema, value],
     2: (schema, value) => [{}, schema, value]
   })
-  if(!Check(context, schema, value)) {
-    const [_result, errors] = Errors(context, schema, value)
-    throw new ParseError(schema, value, errors)
-  }
-  return value
+  if(Check(context, schema, value)) return value
+  ThrowParseError(context, schema, value)
 }

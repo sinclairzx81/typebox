@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
-import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 
@@ -60,7 +60,7 @@ export function CheckIf(stack: Stack, context: CheckContext, schema: Schema.XIf,
 export function ErrorIf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XIf, value: unknown): boolean {
   const thenSchema = Schema.IsThen(schema) ? schema.then : true
   const elseSchema = Schema.IsElse(schema) ? schema.else : true
-  const trueContext = new AccumulatedErrorContext()
+  const trueContext = new ErrorContext()
   const isIf = ErrorSchema(stack, trueContext, `${schemaPath}/if`, instancePath, schema.if, value)
     ? ErrorSchema(stack, trueContext, `${schemaPath}/then`, instancePath, thenSchema, value) || context.AddError({
       keyword: 'if',

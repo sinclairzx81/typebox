@@ -89,7 +89,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
     if(Settings.Get().correctiveParse) return Parser(this.Context(), this.Type(), value) as never
     throw new ParseError(value, this.Errors(value))
   }
-  /** Inspects a value and returns a detailed list of validation errors. */
+  /** Returns an array of validation errors for the given value. */
   public Errors(value: unknown): TLocalizedValidationError[] {
     if (this.IsAccelerated() && this.Check(value)) return []
     return Errors(this.Context(), this.Type(), value)

@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
-import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Reducer } from './_reducer.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
@@ -63,9 +63,9 @@ export function CheckAnyOf(stack: Stack, context: CheckContext, schema: Schema.X
 // Error
 // ------------------------------------------------------------------
 export function ErrorAnyOf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XAnyOf, value: unknown): boolean {
-  const failedContexts: AccumulatedErrorContext[] = []
-  const results = schema.anyOf.reduce<AccumulatedErrorContext[]>((result, schema, index) => {
-    const nextContext = new AccumulatedErrorContext()
+  const failedContexts: ErrorContext[] = []
+  const results = schema.anyOf.reduce<ErrorContext[]>((result, schema, index) => {
+    const nextContext = new ErrorContext()
     const nextSchemaPath = `${schemaPath}/anyOf/${index}`
     const isSchema = ErrorSchema(stack, nextContext, nextSchemaPath, instancePath, schema, value)
     if (!isSchema) failedContexts.push(nextContext)

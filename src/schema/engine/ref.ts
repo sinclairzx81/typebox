@@ -31,7 +31,7 @@ THE SOFTWARE.
 import * as Functions from './_functions.ts'
 import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
-import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 import { CheckSchema, ErrorSchema } from './schema.ts'
 
@@ -72,7 +72,7 @@ export function CheckRef(stack: Stack, context: CheckContext, schema: Schema.XRe
 // ------------------------------------------------------------------
 export function ErrorRef(stack: Stack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XRef, value: unknown): boolean {
   const target = stack.Ref(schema) ?? false
-  const nextContext = new AccumulatedErrorContext()
+  const nextContext = new ErrorContext()
   const result = (Schema.IsSchema(target) && ErrorSchema(stack, nextContext, '#', instancePath, target, value))
   if (result) context.Merge([nextContext])
   if (!result) nextContext.GetErrors().forEach(error => context.AddError(error))

@@ -321,6 +321,7 @@ export function ErrorSchemaPushStack(stack: Stack, context: ErrorContext, schema
   return (context.Push() && ErrorSchema(stack, context, schemaPath, instancePath, schema, value)) && context.Pop()
 }
 export function ErrorSchema(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
+  if(context.AtCapacity()) return false
   stack.Push(schema)
   const result = (Schema.IsSchemaBoolean(schema)) ? ErrorSchemaBoolean(stack, context, schemaPath, instancePath, schema, value) : (
     !!(

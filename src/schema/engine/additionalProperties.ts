@@ -32,7 +32,7 @@ import * as S from '../types/index.ts'
 import * as V from './_externals.ts'
 import { Stack } from './_stack.ts'
 import { Unique } from './_unique.ts'
-import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { UnicodeRegExp } from './_regexp.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
@@ -137,7 +137,7 @@ export function ErrorAdditionalProperties(stack: Stack, context: ErrorContext, s
   const isAdditionalProperties = G.EveryAll(G.Keys(value), 0, (key, _index) => {
     const nextSchemaPath = `${schemaPath}/additionalProperties`
     const nextInstancePath = `${instancePath}/${key}`
-    const nextContext = new AccumulatedErrorContext()
+    const nextContext = new ErrorContext()
     const isAdditionalProperty = regexp.test(key) ||
       (ErrorSchemaPushStack(stack, nextContext, nextSchemaPath, nextInstancePath, schema.additionalProperties, value[key]) && context.AddKey(key))
 

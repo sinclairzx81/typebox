@@ -35,7 +35,7 @@ import { type Static } from '../type/types/static.ts'
 import * as Schema from './types/index.ts'
 import * as Build from './build.ts'
 import { Errors } from './errors.ts'
-import { ParseError } from './parse.ts'
+import { ThrowParseError } from './parse.ts'
 
 // ------------------------------------------------------------------
 // Validator
@@ -43,33 +43,37 @@ import { ParseError } from './parse.ts'
 export class Validator<const Schema extends Schema.XSchema = Schema.XSchema, 
   Value extends unknown = Static<Schema>
 >  {
-  private readonly buildResult: Build.BuildResult
-  private readonly evaluateResult: Build.EvaluateResult
+  private readonly check: (value: unknown) => boolean
+  private readonly isAccelerated: boolean
+  private readonly context: Record<string, Schema.XSchema>
+  private readonly schema: Schema.XSchema
   constructor(context: Record<string, Schema.XSchema>, schema: Schema) {
-    this.buildResult = Build.Build(context, schema)
-    this.evaluateResult = this.buildResult.Evaluate()
+    const evaluateResult = Build.Build(context, schema).Evaluate()
+    this.check = (value: unknown) => evaluateResult.Check(value)
+    this.isAccelerated = evaluateResult.IsAccelerated()
+    this.context = context
+    this.schema = schema
   }
   /** Returns true if this Validator is using JIT acceleration. */
   public IsAccelerated(): boolean {
-    return this.evaluateResult.IsAccelerated()
+    return this.isAccelerated
   }
   /** Returns the underlying Schema used to construct this Validator. */
   public Schema(): Schema {
-    return this.buildResult.Schema() as never
+    return this.schema as never
   }
   /** Performs a type-guard check on the provided value. */
   public Check(value: unknown): value is Value {
-    return this.evaluateResult.Check(value)
+    return this.check(value)
   }
   /** Validates a value and returns it. Will throw if invalid. */
   public Parse(value: unknown): Value {
-    if(this.evaluateResult.Check(value)) return value as never
-    const [_result, errors] = Errors(this.buildResult.Context(), this.buildResult.Schema(), value)
-    throw new ParseError(this.buildResult.Schema(), value, errors)
+    if(this.check(value)) return value as never
+    ThrowParseError(this.context, this.schema, value)
   }
-  /** Inspects a value and returns a detailed list of validation errors. */
+  /** Returns an array of validation errors for the given value. */
   public Errors(value: unknown): [result: boolean, errors: TLocalizedValidationError[]] {
-    return Errors(this.buildResult.Context(), this.buildResult.Schema(), value)
+    return Errors(this.context, this.schema, value)
   }
 }
 // ------------------------------------------------------------------

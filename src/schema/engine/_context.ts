@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Settings } from '../../system/settings/index.ts'
 import * as Schema from '../types/index.ts'
 import type { TValidationError } from '../../error/index.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
@@ -141,27 +142,17 @@ export class CheckContext {
 // ------------------------------------------------------------------
 // ErrorContext
 // ------------------------------------------------------------------
-export type ErrorContextCallback = (error: TValidationError) => unknown
 export class ErrorContext extends CheckContext {
-  constructor(private readonly callback: ErrorContextCallback) {
-    super()
-  }
-  public AddError(error: TValidationError): false {
-    this.callback(error)
-    return false
-  }
-}
-// ------------------------------------------------------------------
-// AccumulatedErrorContext
-// ------------------------------------------------------------------
-export class AccumulatedErrorContext extends ErrorContext {
   private readonly errors: TValidationError[]
   constructor() {
-    super(error => this.errors.push(error))
+    super()
     this.errors = []
   }
-  public override AddError(error: TValidationError): false {
-    this.errors.push(error)
+  public AtCapacity(): boolean {
+    return this.errors.length >= Settings.Get().maxErrors
+  }
+  public AddError(error: TValidationError): false {
+    if(!this.AtCapacity()) this.errors.push(error)
     return false
   }
   public GetErrors(): TValidationError[] {

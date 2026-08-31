@@ -31,7 +31,7 @@ THE SOFTWARE.
 import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
 import { Unique } from './_unique.ts'
-import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 
@@ -67,7 +67,7 @@ export function ErrorUnevaluatedItems(stack: Stack, context: ErrorContext, schem
   const indices = context.GetIndices()
   const unevaluatedItems: number[] = []
   const isUnevaluatedItems = G.EveryAll(value, 0, (item, index) => {
-    const nextContext = new AccumulatedErrorContext()
+    const nextContext = new ErrorContext()
     const isEvaluatedItem = (indices.has(index) || ErrorSchema(stack, nextContext, schemaPath, instancePath, schema.unevaluatedItems, item))
       && context.AddIndex(index)
     if (!isEvaluatedItem) unevaluatedItems.push(index)
