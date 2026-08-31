@@ -1,16 +1,49 @@
 # Schema.Intern
 
-The Intern(...) function is a schema optimizer that deduplicates common schemas into a normalized referential schema structure. This function shares many aspects with the compiler optimization [Common Subexpression Elimination](https://en.wikipedia.org/wiki/Common_subexpression_elimination) (CSE), where common sub-expressions are hoisted and referenced. TypeBox implements a similar concept for JSON Schema, which can improve validation performance and reduce memory overhead in some cases. 
+The Intern(...) function is a schema optimizer that deduplicates common schemas into a normalized referential schema structure. This function shares many aspects with the compiler optimization [Common Subexpression Elimination](https://en.wikipedia.org/wiki/Common_subexpression_elimination) (CSE), where common sub-expressions are hoisted and referenced. TypeBox implements a similar concept for JSON Schema, which can be used to compress schemas as well as target certain JavaScript engine-level optimizations. 
 
-> ⚠️ The Intern(...) function is an experimental optimizer primarily aimed at optimizing TypeBox-aware schemas. The function does support most JSON Schema keywords; however, referential keywords such as `$recursiveRef`, `$dynamicRef`, and `$dynamicAnchor` are not supported. Schemas containing `$ref` must have resolvable targets or an error is thrown.
+> ⚠️ The Intern(...) function is an experimental optimizer primarily aimed at optimizing TypeBox-aware schemas. The function does support most JSON Schema keywords; however, referential keywords such as `$recursiveRef`, `$dynamicRef`, and `$dynamicAnchor` are currently not supported. Schemas containing `$ref` must have resolvable targets or an error is thrown.
 
-### Interning Performance
+### Intern Transformation
 
-The Intern(...) function will restructure a JSON Schema to use `$defs` and hash-content-addressable keys for each subschema. The resulting schema will be a fully normalized referential schema. Because each subschema is referential, the TypeBox compiler will generate smaller functions that are more likely to be inlined by the V8 [Maglev optimizer](https://github.com/v8/v8/blob/692983bf16608a60b3be9876e5cce921fbbf3753/src/flags/flag-definitions.h#L618-L637) (which should attempt to inline functions under a maximum bytecode length, usually 27 to 30 depending on the runtime).
+The Intern(...) function will restructure a JSON Schema to use `$defs` and hash-content-addressable keys for each subschema. The resulting schema deduplicates structurally identical subschemas into shared `$defs` entries referenced via `$ref`, producing a more compact, referential representation of the original schema.
 
-### Inspect Runtime 
+```typescript
+// ------------------------------------------------------------------
+// Duplication
+// ------------------------------------------------------------------
+const A = Type.Union([           // const A = {
+  Type.Literal(1),               //   anyOf: [
+  Type.Literal(1),               //     { type: "number", const: 1 },
+  Type.Literal(2),               //     { type: "number", const: 1 }, // <-- duplicate
+])                               //     { type: "number", const: 2 }
+                                 //   ]
+                                 // }
 
-You can check the runtime inlining thresholds with the following:
+// ------------------------------------------------------------------
+// Interned
+// ------------------------------------------------------------------
+const B = Schema.Intern(A)       // const B = {
+                                 //   "$ref": "#/$defs/x-b8ef83810052edcf",
+                                 //   "$defs": {
+                                 //     "x-b4a949e1fd1fa2d7": { type: "number", const: 1 },
+                                 //     "x-b225dd4d0666e2b6": { type: "number", const: 2 },
+                                 //     "x-b8ef83810052edcf": {
+                                 //       anyOf: [
+                                 //         { "$ref": "#/$defs/x-b4a949e1fd1fa2d7" },
+                                 //         { "$ref": "#/$defs/x-b4a949e1fd1fa2d7" },
+                                 //         { "$ref": "#/$defs/x-b225dd4d0666e2b6" }
+                                 //       ]
+                                 //     }
+                                 //   }
+                                 // }
+```
+
+### Codegen and Engine Inlining
+
+The Intern(...) function was written to explore V8's optimizing compiler tier (Maglev), which suggests inlining functions based on bytecode length. Because each hashed sub-schema compiles to a small function, individual functions may be more likely to fall within fast optimization thresholds (usually a bytecode length of around 27 to 30 depending on the runtime). Additionally, eliminating repeated check expressions may improve overall JIT performance for very large schematics.
+
+You can check the [Maglev](https://github.com/v8/v8/blob/692983bf16608a60b3be9876e5cce921fbbf3753/src/flags/flag-definitions.h#L618-L637) inlining thresholds with the following:
 
 ```bash
 $ node --v8-options | grep max-inlined-bytecode-size-small
@@ -18,19 +51,17 @@ $ node --v8-options | grep max-inlined-bytecode-size-small
 #        type: int  default: --max-inlined-bytecode-size-small=27
 ```
 
-### Runtime Inlining
-
-The following shows the transform and subsequent code generation.
+The following example shows the transform and subsequent code generation with consideration to Maglev.
 
 ```typescript
 // ------------------------------------------------------------------
 // Schema A
 //
-// When passing a TypeBox schema to Schema.Compile(...), the result 
-// will be a single logical expression to check a value. Because a 
-// single expression may be long and complex, inlining optimizers 
-// may skip optimizations based on the engine's observed bytecode 
-// length.
+// When passing a non-referential schema to Schema.Compile(...), the 
+// result will be a single function with a large logical expression. 
+// Because a single expression may be long and complex, inlining 
+// optimizers may skip optimizations based on the engine's observed 
+// bytecode length.
 //
 // ------------------------------------------------------------------
 
@@ -44,7 +75,7 @@ const A = Type.Object({      // const A = {
                              //   }
                              // }
 
-// Logical expression may be considered too large for optimization.
+// Expression may be considered too large for optimization.
 
 Schema.Build(A).Functions()  // const check_0 = ((value) => ((typeof value === "object" 
                              //   && value !== null && !(Array.isArray(value))) 
@@ -53,7 +84,7 @@ Schema.Build(A).Functions()  // const check_0 = ((value) => ((typeof value === "
                              //   && typeof value.z === "boolean"))))
 ```
 
-The following shows the output after an Intern(...) transformation.
+The following shows the generated emit after an Intern(...) transformation.
 
 ```typescript
 // ------------------------------------------------------------------
@@ -84,10 +115,10 @@ const B = Schema.Intern(A)   // const B = {
 // Optimization
 //
 // The core idea behind Intern(...) is to reduce the bytecode length 
-// of expressions such that engine optimizers (i.e., Maglev) will 
-// attempt to inline them. To make this more likely, Intern(...) will 
-// cause the original (A) check_0 function to expand into 5 distinct 
-// functions, one for each hashed definition. 
+// of expressions such that engine optimizers will attempt to inline 
+// them. To make this more likely, Intern(...) will cause the original 
+// (A) check_0 function to expand into 5 distinct functions, one for 
+// each hashed definition. 
 // 
 // For check_1, the length of the object expression has been reduced, 
 // making it more likely an optimizer will attempt to inline. The 
@@ -98,7 +129,8 @@ const B = Schema.Intern(A)   // const B = {
 // ------------------------------------------------------------------
 
 Schema.Build(B).Functions()    // const check_0 = ((value) => check_1(value))
-                               // const check_1 = ((value) => ((typeof value === "object" && value !== null 
+                               // const check_1 = ((value) => ((typeof value === "object" 
+                               //   && value !== null 
                                //   && !(Array.isArray(value))) 
                                //   && ((("x" in value && "y" in value) && "z" in value) 
                                //   && ((check_2(value.x) && check_3(value.y)) 
@@ -108,7 +140,3 @@ Schema.Build(B).Functions()    // const check_0 = ((value) => check_1(value))
                                // const check_3 = ((value) => Number.isFinite(value))
                                // const check_4 = ((value) => typeof value === "boolean")
 ```
-
-### Performance Remarks
-
-For large schemas, Intern(...) inlining may improve performance by 10-20%. For small schemas, there may be no noticeable change in performance, and it may even degrade performance. Thus, the Intern(...) function is best used to selectively optimize large schemas where additional performance may be beneficial. Users are encouraged to experiment and locally benchmark for their use cases.
