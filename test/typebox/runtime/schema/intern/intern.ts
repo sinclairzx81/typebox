@@ -4,9 +4,16 @@ import Schema, { Intern } from 'typebox/schema'
 const Test = Assert.Context('Schema.Intern')
 
 // ------------------------------------------------------------------
+// Identity Check
+// ------------------------------------------------------------------
+function Identity(a: Schema.XSchema): void {
+  Assert.IsEqual(Intern(a), Intern(Intern(a)))
+}
+// ------------------------------------------------------------------
 // Parity Check
 // ------------------------------------------------------------------
-function Parity(a: Schema.XSchema, value: unknown) {
+function Parity(a: Schema.XSchema, value: unknown): boolean {
+  Identity(a)
   const b = Intern(a)
   const R1 = Schema.Compile(a).Check(value)
   const R2 = Schema.Compile(b).Check(value)
