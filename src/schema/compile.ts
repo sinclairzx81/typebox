@@ -43,20 +43,17 @@ import { ThrowParseError } from './parse.ts'
 export class Validator<const Schema extends Schema.XSchema = Schema.XSchema, 
   Value extends unknown = Static<Schema>
 >  {
-  private readonly check: (value: unknown) => boolean
-  private readonly isAccelerated: boolean
+  private readonly evaluateResult: Build.EvaluateResult
   private readonly context: Record<string, Schema.XSchema>
   private readonly schema: Schema.XSchema
   constructor(context: Record<string, Schema.XSchema>, schema: Schema) {
-    const evaluateResult = Build.Build(context, schema).Evaluate()
-    this.check = (value: unknown) => evaluateResult.Check(value)
-    this.isAccelerated = evaluateResult.IsAccelerated()
+    this.evaluateResult = Build.Build(context, schema).Evaluate()
     this.context = context
     this.schema = schema
   }
   /** Returns true if this Validator is using JIT acceleration. */
   public IsAccelerated(): boolean {
-    return this.isAccelerated
+    return this.evaluateResult.IsAccelerated()
   }
   /** Returns the underlying Schema used to construct this Validator. */
   public Schema(): Schema {
@@ -64,11 +61,11 @@ export class Validator<const Schema extends Schema.XSchema = Schema.XSchema,
   }
   /** Performs a type-guard check on the provided value. */
   public Check(value: unknown): value is Value {
-    return this.check(value)
+    return this.evaluateResult.Check(value)
   }
   /** Validates a value and returns it. Will throw if invalid. */
   public Parse(value: unknown): Value {
-    if(this.check(value)) return value as never
+    if(this.evaluateResult.Check(value)) return value as never
     ThrowParseError(this.context, this.schema, value)
   }
   /** Returns an array of validation errors for the given value. */
