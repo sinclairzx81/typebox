@@ -56,8 +56,7 @@ export function ErrorPropertyNames(stack: Stack, context: ErrorContext, schemaPa
   const isPropertyNames = G.EveryAll(G.Keys(value), 0, (key, _index) => {
     const nextInstancePath = `${instancePath}/${key}`
     const nextSchemaPath = `${schemaPath}/propertyNames`
-    const nextContext = new ErrorContext()
-    const isPropertyName = ErrorSchema(stack, nextContext, nextSchemaPath, nextInstancePath, schema.propertyNames, key)
+    const isPropertyName = ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema.propertyNames, key)
     if (!isPropertyName) propertyNames.push(key)
     return isPropertyName
   })
