@@ -167,13 +167,13 @@ function ResolveRef(context: Record<string, S.XSchema>, schema: S.XSchemaObject,
   return Resolve.Ref(context, schema, ref) ?? UnresolvableRef(ref)
 }
 function FromRef(context: RefContext, schema: S.XRef): S.XSchema {
-  // resolve target, boolean schemas return as is.
+  // Resolve target, boolean schemas return as is.
   const target = ResolveRef(context.context, context.schema, schema.$ref)
   if (S.IsSchemaBoolean(target)) return target
-  // check if target is resolving, if not, resolve
+  // Check if target is resolving, if not, resolve
   const pending = context.resolving.get(target)
   if (Guard.IsUndefined(pending)) return FromSchema(context, target)
-  // target is mid-conversion, so this is a cycle (point at its reserved placeholder)
+  // Target is mid-intern, so this is a cycle (point at its reserved placeholder)
   pending.used = true
   return { $ref: `#/$defs/${pending.key}` }
 }
@@ -236,7 +236,6 @@ function FromSchemaObject(context: RefContext, schema: S.XSchemaObject): S.XSche
     ...(S.IsUnevaluatedItems(schema) ? { unevaluatedItems: FromUnevaluatedItems(context, schema) } : {}),
     ...(S.IsUnevaluatedProperties(schema) ? { unevaluatedProperties: FromUnevaluatedProperties(context, schema) } : {})
   }
-
   context.resolving.delete(schema)
 
   // Finalize and register the result
@@ -275,8 +274,8 @@ function BooleanIntern(schema: S.XSchemaBoolean): S.XSchemaObject {
   return { $ref: `#/$defs/${HashKey(schema)}`, $defs: { [HashKey(schema)]: schema } }
 }
 /**
- * (Experimental) Performs a Common Subexpression Elimination-like transform on the given schema. It restructures the schema such that each distinct sub-schema is stored exactly once in a
- * `$defs` object, keyed by its content hash. This function can be used to compress and optimize schematics prior to compilation.
+ * [Experimental] Performs a Common Subexpression Elimination (CSE) transform on the given schema. This function restructures the schema such that each distinct sub-schema is stored exactly once in a
+ * $defs object, keyed by its content hash. The result of Intern(...) is a canonical referential schema, and repeated calls are idempotent. This function can be used to both compress and optimize schemas prior to compilation. 
  */
 export function Intern<const Schema extends S.XSchema>(schema: Schema): XIntern<XStatic<Schema>> {
   registry.clear()
