@@ -56,8 +56,7 @@ function HashKey(schema: S.XSchema): string {
 interface RefContext {
   context: Record<string, S.XSchema>
   schema: S.XSchemaObject
-  entry: S.XSchemaObject
-  cyclic: boolean
+  resolving: Map<S.XSchema, { key: string; used: boolean }>
 }
 // ----------------------------------------------------------------
 // AdditionalItems
@@ -168,17 +167,16 @@ function ResolveRef(context: Record<string, S.XSchema>, schema: S.XSchemaObject,
   return Resolve.Ref(context, schema, ref) ?? UnresolvableRef(ref)
 }
 function FromRef(context: RefContext, schema: S.XRef): S.XSchema {
+  // Resolve target
   const target = ResolveRef(context.context, context.schema, schema.$ref)
-  if (Guard.IsEqual(target, context.entry) && context.cyclic) return { $ref: '#' }
-  const existing = resolved.get(target)
-  if (!Guard.IsUndefined(existing)) return existing
-  const isRoot = Guard.IsEqual(target, context.entry)
-  if (isRoot) context.cyclic = true
-  const reserved: S.XSchema = isRoot ? { $ref: '#' } : { $ref: `#/$defs/x-ref-${counter++}` }
-  resolved.set(target, reserved)
-  const converted = FromSchema(context, target)
-  if (!isRoot) registry.set((reserved as { $ref: string }).$ref.slice('#/$defs/'.length), converted as S.XSchemaObject)
-  return isRoot ? converted : reserved
+
+  // Check if target is resolving, if not, resolve
+  const resolving = context.resolving.get(target)
+  if (Guard.IsUndefined(resolving)) return FromSchema(context, target)
+
+  // Target is mid-intern, so this is a cycle (point at its reserved placeholder)
+  resolving.used = true
+  return { $ref: `#/$defs/${resolving.key}` }
 }
 // ----------------------------------------------------------------
 // Then
@@ -202,12 +200,22 @@ function FromUnevaluatedProperties(context: RefContext, schema: S.XUnevaluatedPr
 // SchemaObject
 // ----------------------------------------------------------------
 function FromSchemaObject(context: RefContext, schema: S.XSchemaObject): S.XSchema {
-  // unsupported
+  // Reference schemas cannot contain other keywords
+  if (S.IsRef(schema)) return FromRef(context, schema)
+
+  // Check if the schema has already been resolved
+  const existing = resolved.get(schema)
+  if (!Guard.IsUndefined(existing)) return existing
+
+  // These keywords are unsupported
   if (S.IsDynamicRef(schema)) UnsupportedKeyword('$dynamicRef')
   if (S.IsRecursiveRef(schema)) UnsupportedKeyword('$recursiveRef')
-  // reference
-  if (S.IsRef(schema)) return FromRef(context, schema)
-  // remapped
+
+  // Reserve a placeholder key in case a nested ref cycles back to this schema
+  const reservation = { key: `x-ref-${context.resolving.size}`, used: false }
+  context.resolving.set(schema, reservation)
+
+  // Intern each subschema
   const remapped = {
     ...(S.IsRefine(schema) ? { ['~refine']: schema['~refine'] } : {}),
     ...(S.IsAdditionalItems(schema) ? { additionalItems: FromAdditionalItems(context, schema) } : {}),
@@ -229,31 +237,49 @@ function FromSchemaObject(context: RefContext, schema: S.XSchemaObject): S.XSche
     ...(S.IsUnevaluatedItems(schema) ? { unevaluatedItems: FromUnevaluatedItems(context, schema) } : {}),
     ...(S.IsUnevaluatedProperties(schema) ? { unevaluatedProperties: FromUnevaluatedProperties(context, schema) } : {})
   }
+  context.resolving.delete(schema)
+
+  // Finalize and register the result
   const interned = Memory.Discard(Memory.Assign(schema, remapped), ['$id'])
-  const hashkey = HashKey(interned)
-  registry.set(hashkey, interned)
-  return { $ref: `#/$defs/${hashkey}` }
+  const key = reservation.used ? reservation.key : HashKey(interned)
+  registry.set(key, interned)
+
+  // Result
+  const result: S.XSchema = { $ref: `#/$defs/${key}` }
+  resolved.set(schema, result)
+  return result
 }
 // ----------------------------------------------------------------
 // SchemaBoolean
 // ----------------------------------------------------------------
-function FromSchemaBoolean(schema: S.XSchemaBoolean): S.XSchema {
-  return schema
+function FromSchemaBoolean(_context: RefContext, schema: S.XSchemaBoolean): S.XSchema {
+  // Finalize and register the result
+  const key = HashKey(schema)
+  registry.set(key, schema)
+
+  // Result
+  const result: S.XSchema = { $ref: `#/$defs/${key}` }
+  resolved.set(schema, result)
+  return result
 }
 // ----------------------------------------------------------------
 // Schema
 // ----------------------------------------------------------------
 function FromSchema(context: RefContext, schema: S.XSchema): S.XSchema {
-  return (
-    S.IsSchemaBoolean(schema) ? FromSchemaBoolean(schema) : FromSchemaObject(context, schema)
-  )
+  return S.IsSchemaBoolean(schema) ? FromSchemaBoolean(context, schema) : FromSchemaObject(context, schema)
+}
+// ----------------------------------------------------------------
+// BooleanEntry
+// ----------------------------------------------------------------
+function BooleanEntry(schema: S.XSchemaBoolean): S.XSchemaObject {
+  const key = HashKey(schema)
+  return { $ref: `#/$defs/${key}`, $defs: { [key]: schema } }
 }
 // ----------------------------------------------------------------
 // Module-level accumulator state
 // ----------------------------------------------------------------
-const registry = new Map<string, S.XSchemaObject>()
+const registry = new Map<string, S.XSchema>()
 const resolved = new Map<S.XSchema, S.XSchema>()
-let counter = 0
 // ----------------------------------------------------------------
 // XIntern
 // ----------------------------------------------------------------
@@ -262,26 +288,20 @@ export interface XIntern<Type extends unknown = unknown> {
   $ref: string
   $defs: Record<string, S.XSchemaObject>
 }
-// ----------------------------------------------------------------
-// BooleanIntern
-// ----------------------------------------------------------------
-function BooleanIntern(schema: S.XSchemaBoolean): S.XSchemaObject {
-  return { $ref: `#/$defs/${HashKey(schema)}`, $defs: { [HashKey(schema)]: schema } }
-}
 /**
- * (Experimental) Performs a [Common Subexpression Elimination](https://en.wikipedia.org/wiki/Common_subexpression_elimination)-like
- * transform on the given schema. It restructures the schema such that each distinct sub-schema is stored exactly once in a
- * `$defs` object, keyed by its content hash. This function can be used to compress and optimize schematics prior to compilation.
+ * [Experimental] Performs a Common Subexpression Elimination (CSE) transform on the given
+ * schema. This function restructures the schema such that each distinct sub-schema is stored
+ * exactly once in a $defs object and keyed by content hash. This function can be used to
+ * both compress and optimize schemas prior to compilation.
  */
 export function Intern<const Schema extends S.XSchema>(schema: Schema): XIntern<XStatic<Schema>> {
   registry.clear()
   resolved.clear()
-  counter = 0
-  if (S.IsSchemaBoolean(schema)) return BooleanIntern(schema) as never
+  if (S.IsSchemaBoolean(schema)) return BooleanEntry(schema) as never
   const context = S.IsDefs(schema) ? schema.$defs : {}
   const entry = S.IsRef(schema) ? ResolveRef(context, schema, schema.$ref) : schema
-  if (S.IsSchemaBoolean(entry)) return BooleanIntern(entry) as never
-  const ref_context: RefContext = { schema, context, entry, cyclic: false }
-  const result = FromSchema(ref_context, schema) as { $ref: string }
+  if (S.IsSchemaBoolean(entry)) return BooleanEntry(entry) as never
+  const ref_context: RefContext = { schema, context, resolving: new Map() }
+  const result = FromSchema(ref_context, entry) as { $ref: string }
   return { $ref: result.$ref, $defs: Object.fromEntries(registry) } as never
 }

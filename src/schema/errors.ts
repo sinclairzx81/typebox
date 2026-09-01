@@ -29,7 +29,6 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Arguments } from '../system/arguments/index.ts'
-import { Settings } from '../system/settings/index.ts'
 import { Get as GetLocalizationFunction } from '../system/locale/_config.ts'
 
 import { type TLocalizedValidationError } from '../error/index.ts'
@@ -49,7 +48,7 @@ export function Errors(...args: unknown[]): [boolean, TLocalizedValidationError[
   const stack = new Engine.Stack(context, schema)
   const errorContext = new Engine.ErrorContext()
   const result = Engine.ErrorSchema(stack, errorContext, '#', '', schema, value)
-  const errors = errorContext.GetErrors().slice(0, Settings.Get().maxErrors)
+  const errors = errorContext.GetErrors()
   const locale = GetLocalizationFunction()
   const localized = errors.map(error => ({ ...error, message: locale(error) }))
   return [result, localized]
