@@ -137,9 +137,8 @@ export function ErrorAdditionalProperties(stack: Stack, context: ErrorContext, s
   const isAdditionalProperties = G.EveryAll(G.Keys(value), 0, (key, _index) => {
     const nextSchemaPath = `${schemaPath}/additionalProperties`
     const nextInstancePath = `${instancePath}/${key}`
-    const nextContext = new ErrorContext()
     const isAdditionalProperty = regexp.test(key) ||
-      (ErrorSchemaPushStack(stack, nextContext, nextSchemaPath, nextInstancePath, schema.additionalProperties, value[key]) && context.AddKey(key))
+      (ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema.additionalProperties, value[key]) && context.AddKey(key))
 
     if (!isAdditionalProperty) additionalProperties.push(key)
     return isAdditionalProperty
