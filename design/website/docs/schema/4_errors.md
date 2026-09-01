@@ -1,6 +1,8 @@
 # Schema.Errors
 
-The Errors(...) function returns a validation result containing a boolean success value, and an array of validation errors.
+The Errors(...) function returns an array of gathered validation errors up to the configured `maxErrors` limit. If the value contains no errors, an empty array is returned.
+
+> ⚠️ For performance, this function should only be called after a failed Check. The function performs an exhaustive check up to the `maxErrors` setting (the default is `8`). For additional performance, consider reducing `maxErrors` to `1`, which will terminate gathering on the first error.
 
 ## Example
 
