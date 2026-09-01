@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
-import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Reducer } from './_reducer.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
@@ -67,11 +67,11 @@ export function CheckOneOf(stack: Stack, context: CheckContext, schema: Schema.X
 // Error
 // ------------------------------------------------------------------
 export function ErrorOneOf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XOneOf, value: unknown): boolean {
-  const failedContexts: AccumulatedErrorContext[] = []
+  const failedContexts: ErrorContext[] = []
   const passingSchemas: number[] = []
 
-  const passedContexts = schema.oneOf.reduce<AccumulatedErrorContext[]>((result, schema, index) => {
-    const nextContext = new AccumulatedErrorContext()
+  const passedContexts = schema.oneOf.reduce<ErrorContext[]>((result, schema, index) => {
+    const nextContext = new ErrorContext()
     const nextSchemaPath = `${schemaPath}/oneOf/${index}`
     const isSchema = ErrorSchema(stack, nextContext, nextSchemaPath, instancePath, schema, value)
     if (isSchema) passingSchemas.push(index)

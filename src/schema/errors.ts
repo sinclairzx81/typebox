@@ -30,32 +30,27 @@ THE SOFTWARE.
 
 import { Arguments } from '../system/arguments/index.ts'
 import { Settings } from '../system/settings/index.ts'
-import { Get as LocaleGet } from '../system/locale/_config.ts'
-import { Guard } from '../guard/index.ts'
+import { Get as GetLocalizationFunction } from '../system/locale/_config.ts'
 
 import { type TLocalizedValidationError } from '../error/index.ts'
 import * as Schema from './types/index.ts'
 import * as Engine from './engine/index.ts'
 
-/** Checks a value and returns validation errors */
+/** Returns an array of validation errors for the given value. */
 export function Errors(schema: Schema.XSchema, value: unknown): [boolean, TLocalizedValidationError[]]
-/** Checks a value and returns validation errors */
+/** Returns an array of validation errors for the given value. */
 export function Errors(context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, value: unknown): [boolean, TLocalizedValidationError[]]
-/** Checks a value and returns validation errors */
+/** Returns an array of validation errors for the given value. */
 export function Errors(...args: unknown[]): [boolean, TLocalizedValidationError[]] {
   const [context, schema, value] = Arguments.Match<[Record<PropertyKey, Schema.XSchema>, Schema.XSchema, unknown]>(args, {
     3: (context, schema, value) => [context, schema, value],
     2: (schema, value) => [{}, schema, value]
   })
-  const settings = Settings.Get()
-  const locale = LocaleGet()
-  const errors: TLocalizedValidationError[] = []
-
   const stack = new Engine.Stack(context, schema)
-  const errorContext = new Engine.ErrorContext(error => {
-    if(Guard.IsGreaterEqualThan(errors.length, settings.maxErrors)) return
-    return errors.push({ ...error, message: locale(error) })
-  })
+  const errorContext = new Engine.ErrorContext()
   const result = Engine.ErrorSchema(stack, errorContext, '#', '', schema, value)
-  return [result, errors]
+  const errors = errorContext.GetErrors().slice(0, Settings.Get().maxErrors)
+  const locale = GetLocalizationFunction()
+  const localized = errors.map(error => ({ ...error, message: locale(error) }))
+  return [result, localized]
 }

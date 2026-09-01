@@ -31,7 +31,7 @@ THE SOFTWARE.
 import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
 import { Unique } from './_unique.ts'
-import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 
@@ -56,8 +56,7 @@ export function ErrorPropertyNames(stack: Stack, context: ErrorContext, schemaPa
   const isPropertyNames = G.EveryAll(G.Keys(value), 0, (key, _index) => {
     const nextInstancePath = `${instancePath}/${key}`
     const nextSchemaPath = `${schemaPath}/propertyNames`
-    const nextContext = new AccumulatedErrorContext()
-    const isPropertyName = ErrorSchema(stack, nextContext, nextSchemaPath, nextInstancePath, schema.propertyNames, key)
+    const isPropertyName = ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema.propertyNames, key)
     if (!isPropertyName) propertyNames.push(key)
     return isPropertyName
   })

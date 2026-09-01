@@ -1,5 +1,8 @@
 <h1>Schema.Errors</h1>
-<p>The Errors(...) function returns a validation result containing a boolean success value, and an array of validation errors.</p>
+<p>The Errors(...) function returns an array of gathered validation errors up to the configured <code>maxErrors</code> limit. If the value contains no errors, an empty array is returned.</p>
+<blockquote>
+<p>⚠️ For performance, this function should only be called after a failed Check. The function performs an exhaustive check up to the <code>maxErrors</code> setting (the default is <code>8</code>). For additional performance, consider reducing <code>maxErrors</code> to <code>1</code>, which will terminate gathering on the first error.</p>
+</blockquote>
 <h2>Example</h2>
 <pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
 

@@ -31,30 +31,13 @@ THE SOFTWARE.
 import { Arguments } from '../../system/arguments/index.ts'
 import type { TProperties, TSchema } from '../../type/index.ts'
 import type { TLocalizedValidationError } from '../../error/index.ts'
-import { Errors as SchemaErrors,  } from '../../schema/index.ts'
+import { Errors as SchemaErrors } from '../../schema/index.ts'
 
-/** 
- * Performs an exhaustive Check on the specified value and reports any errors found.
- * If no errors are found, an empty array is returned. Unlike Check, this function
- * does not terminate at the first occurrence of an error. For best performance, call 
- * Check first and call Errors only if Check returns false.
- */
+/** Returns an array of validation errors for the given value. */
 export function Errors<Type extends TSchema>(type: Type, value: unknown): TLocalizedValidationError[]
-
-/** 
- * Performs an exhaustive Check on the specified value and reports any errors found.
- * If no errors are found, an empty array is returned. Unlike Check, this function
- * does not terminate at the first occurrence of an error. For best performance, call 
- * Check first and call Errors only if Check returns false.
- */
+/** Returns an array of validation errors for the given value. */
 export function Errors<Context extends TProperties, Type extends TSchema>(context: Context, type: Type, value: unknown): TLocalizedValidationError[]
-
-/** 
- * Performs an exhaustive Check on the specified value and reports any errors found.
- * If no errors are found, an empty array is returned. Unlike Check, this function
- * does not terminate at the first occurrence of an error. For best performance, call 
- * Check first and call Errors only if Check returns false.
- */
+/** Returns an array of validation errors for the given value. */
 export function Errors(...args: unknown[]): TLocalizedValidationError[] {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
     3: (context, type, value) => [context, type, value],

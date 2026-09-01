@@ -1,8 +1,8 @@
 # Value.Errors
 
-The Errors function returns an array of validation errors for the specified value. If the value contains no errors, an empty array is returned. This function should only be invoked after a failed Check.
+The Errors(...) function returns an array of gathered validation errors up to the configured `maxErrors` limit. If the value contains no errors, an empty array is returned.
 
-> ⚠️ For performance reasons, this function should be called only when a value fails a Check. The function performs an exhaustive recheck of the entire value and returns any errors encountered. Exhaustive validation can be costly for large values, so applications should carefully consider the performance impact of generating errors. For performance-sensitive scenarios, it is recommended to generate errors only in debugging or development environments.
+> ⚠️ For performance, this function should only be called after a failed Check. The function performs an exhaustive check up to the `maxErrors` setting (the default is `8`). For additional performance, consider reducing `maxErrors` to `1`, which will terminate gathering on the first error.
 
 ## Example
 
