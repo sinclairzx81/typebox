@@ -167,15 +167,16 @@ function ResolveRef(context: Record<string, S.XSchema>, schema: S.XSchemaObject,
   return Resolve.Ref(context, schema, ref) ?? UnresolvableRef(ref)
 }
 function FromRef(context: RefContext, schema: S.XRef): S.XSchema {
-  // Resolve target, boolean schemas return as is.
+  // Resolve target
   const target = ResolveRef(context.context, context.schema, schema.$ref)
-  if (S.IsSchemaBoolean(target)) return target
+
   // Check if target is resolving, if not, resolve
-  const pending = context.resolving.get(target)
-  if (Guard.IsUndefined(pending)) return FromSchema(context, target)
+  const resolving = context.resolving.get(target)
+  if (Guard.IsUndefined(resolving)) return FromSchema(context, target)
+
   // Target is mid-intern, so this is a cycle (point at its reserved placeholder)
-  pending.used = true
-  return { $ref: `#/$defs/${pending.key}` }
+  resolving.used = true
+  return { $ref: `#/$defs/${resolving.key}` }
 }
 // ----------------------------------------------------------------
 // Then
@@ -243,6 +244,20 @@ function FromSchemaObject(context: RefContext, schema: S.XSchemaObject): S.XSche
   const key = reservation.used ? reservation.key : HashKey(interned)
   registry.set(key, interned)
 
+  // Result
+  const result: S.XSchema = { $ref: `#/$defs/${key}` }
+  resolved.set(schema, result)
+  return result
+}
+// ----------------------------------------------------------------
+// SchemaBoolean
+// ----------------------------------------------------------------
+function FromSchemaBoolean(_context: RefContext, schema: S.XSchemaBoolean): S.XSchema {
+  // Finalize and register the result
+  const key = HashKey(schema)
+  registry.set(key, schema)
+
+  // Result
   const result: S.XSchema = { $ref: `#/$defs/${key}` }
   resolved.set(schema, result)
   return result
@@ -251,13 +266,19 @@ function FromSchemaObject(context: RefContext, schema: S.XSchemaObject): S.XSche
 // Schema
 // ----------------------------------------------------------------
 function FromSchema(context: RefContext, schema: S.XSchema): S.XSchema {
-  return S.IsSchemaBoolean(schema) ? schema : FromSchemaObject(context, schema)
+  return S.IsSchemaBoolean(schema) ? FromSchemaBoolean(context, schema) : FromSchemaObject(context, schema)
 }
-
+// ----------------------------------------------------------------
+// BooleanEntry
+// ----------------------------------------------------------------
+function BooleanEntry(schema: S.XSchemaBoolean): S.XSchemaObject {
+  const key = HashKey(schema)
+  return { $ref: `#/$defs/${key}`, $defs: { [key]: schema } }
+}
 // ----------------------------------------------------------------
 // Module-level accumulator state
 // ----------------------------------------------------------------
-const registry = new Map<string, S.XSchemaObject>()
+const registry = new Map<string, S.XSchema>()
 const resolved = new Map<S.XSchema, S.XSchema>()
 // ----------------------------------------------------------------
 // XIntern
@@ -267,12 +288,6 @@ export interface XIntern<Type extends unknown = unknown> {
   $ref: string
   $defs: Record<string, S.XSchemaObject>
 }
-// ----------------------------------------------------------------
-// BooleanIntern
-// ----------------------------------------------------------------
-function BooleanIntern(schema: S.XSchemaBoolean): S.XSchemaObject {
-  return { $ref: `#/$defs/${HashKey(schema)}`, $defs: { [HashKey(schema)]: schema } }
-}
 /**
  * [Experimental] Performs a Common Subexpression Elimination (CSE) transform on the given schema. This function restructures the schema such that each distinct sub-schema is stored exactly once in a
  * $defs object, keyed by its content hash. The result of Intern(...) is a canonical referential schema, and repeated calls are idempotent. This function can be used to both compress and optimize schemas prior to compilation.
@@ -280,10 +295,10 @@ function BooleanIntern(schema: S.XSchemaBoolean): S.XSchemaObject {
 export function Intern<const Schema extends S.XSchema>(schema: Schema): XIntern<XStatic<Schema>> {
   registry.clear()
   resolved.clear()
-  if (S.IsSchemaBoolean(schema)) return BooleanIntern(schema) as never
+  if (S.IsSchemaBoolean(schema)) return BooleanEntry(schema) as never
   const context = S.IsDefs(schema) ? schema.$defs : {}
   const entry = S.IsRef(schema) ? ResolveRef(context, schema, schema.$ref) : schema
-  if (S.IsSchemaBoolean(entry)) return BooleanIntern(entry) as never
+  if (S.IsSchemaBoolean(entry)) return BooleanEntry(entry) as never
   const ref_context: RefContext = { schema, context, resolving: new Map() }
   const result = FromSchema(ref_context, entry) as { $ref: string }
   return { $ref: result.$ref, $defs: Object.fromEntries(registry) } as never

@@ -838,34 +838,34 @@ Test('Should Intern 124', () => {
 // ----------------------------------------------------------------
 Test('Should Intern 124', () => {
   const A = {
-    $defs: { condition: true },
-    $ref: '#/$defs/condition'
+    $defs: { foo: true },
+    $ref: '#/$defs/foo'
   }
   Ok(A, 1)
 })
-Test('Should Intern 124', () => {
+Test('Should Intern 125', () => {
   const A = {
-    $defs: { condition: false },
-    $ref: '#/$defs/condition'
+    $defs: { foo: false },
+    $ref: '#/$defs/foo'
   }
   Fail(A, 1)
 })
 // ----------------------------------------------------------------
 // UnsupportedKeyword
 // ----------------------------------------------------------------
-Test('Should Intern 125', () => {
+Test('Should Intern 128', () => {
   Assert.Throws(() => Schema.Intern({ $dynamicRef: 'x' }))
 })
-Test('Should Intern 126', () => {
+Test('Should Intern 129', () => {
   Assert.Throws(() => Schema.Intern({ $recursiveRef: 'x' }))
 })
 // ----------------------------------------------------------------
 // UnresolvableRef
 // ----------------------------------------------------------------
-Test('Should Intern 127', () => {
+Test('Should Intern 130', () => {
   Assert.Throws(() => Schema.Intern({ $ref: 'unresolvable' }))
 })
-Test('Should Intern 128', () => {
+Test('Should Intern 131', () => {
   Assert.Throws(() =>
     Schema.Intern({
       $defs: {
@@ -874,4 +874,116 @@ Test('Should Intern 128', () => {
       $ref: '#/defs/A'
     })
   )
+})
+// ----------------------------------------------------------------
+// Multi-Ref-Indirection
+// ----------------------------------------------------------------
+Test('Should Intern 132', () => {
+  const A = {
+    $defs: {
+      foo: { $ref: '#/$defs/bar' },
+      bar: true
+    },
+    $ref: '#/$defs/foo'
+  }
+  Ok(A, 1)
+})
+Test('Should Intern 133', () => {
+  const A = {
+    $defs: {
+      foo: { $ref: '#/$defs/bar' },
+      bar: false
+    },
+    $ref: '#/$defs/foo'
+  }
+  Fail(A, 1)
+})
+Test('Should Intern 134', () => {
+  // 2 levels of indirection
+  const A = {
+    $defs: {
+      a: { $ref: '#/$defs/b' },
+      b: { type: 'number' }
+    },
+    $ref: '#/$defs/a'
+  }
+  Ok(A, 1)
+  Fail(A, 'hello')
+})
+Test('Should Intern 135', () => {
+  // 3 levels of indirection
+  const A = {
+    $defs: {
+      a: { $ref: '#/$defs/b' },
+      b: { $ref: '#/$defs/c' },
+      c: { type: 'string' }
+    },
+    $ref: '#/$defs/a'
+  }
+  Ok(A, 'hello')
+  Fail(A, 123)
+})
+Test('Should Intern 136', () => {
+  // 4 levels of indirection
+  const A = {
+    $defs: {
+      a: { $ref: '#/$defs/b' },
+      b: { $ref: '#/$defs/c' },
+      c: { $ref: '#/$defs/d' },
+      d: { type: 'boolean' }
+    },
+    $ref: '#/$defs/a'
+  }
+  Ok(A, true)
+  Fail(A, 'true')
+})
+Test('Should Intern 137', () => {
+  // 4 levels of indirection pointing to an object schema
+  const A = {
+    $defs: {
+      a: { $ref: '#/$defs/b' },
+      b: { $ref: '#/$defs/c' },
+      c: { $ref: '#/$defs/d' },
+      d: { type: 'object', properties: { x: { type: 'number' } }, required: ['x'] }
+    },
+    $ref: '#/$defs/a'
+  }
+  Ok(A, { x: 1 })
+  Fail(A, { x: '1' })
+})
+// ----------------------------------------------------------------
+// Pathological: Indirect Mutual Cycles + Shared Subexpressions
+// ----------------------------------------------------------------
+Test('Should Intern 138', () => {
+  const A = {
+    $defs: {
+      A: { $ref: '#/$defs/B' },
+      B: { $ref: '#/$defs/C' },
+      C: {
+        type: 'object',
+        properties: {
+          val: { $ref: '#/$defs/H' },
+          next: { $ref: '#/$defs/D' }
+        },
+        required: ['val']
+      },
+      D: { $ref: '#/$defs/E' },
+      E: {
+        type: 'object',
+        properties: {
+          val: { $ref: '#/$defs/H' },
+          next: { $ref: '#/$defs/F' }
+        },
+        required: ['val']
+      },
+      F: { $ref: '#/$defs/G' },
+      G: { $ref: '#/$defs/C' },
+      H: { $ref: '#/$defs/I' },
+      I: { type: 'number' }
+    },
+    $ref: '#/$defs/A'
+  }
+  Ok(A, { val: 1, next: { val: 2, next: { val: 3 } } })
+  Fail(A, { val: 'invalid' })
+  Fail(A, { val: 1, next: { val: 'invalid' } })
 })
