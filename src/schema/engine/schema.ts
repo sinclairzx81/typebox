@@ -321,6 +321,10 @@ export function ErrorSchemaPushStack(stack: Stack, context: ErrorContext, schema
   return (context.Push() && ErrorSchema(stack, context, schemaPath, instancePath, schema, value)) && context.Pop()
 }
 export function ErrorSchema(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
+  // Optimization: We can safely terminate here when the context is at capacity because we are unable to
+  // append additional errors. It is worth being mindful that logical keywords such as allOf, anyOf,
+  // oneOf pass a new context per operand, so the capacity check applies per context, not across the
+  // full set of errors accumulated by the schema as a whole. (review)
   if(context.AtCapacity()) return false
   stack.Push(schema)
   const result = (Schema.IsSchemaBoolean(schema)) ? ErrorSchemaBoolean(stack, context, schemaPath, instancePath, schema, value) : (
