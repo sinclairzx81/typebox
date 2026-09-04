@@ -296,6 +296,23 @@
     ]
   },
   {
+    "description": "remote ref, containing refs itself",
+    "schema": {
+      "$ref": "http://json-schema.org/draft-03/schema#"
+    },
+    "tests": [
+      {
+        "description": "remote ref valid",
+        "data": {
+          "items": {
+            "type": "integer"
+          }
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
     "description": "naive replacement of $ref with its destination is not correct",
     "schema": {
       "definitions": {

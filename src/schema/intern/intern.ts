@@ -164,16 +164,14 @@ function FromPropertyNames(context: RefContext, schema: S.XPropertyNames): S.XSc
 // Ref
 // ----------------------------------------------------------------
 function ResolveRef(context: Record<string, S.XSchema>, schema: S.XSchemaObject, ref: string): S.XSchema {
-  return Resolve.Ref(context, schema, ref) ?? UnresolvableRef(ref)
+  return Resolve.Ref(context, schema, Resolve.DefaultBase, ref) ?? UnresolvableRef(ref)
 }
 function FromRef(context: RefContext, schema: S.XRef): S.XSchema {
   // Resolve target
   const target = ResolveRef(context.context, context.schema, schema.$ref)
-
   // Check if target is resolving, if not, resolve
   const resolving = context.resolving.get(target)
   if (Guard.IsUndefined(resolving)) return FromSchema(context, target)
-
   // Target is mid-intern, so this is a cycle (point at its reserved placeholder)
   resolving.used = true
   return { $ref: `#/$defs/${resolving.key}` }
@@ -202,19 +200,15 @@ function FromUnevaluatedProperties(context: RefContext, schema: S.XUnevaluatedPr
 function FromSchemaObject(context: RefContext, schema: S.XSchemaObject): S.XSchema {
   // Reference schemas cannot contain other keywords
   if (S.IsRef(schema)) return FromRef(context, schema)
-
   // Check if the schema has already been resolved
   const existing = resolved.get(schema)
   if (!Guard.IsUndefined(existing)) return existing
-
   // These keywords are unsupported
   if (S.IsDynamicRef(schema)) UnsupportedKeyword('$dynamicRef')
   if (S.IsRecursiveRef(schema)) UnsupportedKeyword('$recursiveRef')
-
   // Reserve a placeholder key in case a nested ref cycles back to this schema
   const reservation = { key: `x-ref-${context.resolving.size}`, used: false }
   context.resolving.set(schema, reservation)
-
   // Intern each subschema
   const remapped = {
     ...(S.IsRefine(schema) ? { ['~refine']: schema['~refine'] } : {}),
@@ -238,12 +232,10 @@ function FromSchemaObject(context: RefContext, schema: S.XSchemaObject): S.XSche
     ...(S.IsUnevaluatedProperties(schema) ? { unevaluatedProperties: FromUnevaluatedProperties(context, schema) } : {})
   }
   context.resolving.delete(schema)
-
   // Finalize and register the result
   const interned = Memory.Discard(Memory.Assign(schema, remapped), ['$id'])
   const key = reservation.used ? reservation.key : HashKey(interned)
   registry.set(key, interned)
-
   // Result
   const result: S.XSchema = { $ref: `#/$defs/${key}` }
   resolved.set(schema, result)

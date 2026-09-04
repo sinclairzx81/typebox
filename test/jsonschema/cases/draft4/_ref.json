@@ -71,13 +71,6 @@
           "minLength": 1
         },
         "valid": true
-      },
-      {
-        "description": "remote ref invalid",
-        "data": {
-          "minLength": -1
-        },
-        "valid": false
       }
     ]
   },

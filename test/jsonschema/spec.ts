@@ -2,7 +2,7 @@ import { Build, Check, Errors } from 'typebox/schema'
 import { Assert } from 'test'
 import { enumerateTests } from './enumerator.ts'
 import { Pointer } from 'typebox/value'
-
+import { MetaSchema } from './meta/index.ts'
 // ------------------------------------------------------------------
 // Drafts
 // ------------------------------------------------------------------
@@ -87,8 +87,8 @@ function assertResult(op: Operation): void {
 // ------------------------------------------------------------------
 // Remote
 // ------------------------------------------------------------------
-const context = JSON.parse(Deno.readTextFileSync('./test/jsonschema/cases/remote.json'))
-
+const remote = JSON.parse(Deno.readTextFileSync('./test/jsonschema/cases/remote.json'))
+const context = { ...MetaSchema, ...remote }
 // ------------------------------------------------------------------
 // Test runners
 // ------------------------------------------------------------------

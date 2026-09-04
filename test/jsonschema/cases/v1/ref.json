@@ -818,6 +818,11 @@
     },
     "tests": [
       {
+        "description": "data is valid against nested sibling",
+        "data": 5,
+        "valid": true
+      },
+      {
         "description": "data is invalid against nested sibling",
         "data": "a",
         "valid": false

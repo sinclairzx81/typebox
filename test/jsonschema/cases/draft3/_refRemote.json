@@ -1,18 +1,5 @@
 [
   {
-    "description": "ref within remote ref",
-    "schema": {
-      "$ref": "http://localhost:1234/draft3/subSchemas.json#/definitions/refToInteger"
-    },
-    "tests": [
-      {
-        "description": "ref within ref valid",
-        "data": 1,
-        "valid": true
-      }
-    ]
-  },
-  {
     "description": "change resolution scope",
     "schema": {
       "id": "http://localhost:1234/",

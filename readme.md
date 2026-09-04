@@ -245,13 +245,16 @@ TypeBox supports all major JSON Schema draft versions and tracks compliance agai
 | contains | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | content | - | - | - | - | ✅ | ✅ | ✅ |
 | default | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| definitions | - | 1/2 | ✅ | ✅ | - | - | - |
+| defs | - | - | - | - | ✅ | ✅ | - |
 | dependencies | 17/18 | ✅ | ✅ | ✅ | - | - | - |
 | dependentRequired | - | - | - | - | ✅ | ✅ | ✅ |
 | dependentSchemas | - | - | - | - | ✅ | ✅ | ✅ |
-| dynamicRef | - | - | - | - | - | 40/44 | 21/27 |
-| enum | 14/16 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| dynamicRef | - | - | - | - | - | ✅ | ✅ |
+| enum | 16/18 | ✅ | ✅ | ✅ | ✅ | ✅ | 52/53 |
 | exclusiveMaximum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMinimum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
+| format | ✅ | ✅ | ✅ | ✅ | ✅ | 114/133 | - |
 | if-then-else | - | - | - | ✅ | ✅ | ✅ | ✅ |
 | infinite-loop-detection | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | items | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -274,11 +277,12 @@ TypeBox supports all major JSON Schema draft versions and tracks compliance agai
 | properties | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | propertyNames | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | recursiveRef | - | - | - | - | ✅ | - | - |
-| ref | 22/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 78/79 |
+| ref | 23/27 | 38/45 | 69/70 | 77/78 | ✅ | ✅ | ✅ |
+| refRemote | 7/8 | 11/17 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | required | 3/4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | type | 73/80 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| unevaluatedItems | - | - | - | - | ✅ | ✅ | 70/71 |
-| unevaluatedProperties | - | - | - | - | ✅ | ✅ | 128/129 |
+| unevaluatedItems | - | - | - | - | ✅ | ✅ | ✅ |
+| unevaluatedProperties | - | - | - | - | ✅ | ✅ | ✅ |
 | uniqueItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ### Performance

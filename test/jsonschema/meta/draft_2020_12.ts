@@ -26,60 +26,42 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export const Draft_2019_09 = {
-  '$schema': 'https://json-schema.org/draft/2019-09/schema',
-  '$id': 'https://json-schema.org/draft/2019-09/schema',
+export const Draft_2020_12 = {
+  '$schema': 'https://json-schema.org/draft/2020-12/schema',
+  '$id': 'https://json-schema.org/draft/2020-12/schema',
   '$vocabulary': {
-    'https://json-schema.org/draft/2019-09/vocab/core': true,
-    'https://json-schema.org/draft/2019-09/vocab/applicator': true,
-    'https://json-schema.org/draft/2019-09/vocab/validation': true,
-    'https://json-schema.org/draft/2019-09/vocab/meta-data': true,
-    'https://json-schema.org/draft/2019-09/vocab/format': false,
-    'https://json-schema.org/draft/2019-09/vocab/content': true
+    'https://json-schema.org/draft/2020-12/vocab/core': true,
+    'https://json-schema.org/draft/2020-12/vocab/applicator': true,
+    'https://json-schema.org/draft/2020-12/vocab/unevaluated': true,
+    'https://json-schema.org/draft/2020-12/vocab/validation': true,
+    'https://json-schema.org/draft/2020-12/vocab/meta-data': true,
+    'https://json-schema.org/draft/2020-12/vocab/format-annotation': true,
+    'https://json-schema.org/draft/2020-12/vocab/content': true
   },
-  '$recursiveAnchor': true,
+  '$dynamicAnchor': 'meta',
   'title': 'Core and Validation specifications meta-schema',
   'allOf': [
     {
-      '$schema': 'https://json-schema.org/draft/2019-09/schema',
-      '$id': 'https://json-schema.org/draft/2019-09/meta/core',
-      '$recursiveAnchor': true,
+      '$schema': 'https://json-schema.org/draft/2020-12/schema',
+      '$id': 'https://json-schema.org/draft/2020-12/meta/core',
+      '$dynamicAnchor': 'meta',
 
       'title': 'Core vocabulary meta-schema',
       'type': ['object', 'boolean'],
       'properties': {
         '$id': {
-          'type': 'string',
-          'format': 'uri-reference',
+          '$ref': '#/$defs/uriReferenceString',
           '$comment': 'Non-empty fragments not allowed.',
           'pattern': '^[^#]*#?$'
         },
-        '$schema': {
-          'type': 'string',
-          'format': 'uri'
-        },
-        '$anchor': {
-          'type': 'string',
-          'pattern': '^[A-Za-z][-A-Za-z0-9.:_]*$'
-        },
-        '$ref': {
-          'type': 'string',
-          'format': 'uri-reference'
-        },
-        '$recursiveRef': {
-          'type': 'string',
-          'format': 'uri-reference'
-        },
-        '$recursiveAnchor': {
-          'type': 'boolean',
-          'default': false
-        },
+        '$schema': { '$ref': '#/$defs/uriString' },
+        '$ref': { '$ref': '#/$defs/uriReferenceString' },
+        '$anchor': { '$ref': '#/$defs/anchorString' },
+        '$dynamicRef': { '$ref': '#/$defs/uriReferenceString' },
+        '$dynamicAnchor': { '$ref': '#/$defs/anchorString' },
         '$vocabulary': {
           'type': 'object',
-          'propertyNames': {
-            'type': 'string',
-            'format': 'uri'
-          },
+          'propertyNames': { '$ref': '#/$defs/uriString' },
           'additionalProperties': {
             'type': 'boolean'
           }
@@ -89,72 +71,104 @@ export const Draft_2019_09 = {
         },
         '$defs': {
           'type': 'object',
-          'additionalProperties': { '$recursiveRef': '#' },
-          'default': {}
+          'additionalProperties': { '$dynamicRef': '#meta' }
+        }
+      },
+      '$defs': {
+        'anchorString': {
+          'type': 'string',
+          'pattern': '^[A-Za-z_][-A-Za-z0-9._]*$'
+        },
+        'uriString': {
+          'type': 'string',
+          'format': 'uri'
+        },
+        'uriReferenceString': {
+          'type': 'string',
+          'format': 'uri-reference'
         }
       }
     },
     {
-      '$schema': 'https://json-schema.org/draft/2019-09/schema',
-      '$id': 'https://json-schema.org/draft/2019-09/meta/applicator',
-      '$recursiveAnchor': true,
-
+      '$schema': 'https://json-schema.org/draft/2020-12/schema',
+      '$id': 'https://json-schema.org/draft/2020-12/meta/applicator',
+      '$dynamicAnchor': 'meta',
       'title': 'Applicator vocabulary meta-schema',
       'type': ['object', 'boolean'],
       'properties': {
-        'additionalItems': { '$recursiveRef': '#' },
-        'unevaluatedItems': { '$recursiveRef': '#' },
-        'items': {
-          'anyOf': [
-            { '$recursiveRef': '#' },
-            { '$ref': '#/$defs/schemaArray' }
-          ]
-        },
-        'contains': { '$recursiveRef': '#' },
-        'additionalProperties': { '$recursiveRef': '#' },
-        'unevaluatedProperties': { '$recursiveRef': '#' },
+        'prefixItems': { '$ref': '#/$defs/schemaArray' },
+        'items': { '$dynamicRef': '#meta' },
+        'contains': { '$dynamicRef': '#meta' },
+        'additionalProperties': { '$dynamicRef': '#meta' },
         'properties': {
           'type': 'object',
-          'additionalProperties': { '$recursiveRef': '#' },
+          'additionalProperties': { '$dynamicRef': '#meta' },
           'default': {}
         },
         'patternProperties': {
           'type': 'object',
-          'additionalProperties': { '$recursiveRef': '#' },
+          'additionalProperties': { '$dynamicRef': '#meta' },
           'propertyNames': { 'format': 'regex' },
           'default': {}
         },
         'dependentSchemas': {
           'type': 'object',
-          'additionalProperties': {
-            '$recursiveRef': '#'
-          }
+          'additionalProperties': { '$dynamicRef': '#meta' },
+          'default': {}
         },
-        'propertyNames': { '$recursiveRef': '#' },
-        'if': { '$recursiveRef': '#' },
-        'then': { '$recursiveRef': '#' },
-        'else': { '$recursiveRef': '#' },
+        'propertyNames': { '$dynamicRef': '#meta' },
+        'if': { '$dynamicRef': '#meta' },
+        'then': { '$dynamicRef': '#meta' },
+        'else': { '$dynamicRef': '#meta' },
         'allOf': { '$ref': '#/$defs/schemaArray' },
         'anyOf': { '$ref': '#/$defs/schemaArray' },
         'oneOf': { '$ref': '#/$defs/schemaArray' },
-        'not': { '$recursiveRef': '#' }
+        'not': { '$dynamicRef': '#meta' }
       },
       '$defs': {
         'schemaArray': {
           'type': 'array',
           'minItems': 1,
-          'items': { '$recursiveRef': '#' }
+          'items': { '$dynamicRef': '#meta' }
         }
       }
     },
     {
-      '$schema': 'https://json-schema.org/draft/2019-09/schema',
-      '$id': 'https://json-schema.org/draft/2019-09/meta/validation',
-      '$recursiveAnchor': true,
+      '$schema': 'https://json-schema.org/draft/2020-12/schema',
+      '$id': 'https://json-schema.org/draft/2020-12/meta/unevaluated',
+      '$dynamicAnchor': 'meta',
+
+      'title': 'Unevaluated applicator vocabulary meta-schema',
+      'type': ['object', 'boolean'],
+      'properties': {
+        'unevaluatedItems': { '$dynamicRef': '#meta' },
+        'unevaluatedProperties': { '$dynamicRef': '#meta' }
+      }
+    },
+    {
+      '$schema': 'https://json-schema.org/draft/2020-12/schema',
+      '$id': 'https://json-schema.org/draft/2020-12/meta/validation',
+      '$dynamicAnchor': 'meta',
 
       'title': 'Validation vocabulary meta-schema',
       'type': ['object', 'boolean'],
       'properties': {
+        'type': {
+          'anyOf': [
+            { '$ref': '#/$defs/simpleTypes' },
+            {
+              'type': 'array',
+              'items': { '$ref': '#/$defs/simpleTypes' },
+              'minItems': 1,
+              'uniqueItems': true
+            }
+          ]
+        },
+        'const': true,
+        'enum': {
+          'type': 'array',
+          'items': true
+        },
         'multipleOf': {
           'type': 'number',
           'exclusiveMinimum': 0
@@ -196,22 +210,6 @@ export const Draft_2019_09 = {
           'additionalProperties': {
             '$ref': '#/$defs/stringArray'
           }
-        },
-        'const': true,
-        'enum': {
-          'type': 'array',
-          'items': true
-        },
-        'type': {
-          'anyOf': [
-            { '$ref': '#/$defs/simpleTypes' },
-            {
-              'type': 'array',
-              'items': { '$ref': '#/$defs/simpleTypes' },
-              'minItems': 1,
-              'uniqueItems': true
-            }
-          ]
         }
       },
       '$defs': {
@@ -243,9 +241,9 @@ export const Draft_2019_09 = {
       }
     },
     {
-      '$schema': 'https://json-schema.org/draft/2019-09/schema',
-      '$id': 'https://json-schema.org/draft/2019-09/meta/meta-data',
-      '$recursiveAnchor': true,
+      '$schema': 'https://json-schema.org/draft/2020-12/schema',
+      '$id': 'https://json-schema.org/draft/2020-12/meta/meta-data',
+      '$dynamicAnchor': 'meta',
 
       'title': 'Meta-data vocabulary meta-schema',
 
@@ -277,48 +275,62 @@ export const Draft_2019_09 = {
       }
     },
     {
-      '$schema': 'https://json-schema.org/draft/2019-09/schema',
-      '$id': 'https://json-schema.org/draft/2019-09/meta/format',
-      '$recursiveAnchor': true,
+      '$schema': 'https://json-schema.org/draft/2020-12/schema',
+      '$id': 'https://json-schema.org/draft/2020-12/meta/format-annotation',
+      '$dynamicAnchor': 'meta',
 
-      'title': 'Format vocabulary meta-schema',
+      'title': 'Format vocabulary meta-schema for annotation results',
       'type': ['object', 'boolean'],
       'properties': {
         'format': { 'type': 'string' }
       }
     },
     {
-      '$schema': 'https://json-schema.org/draft/2019-09/schema',
-      '$id': 'https://json-schema.org/draft/2019-09/meta/content',
-      '$recursiveAnchor': true,
+      '$schema': 'https://json-schema.org/draft/2020-12/schema',
+      '$id': 'https://json-schema.org/draft/2020-12/meta/content',
+      '$dynamicAnchor': 'meta',
 
       'title': 'Content vocabulary meta-schema',
 
       'type': ['object', 'boolean'],
       'properties': {
-        'contentMediaType': { 'type': 'string' },
         'contentEncoding': { 'type': 'string' },
-        'contentSchema': { '$recursiveRef': '#' }
+        'contentMediaType': { 'type': 'string' },
+        'contentSchema': { '$dynamicRef': '#meta' }
       }
     }
   ],
   'type': ['object', 'boolean'],
+  '$comment': 'This meta-schema also defines keywords that have appeared in previous drafts in order to prevent incompatible extensions as they remain in common use.',
   'properties': {
     'definitions': {
-      '$comment': 'While no longer an official keyword as it is replaced by $defs, this keyword is retained in the meta-schema to prevent incompatible extensions as it remains in common use.',
+      '$comment': '"definitions" has been replaced by "$defs".',
       'type': 'object',
-      'additionalProperties': { '$recursiveRef': '#' },
+      'additionalProperties': { '$dynamicRef': '#meta' },
+      'deprecated': true,
       'default': {}
     },
     'dependencies': {
-      '$comment': '"dependencies" is no longer a keyword, but schema authors should avoid redefining it to facilitate a smooth transition to "dependentSchemas" and "dependentRequired"',
+      '$comment': '"dependencies" has been split and replaced by "dependentSchemas" and "dependentRequired" in order to serve their differing semantics.',
       'type': 'object',
       'additionalProperties': {
         'anyOf': [
-          { '$recursiveRef': '#' },
+          { '$dynamicRef': '#meta' },
           { '$ref': 'meta/validation#/$defs/stringArray' }
         ]
-      }
+      },
+      'deprecated': true,
+      'default': {}
+    },
+    '$recursiveAnchor': {
+      '$comment': '"$recursiveAnchor" has been replaced by "$dynamicAnchor".',
+      '$ref': 'meta/core#/$defs/anchorString',
+      'deprecated': true
+    },
+    '$recursiveRef': {
+      '$comment': '"$recursiveRef" has been replaced by "$dynamicRef".',
+      '$ref': 'meta/core#/$defs/uriReferenceString',
+      'deprecated': true
     }
   }
 } as const

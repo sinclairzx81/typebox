@@ -33,6 +33,7 @@ import * as Schema from 'typebox/schema'
 import * as Process from './process.ts'
 import * as Report from './report.ts'
 import type { JSONSchemaTestSuite } from './types.ts'
+import { MetaSchema } from '../../test/jsonschema/meta/index.ts'
 
 // ------------------------------------------------------------------
 // Clone
@@ -84,7 +85,7 @@ function process(context: Record<string, Schema.XSchema>): JSONSchemaTestSuite {
 // ------------------------------------------------------------------
 function report(suite: JSONSchemaTestSuite): void {
   const requiredTable = Report.reportRequired(suite, {
-    ignore: ['defs', 'definitions', 'divisibleBy', 'disallow', 'extends', 'format', 'refRemote', 'vocabulary']
+    ignore: ['divisibleBy', 'disallow', 'extends', 'vocabulary']
   })
   console.log('')
   console.log('## Required Keywords')
@@ -119,7 +120,7 @@ async function cleanup(): Promise<void> {
 /** Refresh the test suite with the latest cases */
 export async function refresh(directory: string): Promise<void> {
   await clone()
-  const context = remotes()
+  const context = { ...MetaSchema, ...remotes() }
   const suite = process(context)
   await report(suite)
   await write(directory, context, suite)

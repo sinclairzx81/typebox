@@ -93,7 +93,7 @@ export function GetFunctions(): string[] {
 // CreateFunction
 // ------------------------------------------------------------------
 export function CreateFunction(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string): string {
-  const name = CreateName(schema, stack.BaseURL().href as Href)
+  const name = CreateName(schema, stack.LexicalBaseURL() as Href)
   const call = CreateCallExpression(context, schema, name, value)
   if (funcs.has(name)) return call
   funcs.set(name, '')
