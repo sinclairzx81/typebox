@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Guard as Guard } from '../../guard/index.ts'
+import { Guard } from '../../guard/index.ts'
 import { Resolve } from '../resolve/index.ts'
 
 // --------------------------------------------------------------------------
@@ -69,12 +69,14 @@ export class Stack {
     if (Schema.IsRecursiveAnchorTrue(schema)) this.recursiveAnchors.push(schema)
     if (Schema.IsDynamicAnchor(schema)) this.dynamicAnchors.push(schema)
     const retrievedResource = this.retrievedResources.get(schema)
-    if (retrievedResource) this.retrievedFrames.push({
-      schema: retrievedResource.root,
-      base: retrievedResource.base,
-      idDepth: this.ids.length,
-      resourceDepth: this.resourceIds.length,
-    })
+    if (retrievedResource) {
+      this.retrievedFrames.push({
+        schema: retrievedResource.root,
+        base: retrievedResource.base,
+        idDepth: this.ids.length,
+        resourceDepth: this.resourceIds.length
+      })
+    }
   }
   // ----------------------------------------------------------------
   // Pop
@@ -113,12 +115,13 @@ export class Stack {
     return result
   }
   // ----------------------------------------------------------------
-  // Scope
+  // StackFrame
   //
-  // Packages current stack state into the read-only snapshot Resolve
-  // needs to make resolution decisions. Nothing in Resolve mutates this
-  // or reaches back into Stack; it only ever returns a description of
-  // what happened.
+  // Encodes the current stack state into a read-only snapshot that
+  // Resolve needs to make resolution decisions. Nothing in Resolve
+  // mutates this or reaches back into Stack. We currently do this to
+  // decouple Stack and Resolve, but we may just pass Stack directly
+  // to Resolve in future revisions (review).
   // ----------------------------------------------------------------
   #StackFrame(): Resolve.StackFrame {
     return {
@@ -131,24 +134,30 @@ export class Stack {
       resourceBase: this.#ResourceBaseURL(),
       recursiveAnchors: this.recursiveAnchors,
       dynamicAnchors: this.dynamicAnchors,
-      inRetrievedFrame: this.retrievedFrames.length > 0,
+      inRetrievedFrame: this.retrievedFrames.length > 0
     }
   }
   // ----------------------------------------------------------------
   // ApplyRefResult
   //
-  // The only place Stack acts on a Resolve decision. `retrievedResource`
-  // records a frame to be entered the next time traversal reaches its
-  // target; `resolvedResource` synthetically enters a resource immediately
-  // (unregistered again on Pop via #ExitResolvedResource).
+  // Updates stack state after reference resolution to reflect target
+  // scope boundaries. It immediately enters new base URIs for resolved
+  // $ids, flags the target as a pending resource root for upcoming
+  // traversal, or maps external document roots so Push can manage
+  // frame boundaries when traversal reaches them.
   // ----------------------------------------------------------------
   #ApplyRefResult(result: Resolve.RefResult): void {
-    if (!Guard.IsUndefined(result.resolvedResource)) this.#EnterResolvedResource(result.resolvedResource.target, result.resolvedResource.resource)
     if (!Guard.IsUndefined(result.schema)) this.pendingResource = true
+    if (!Guard.IsUndefined(result.resolvedResource)) {
+      this.#EnterResolvedResource(
+        result.resolvedResource.target,
+        result.resolvedResource.resource
+      )
+    }
     if (!Guard.IsUndefined(result.retrievedResource)) {
       this.retrievedResources.set(result.retrievedResource.target, {
         base: result.retrievedResource.base,
-        root: result.retrievedResource.root,
+        root: result.retrievedResource.root
       })
     }
   }
@@ -187,7 +196,14 @@ export class Stack {
     return this.ids.length > 0 ? this.ids[this.ids.length - 1] : (this.schema as Schema.XSchemaObject)
   }
   // ----------------------------------------------------------------
-  // RegisterResourceAnchorArray (invalid refs land here, need to handle)
+  // RegisterResourceAnchorArray
+  //
+  // Note: Invalid $refs may land here, presumably via anchors
+  // embedded in logical allOf/anyOf operands. I noted a few
+  // test suite cases commented as invalid that trigger this
+  // code path. We may be able to remove these in the future as,
+  // technically, we shouldn't need to traverse arrays inside
+  // the stack instances (review).
   // ----------------------------------------------------------------
   #RegisterResourceAnchorArray(schema: unknown[]): void {
     schema.forEach((schema) => this.#RegisterResourceAnchors(schema, false))
@@ -249,7 +265,7 @@ export class Stack {
   // ExitResolvedResource
   // ----------------------------------------------------------------
   #ExitResolvedResource(target: Schema.XSchemaObject): void {
-    if(!this.resolvedResources.has(target)) return
+    if (!this.resolvedResources.has(target)) return
     const resource = this.resolvedResources.get(target)!
     this.#UnregisterResource(resource)
     this.resolvedResources.delete(target)
