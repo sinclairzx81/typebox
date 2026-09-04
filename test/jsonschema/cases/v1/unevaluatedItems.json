@@ -704,6 +704,14 @@
     },
     "tests": [
       {
+        "description": "with no unevaluated items",
+        "data": [
+          "foo",
+          "bar"
+        ],
+        "valid": true
+      },
+      {
         "description": "with unevaluated items",
         "data": [
           "foo",

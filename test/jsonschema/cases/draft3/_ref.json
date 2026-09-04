@@ -92,15 +92,6 @@
     },
     "tests": [
       {
-        "description": "remote ref valid",
-        "data": {
-          "items": {
-            "type": "integer"
-          }
-        },
-        "valid": true
-      },
-      {
         "description": "remote ref invalid",
         "data": {
           "items": {

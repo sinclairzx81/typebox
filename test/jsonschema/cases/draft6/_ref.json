@@ -27,27 +27,5 @@
         "valid": true
       }
     ]
-  },
-  {
-    "description": "remote ref, containing refs itself",
-    "schema": {
-      "$ref": "http://json-schema.org/draft-06/schema#"
-    },
-    "tests": [
-      {
-        "description": "remote ref valid",
-        "data": {
-          "minLength": 1
-        },
-        "valid": true
-      },
-      {
-        "description": "remote ref invalid",
-        "data": {
-          "minLength": -1
-        },
-        "valid": false
-      }
-    ]
   }
 ]

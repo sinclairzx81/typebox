@@ -42,6 +42,11 @@
     },
     "tests": [
       {
+        "description": "ref within ref valid",
+        "data": 1,
+        "valid": true
+      },
+      {
         "description": "ref within ref invalid",
         "data": "a",
         "valid": false

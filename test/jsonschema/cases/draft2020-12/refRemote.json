@@ -64,6 +64,11 @@
     },
     "tests": [
       {
+        "description": "ref within ref valid",
+        "data": 1,
+        "valid": true
+      },
+      {
         "description": "ref within ref invalid",
         "data": "a",
         "valid": false
@@ -83,6 +88,15 @@
       }
     },
     "tests": [
+      {
+        "description": "base URI change ref valid",
+        "data": [
+          [
+            1
+          ]
+        ],
+        "valid": true
+      },
       {
         "description": "base URI change ref invalid",
         "data": [
@@ -116,6 +130,15 @@
       }
     },
     "tests": [
+      {
+        "description": "number is valid",
+        "data": {
+          "list": [
+            1
+          ]
+        },
+        "valid": true
+      },
       {
         "description": "string is invalid",
         "data": {
@@ -154,6 +177,15 @@
     },
     "tests": [
       {
+        "description": "number is valid",
+        "data": {
+          "list": [
+            1
+          ]
+        },
+        "valid": true
+      },
+      {
         "description": "string is invalid",
         "data": {
           "list": [
@@ -178,11 +210,27 @@
     },
     "tests": [
       {
+        "description": "string is valid",
+        "data": {
+          "name": "foo"
+        },
+        "valid": true
+      },
+      {
         "description": "null is valid",
         "data": {
           "name": null
         },
         "valid": true
+      },
+      {
+        "description": "object is invalid",
+        "data": {
+          "name": {
+            "name": null
+          }
+        },
+        "valid": false
       }
     ]
   },
@@ -218,6 +266,11 @@
     },
     "tests": [
       {
+        "description": "integer is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
         "description": "string is invalid",
         "data": "foo",
         "valid": false
@@ -244,6 +297,15 @@
           }
         },
         "valid": false
+      },
+      {
+        "description": "string is valid",
+        "data": {
+          "name": {
+            "foo": "a"
+          }
+        },
+        "valid": true
       }
     ]
   },
@@ -296,6 +358,11 @@
         "description": "number is invalid",
         "data": 1,
         "valid": false
+      },
+      {
+        "description": "string is valid",
+        "data": "foo",
+        "valid": true
       }
     ]
   },
@@ -306,6 +373,11 @@
       "$ref": "http://localhost:1234/draft2020-12/detached-ref.json#/$defs/foo"
     },
     "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
       {
         "description": "non-number is invalid",
         "data": "a",

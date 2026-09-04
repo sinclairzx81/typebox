@@ -1,0 +1,19 @@
+[
+  {
+    "description": "enum with codepoint equality: same visual character, different codepoints",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "enum": [
+        "ä"
+      ]
+    },
+    "tests": [
+      {
+        "description": "character looks the same but uses combining marks",
+        "data": "ä",
+        "comment": "a, U+0308",
+        "valid": false
+      }
+    ]
+  }
+]

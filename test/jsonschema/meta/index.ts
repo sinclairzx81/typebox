@@ -26,25 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './draft_3.ts'
-export * from './draft_4.ts'
-export * from './draft_6.ts'
-export * from './draft_7.ts'
-export * from './draft_2019_09.ts'
-export * from './draft_2020_12.ts'
-
-import { Draft_3 } from './draft_3.ts'
-import { Draft_4 } from './draft_4.ts'
-import { Draft_6 } from './draft_6.ts'
-import { Draft_7 } from './draft_7.ts'
-import { Draft_2019_09 } from './draft_2019_09.ts'
-import { Draft_2020_12 } from './draft_2020_12.ts'
-
-export default {
-  Draft_3,
-  Draft_4,
-  Draft_6,
-  Draft_7,
-  Draft_2019_09,
-  Draft_2020_12
-}
+export * from './meta.ts'

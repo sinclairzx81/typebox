@@ -56,6 +56,14 @@
     },
     "tests": [
       {
+        "description": "An array of strings is valid",
+        "data": [
+          "foo",
+          "bar"
+        ],
+        "valid": true
+      },
+      {
         "description": "An array containing non-strings is invalid",
         "data": [
           "foo",
@@ -90,6 +98,14 @@
       }
     },
     "tests": [
+      {
+        "description": "An array of strings is valid",
+        "data": [
+          "foo",
+          "bar"
+        ],
+        "valid": true
+      },
       {
         "description": "An array containing non-strings is invalid",
         "data": [
@@ -317,6 +333,17 @@
         "valid": false
       },
       {
+        "description": "incorrect extended schema",
+        "data": {
+          "elements": [
+            {
+              "b": 1
+            }
+          ]
+        },
+        "valid": false
+      },
+      {
         "description": "correct extended schema",
         "data": {
           "elements": [
@@ -363,6 +390,17 @@
         "valid": false
       },
       {
+        "description": "incorrect extended schema",
+        "data": {
+          "elements": [
+            {
+              "b": 1
+            }
+          ]
+        },
+        "valid": false
+      },
+      {
         "description": "correct extended schema",
         "data": {
           "elements": [
@@ -381,6 +419,11 @@
       "$ref": "http://localhost:1234/v1/detached-dynamicref.json#/$defs/foo"
     },
     "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
       {
         "description": "non-number is invalid",
         "data": "a",
@@ -497,6 +540,11 @@
       }
     },
     "tests": [
+      {
+        "description": "data is sufficient for schema at second#/$defs/length",
+        "data": "hi",
+        "valid": true
+      },
       {
         "description": "data is not sufficient for schema at second#/$defs/length",
         "data": "hey",

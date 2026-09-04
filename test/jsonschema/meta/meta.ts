@@ -26,13 +26,19 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// ------------------------------------------------------------------
-// Barrel
-// ------------------------------------------------------------------
-export * from './schema.ts'
+import { Draft_2020_12 } from './draft_2020_12.ts'
+import { Draft_2019_09 } from './draft_2019_09.ts'
+import { Draft_7 } from './draft_7.ts'
+import { Draft_6 } from './draft_6.ts'
+import { Draft_4 } from './draft_4.ts'
+import { Draft_3 } from './draft_3.ts'
 
-// ------------------------------------------------------------------
-// Default
-// ------------------------------------------------------------------
-import * as Schema from './schema.ts'
-export default Schema
+/** Json Schema Metaschema */
+export const MetaSchema = {
+  'http://json-schema.org/draft-03/schema#': Draft_3,
+  'http://json-schema.org/draft-04/schema#': Draft_4,
+  'http://json-schema.org/draft-06/schema#': Draft_6,
+  'http://json-schema.org/draft-07/schema#': Draft_7,
+  'https://json-schema.org/draft/2019-09/schema': Draft_2019_09,
+  'https://json-schema.org/draft/2020-12/schema': Draft_2020_12
+}
