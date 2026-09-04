@@ -51,6 +51,21 @@
         "valid": true
       },
       {
+        "description": "invalid percent-encoding with non-hex digits",
+        "data": "http://ƒøø.ßår/%6G",
+        "valid": false
+      },
+      {
+        "description": "incomplete percent-encoding triplet",
+        "data": "http://ƒøø.ßår/%A",
+        "valid": false
+      },
+      {
+        "description": "lone percent sign is invalid",
+        "data": "http://ƒøø.ßår/%",
+        "valid": false
+      },
+      {
         "description": "a valid IRI with many special characters",
         "data": "http://-.~_!$&'()*+,;=:%40:80%2f::::::@example.com",
         "valid": true

@@ -22,7 +22,7 @@ TypeBox has broad support for all major JSON Schema drafts and asserts for speci
 | dependentRequired | - | - | - | - | ✅ | ✅ | ✅ |
 | dependentSchemas | - | - | - | - | ✅ | ✅ | ✅ |
 | dynamicRef | - | - | - | - | - | ✅ | ✅ |
-| enum | 16/18 | ✅ | ✅ | ✅ | ✅ | ✅ | 52/53 |
+| enum | 16/18 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMaximum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMinimum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format | ✅ | ✅ | ✅ | ✅ | ✅ | 114/133 | - |
