@@ -30,12 +30,12 @@ THE SOFTWARE.
   Scale variables
 /* ================================================================ */
 .home {
-  --home-scale: 1;               /* master scale: controls ALL elements   */
+  --home-scale: 1;               /* master scale                          */
   --home-logo-scale: 0.85;       /* logo scale (1 = 256px)                */
-  --home-logo-gap: 0.5em;        /* gap between logo and h1               */
+  --home-logo-gap: 0.3em;        /* gap between logo and h1               */
   --home-h1-size: 2.4em;         /* h1 font size                          */
-  --home-h2-size: 1em;           /* h2 font size                          */
-  --home-h1-h2-gap: 1.25em;      /* gap between h1 and subheading         */
+  --home-h2-size: 0.9em;         /* h2 font size                          */
+  --home-h1-h2-gap: 1.55em;      /* gap between h1 and subheading         */
   --home-subheading-gap: 4.5em;  /* gap between subheading and buttons    */
   --home-button-scale: 0.85;     /* button scale                          */
 }
