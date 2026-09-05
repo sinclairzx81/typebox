@@ -251,7 +251,7 @@ TypeBox supports all major JSON Schema draft versions and tracks compliance agai
 | dependentRequired | - | - | - | - | ✅ | ✅ | ✅ |
 | dependentSchemas | - | - | - | - | ✅ | ✅ | ✅ |
 | dynamicRef | - | - | - | - | - | ✅ | ✅ |
-| enum | 16/18 | ✅ | ✅ | ✅ | ✅ | ✅ | 52/53 |
+| enum | 16/18 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMaximum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMinimum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format | ✅ | ✅ | ✅ | ✅ | ✅ | 114/133 | - |

@@ -31,6 +31,7 @@ THE SOFTWARE.
 const IpvFutureMatchMaxLength = 2048
 const IpvFutureMatch = /\[[vV][0-9a-fA-F]+\.[^\]]+\]/ // Guarded By IpvFutureMatchMaxLength
 const InvalidIriChars = /[\x00-\x20<>\^`{|}\\]/
+const InvalidPercentEncoding = /%(?![0-9a-fA-F]{2})/
 
 // ------------------------------------------------------------------
 // NarrowIpvFuture
@@ -55,6 +56,8 @@ function NarrowIpvFuture(value: string): string {
 export function IsIri(value: string): boolean {
   // 1. Reject strings containing unencoded whitespace or illegal control characters.
   if (InvalidIriChars.test(value)) return false
-  // 2. Delegate to the native URL parser, patching the IPvFuture edge case beforehand.
+  // 2. Reject malformed percent-encoding triplets.
+  if (InvalidPercentEncoding.test(value)) return false
+  // 3. Delegate to the native URL parser, patching the IPvFuture edge case beforehand.
   return URL.canParse(NarrowIpvFuture(value))
 }
