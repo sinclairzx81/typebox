@@ -10,6 +10,7 @@
     "allowImportingTsExtensions": true,
     "exactOptionalPropertyTypes": true,
     "paths": {
+      "typebox/cbor": ["./src/cbor/index.ts"],
       "typebox/compile": ["./src/compile/index.ts"],
       "typebox/errors": ["./src/errors/index.ts"],
       "typebox/format": ["./src/format/index.ts"],

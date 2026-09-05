@@ -44,6 +44,7 @@
     // --------------------------------------------------------------
     // Package Entry
     // --------------------------------------------------------------
+    "typebox/cbor": "./src/cbor/index.ts",
     "typebox/compile": "./src/compile/index.ts",
     "typebox/error": "./src/error/index.ts",
     "typebox/format": "./src/format/index.ts",

@@ -3,6 +3,9 @@ import { Task } from 'tasksmith'
 export async function Metrics() {
   await Task.esbuild.metrics([
     'task/metrics/all.ts',
+    'task/metrics/cbor_all.ts',
+    'task/metrics/cbor_decode.ts',
+    'task/metrics/cbor_encode.ts',
     'task/metrics/compile_all.ts',
     'task/metrics/format.ts',
     'task/metrics/schema_bench.ts',
