@@ -26,7 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export const Draft_7 = {
+import type { XMetaSchemaObject } from './schema.ts'
+
+export const Draft_7: XMetaSchemaObject = {
   '$schema': 'http://json-schema.org/draft-07/schema#',
   '$id': 'http://json-schema.org/draft-07/schema#',
   'title': 'Core schema meta-schema',
@@ -197,4 +199,4 @@ export const Draft_7 = {
     'not': { '$ref': '#' }
   },
   'default': true
-} as const
+} as never

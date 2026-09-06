@@ -1,0 +1,40 @@
+<h1>Schema.Meta</h1>
+<p>JSON Schema is JSON like any other, and can be validated the same way. TypeBox includes meta schemas for the JSON Schema drafts it supports, letting you validate a schema against a specific draft version.</p>
+<blockquote>
+<p>⚠️ TypeBox only includes meta schemas for published JSON Schema versions it tests against. Auxiliary schemas, such as OpenAPI or OpenRPC, can be passed to TypeBox but must be sourced separately.</p>
+</blockquote>
+<h3>Meta Schema Definitions</h3>
+<p>TypeBox provides inline definitions for the following JSON Schema draft meta schemas, also available at these URLs:</p>
+<ul>
+<li><a href="http://json-schema.org/draft-03/schema#">Draft 3</a></li>
+<li><a href="http://json-schema.org/draft-04/schema#">Draft 4</a></li>
+<li><a href="http://json-schema.org/draft-06/schema#">Draft 6</a></li>
+<li><a href="http://json-schema.org/draft-07/schema#">Draft 7</a></li>
+<li><a href="https://json-schema.org/draft/2019-09/schema">Draft 2019-09</a></li>
+<li><a href="https://json-schema.org/draft/2020-12/schema">Draft 2020-12</a></li>
+</ul>
+<h3>Usage</h3>
+<p>The example below parses a schema as Draft 2020-12, then validates a value against it. The meta schema is selected by its <code>$schema</code> identifier.</p>
+<pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
+
+// ------------------------------------------------------------------
+// Validate Schema
+// ------------------------------------------------------------------
+const A = Schema.Parse(Schema.Meta[&#39;https://json-schema.org/draft/2020-12/schema&#39;], {
+  type: &#39;object&#39;,
+  required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+  properties: {
+    x: { type: &#39;number&#39; },
+    y: { type: &#39;number&#39; },
+    z: { type: &#39;number&#39; },
+  }
+})
+// ------------------------------------------------------------------
+// Validate Value
+// ------------------------------------------------------------------
+const B = Schema.Parse(A, {
+  x: 1,
+  y: 2,
+  z: 3
+})
+</code></pre>
