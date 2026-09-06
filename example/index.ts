@@ -1,22 +1,73 @@
+import Compile from 'typebox/compile'
+import System from 'typebox/system'
+import Guard from 'typebox/guard'
+import Format from 'typebox/format'
 import Schema from 'typebox/schema'
+import Value from 'typebox/value'
+import Type from 'typebox'
 
 // ------------------------------------------------------------------
-// Validate Schema
+// Settings
 // ------------------------------------------------------------------
-const A = Schema.Parse(Schema.Meta['https://json-schema.org/draft/2020-12/schema'], {
-  type: 'object',
-  required: ['x', 'y', 'z'],
-  properties: {
-    x: { type: 'number' },
-    y: { type: 'number' },
-    z: { type: 'number' },
-  }
+
+System.Settings.Set({ enumerableKind: false })
+
+// ------------------------------------------------------------------
+// Guard
+// ------------------------------------------------------------------
+
+const A = Guard.GraphemeCount('type-📦')      // 6
+const B = Guard.HasPropertyKey({ x: 1 }, 'x') // true
+
+// ------------------------------------------------------------------
+// Type
+// ------------------------------------------------------------------
+
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
 })
+
 // ------------------------------------------------------------------
-// Validate Value
+// Script
 // ------------------------------------------------------------------
-const B = Schema.Parse(A, {
-  x: 1,
-  y: 2,
-  z: 3
-})
+
+const U = Type.Script(`string with { format: 'email' }`)
+
+const S = Type.Script({ T }, `{
+  [K in keyof T]: T[K] | null
+}`)
+
+// ------------------------------------------------------------------
+// Infer
+// ------------------------------------------------------------------
+
+type U = Type.Static<typeof U>
+type T = Type.Static<typeof T>
+type S = Type.Static<typeof S>
+
+// ------------------------------------------------------------------
+// Parse
+// ------------------------------------------------------------------
+
+const R = Value.Parse(T, { x: 1, y: 2, z: 3 })
+
+// ------------------------------------------------------------------
+// Compile
+// ------------------------------------------------------------------
+const C = Compile(S)
+
+const X = C.Parse({ x: 1, y: 2, z: 3 })
+
+// ------------------------------------------------------------------
+// Format
+// ------------------------------------------------------------------
+
+const E = Format.IsEmail('user@domain.com')
+
+// ------------------------------------------------------------------
+// Schema
+// ------------------------------------------------------------------
+
+const D = Schema.Parse({ const: 'hello' }, 'hello')
