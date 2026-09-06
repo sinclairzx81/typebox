@@ -26,11 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export const Draft_3 = {
+import type { XMetaSchemaObject } from './schema.ts'
+
+export const Draft_3: XMetaSchemaObject = {
   '$schema': 'http://json-schema.org/draft-03/schema#',
   'id': 'http://json-schema.org/draft-03/schema#',
   'type': 'object',
-
   'properties': {
     'type': {
       'type': ['string', 'array'],
@@ -172,4 +173,4 @@ export const Draft_3 = {
     'exclusiveMaximum': 'maximum'
   },
   'default': {}
-} as const
+} as never

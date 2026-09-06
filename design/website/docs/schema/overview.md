@@ -1,6 +1,6 @@
 # Schema
 
-High Performance Validation for JSON Schema 
+High Performance JSON Schema Validation
 
 ## Overview
 
