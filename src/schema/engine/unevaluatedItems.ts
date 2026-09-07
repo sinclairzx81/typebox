@@ -29,16 +29,16 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { Unique } from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildUnevaluatedItems(stack: Stack, context: BuildContext, schema: Schema.XUnevaluatedItems, value: string): string {
+export function BuildUnevaluatedItems(stack: Stack.XStack, context: BuildContext, schema: Schema.XUnevaluatedItems, value: string): string {
   const [index, item] = [Unique(), Unique()]
   const indices = E.Call(E.Member('context', 'GetIndices'), [])
   const hasIndex = E.Call(E.Member('indices', 'has'), [index])
@@ -53,7 +53,7 @@ export function BuildUnevaluatedItems(stack: Stack, context: BuildContext, schem
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckUnevaluatedItems(stack: Stack, context: CheckContext, schema: Schema.XUnevaluatedItems, value: unknown[]): boolean {
+export function CheckUnevaluatedItems(stack: Stack.XStack, context: CheckContext, schema: Schema.XUnevaluatedItems, value: unknown[]): boolean {
   const indices = context.GetIndices()
   return G.Every(value, 0, (item, index) => {
     return (indices.has(index) || CheckSchema(stack, context, schema.unevaluatedItems, item))
@@ -63,7 +63,7 @@ export function CheckUnevaluatedItems(stack: Stack, context: CheckContext, schem
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorUnevaluatedItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XUnevaluatedItems, value: unknown[]): boolean {
+export function ErrorUnevaluatedItems(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XUnevaluatedItems, value: unknown[]): boolean {
   const indices = context.GetIndices()
   const unevaluatedItems: number[] = []
   const isUnevaluatedItems = G.EveryAll(value, 0, (item, index) => {
@@ -73,10 +73,6 @@ export function ErrorUnevaluatedItems(stack: Stack, context: ErrorContext, schem
     if (!isEvaluatedItem) unevaluatedItems.push(index)
     return isEvaluatedItem
   })
-  return isUnevaluatedItems || context.AddError({
-    keyword: 'unevaluatedItems',
-    schemaPath,
-    instancePath,
-    params: { unevaluatedItems }
-  })
+  return isUnevaluatedItems ||
+    context.AddError('unevaluatedItems', schemaPath, instancePath, { unevaluatedItems })
 }

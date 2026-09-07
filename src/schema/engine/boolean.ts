@@ -28,30 +28,27 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
+
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildSchemaBoolean(_stack: Stack, _context: BuildContext, schema: boolean, _value: string): string {
+export function BuildSchemaBoolean(_stack: Stack.XStack, _context: BuildContext, schema: boolean, _value: string): string {
   return schema ? E.Constant(true) : E.Constant(false)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckSchemaBoolean(_stack: Stack, _context: CheckContext, schema: boolean, _value: unknown): boolean {
+export function CheckSchemaBoolean(_stack: Stack.XStack, _context: CheckContext, schema: boolean, _value: unknown): boolean {
   return schema
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorSchemaBoolean(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: boolean, value: unknown): boolean {
-  return CheckSchemaBoolean(stack, context, schema, value) || context.AddError({
-    keyword: 'boolean',
-    schemaPath,
-    instancePath,
-    params: {}
-  })
+export function ErrorSchemaBoolean(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: boolean, value: unknown): boolean {
+  return CheckSchemaBoolean(stack, context, schema, value) || 
+    context.AddError('boolean', schemaPath, instancePath, {})
 }

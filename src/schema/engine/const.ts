@@ -29,15 +29,15 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
+import * as Stack from './_stack.ts'
 import * as Externals from './_externals.ts'
-import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildConst(_stack: Stack, _context: BuildContext, schema: Schema.XConst, value: string): string {
+export function BuildConst(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XConst, value: string): string {
   return G.IsValueLike(schema.const)
     ? E.IsEqual(value, E.Constant(schema.const))
     : E.IsDeepEqual(value, Externals.CreateVariable(schema.const))
@@ -45,7 +45,7 @@ export function BuildConst(_stack: Stack, _context: BuildContext, schema: Schema
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckConst(_stack: Stack, _context: CheckContext, schema: Schema.XConst, value: unknown): boolean {
+export function CheckConst(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XConst, value: unknown): boolean {
   return G.IsValueLike(schema.const)
     ? G.IsEqual(value, schema.const)
     : G.IsDeepEqual(value, schema.const)
@@ -53,11 +53,7 @@ export function CheckConst(_stack: Stack, _context: CheckContext, schema: Schema
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function ErrorConst(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XConst, value: unknown): boolean {
-  return CheckConst(stack, context, schema, value) || context.AddError({
-    keyword: 'const',
-    schemaPath,
-    instancePath,
-    params: { allowedValue: schema.const },
-  })
+export function ErrorConst(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XConst, value: unknown): boolean {
+  return CheckConst(stack, context, schema, value) || 
+    context.AddError('const', schemaPath, instancePath, { allowedValue: schema.const })
 }

@@ -29,22 +29,22 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
-import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import * as Stack from './_stack.ts'
 import { Reducer } from './_reducer.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildAnyOfStandard(stack: Stack, context: BuildContext, schema: Schema.XAnyOf, value: string): string {
+function BuildAnyOfStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XAnyOf, value: string): string {
   return Reducer(stack, context, schema.anyOf, value, E.IsGreaterThan(E.Member('results', 'length'), E.Constant(0)))
 }
-function BuildAnyOfFast(stack: Stack, context: BuildContext, schema: Schema.XAnyOf, value: string): string {
+function BuildAnyOfFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XAnyOf, value: string): string {
   return E.ReduceOr(schema.anyOf.map((schema) => BuildSchema(stack, context, schema, value)))
 }
-export function BuildAnyOf(stack: Stack, context: BuildContext, schema: Schema.XAnyOf, value: string): string {
+export function BuildAnyOf(stack: Stack.XStack, context: BuildContext, schema: Schema.XAnyOf, value: string): string {
   return context.UseUnevaluated()
     ? BuildAnyOfStandard(stack, context, schema, value)
     : BuildAnyOfFast(stack, context, schema, value)
@@ -52,7 +52,7 @@ export function BuildAnyOf(stack: Stack, context: BuildContext, schema: Schema.X
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckAnyOf(stack: Stack, context: CheckContext, schema: Schema.XAnyOf, value: unknown): boolean {
+export function CheckAnyOf(stack: Stack.XStack, context: CheckContext, schema: Schema.XAnyOf, value: unknown): boolean {
   const results = schema.anyOf.reduce<CheckContext[]>((result, schema) => {
     const nextContext = new CheckContext()
     return CheckSchema(stack, nextContext, schema, value) ? [...result, nextContext] : result
@@ -62,7 +62,7 @@ export function CheckAnyOf(stack: Stack, context: CheckContext, schema: Schema.X
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorAnyOf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XAnyOf, value: unknown): boolean {
+export function ErrorAnyOf(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XAnyOf, value: unknown): boolean {
   const failedContexts: ErrorContext[] = []
   const results = schema.anyOf.reduce<ErrorContext[]>((result, schema, index) => {
     const nextContext = new ErrorContext()
@@ -72,11 +72,6 @@ export function ErrorAnyOf(stack: Stack, context: ErrorContext, schemaPath: stri
     return isSchema ? [...result, nextContext] : result
   }, [])
   const isAnyOf = G.IsGreaterThan(results.length, 0) && context.Merge(results)
-  if (!isAnyOf) failedContexts.forEach(failed => failed.GetErrors().forEach(error => context.AddError(error)))
-  return isAnyOf || context.AddError({
-    keyword: 'anyOf',
-    schemaPath,
-    instancePath,
-    params: {}
-  })
+  if (!isAnyOf) failedContexts.forEach(failed => context.AddErrors(failed.GetErrors()))
+  return isAnyOf || context.AddError('anyOf', schemaPath, instancePath, {})
 }

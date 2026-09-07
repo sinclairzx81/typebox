@@ -29,17 +29,16 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { Unique } from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
-
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildUnevaluatedProperties(stack: Stack, context: BuildContext, schema: Schema.XUnevaluatedProperties, value: string): string {
+export function BuildUnevaluatedProperties(stack: Stack.XStack, context: BuildContext, schema: Schema.XUnevaluatedProperties, value: string): string {
   const [key, prop] = [Unique(), Unique()]
   const keys = E.Call(E.Member('context', 'GetKeys'), [])
   const hasKey = E.Call(E.Member('keys', 'has'), [key])
@@ -54,7 +53,7 @@ export function BuildUnevaluatedProperties(stack: Stack, context: BuildContext, 
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckUnevaluatedProperties(stack: Stack, context: CheckContext, schema: Schema.XUnevaluatedProperties, value: Record<PropertyKey, unknown>) {
+export function CheckUnevaluatedProperties(stack: Stack.XStack, context: CheckContext, schema: Schema.XUnevaluatedProperties, value: Record<PropertyKey, unknown>) {
   const keys = context.GetKeys()
   return G.Every(G.Entries(value), 0, ([key, prop]) => {
     return keys.has(key)
@@ -64,7 +63,7 @@ export function CheckUnevaluatedProperties(stack: Stack, context: CheckContext, 
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorUnevaluatedProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XUnevaluatedProperties, value: Record<PropertyKey, unknown>) {
+export function ErrorUnevaluatedProperties(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XUnevaluatedProperties, value: Record<PropertyKey, unknown>) {
   const keys = context.GetKeys()
   const unevaluatedProperties: PropertyKey[] = []
   const isUnevaluatedProperties = G.EveryAll(G.Entries(value), 0, ([key, prop]) => {
@@ -74,10 +73,6 @@ export function ErrorUnevaluatedProperties(stack: Stack, context: ErrorContext, 
     if (!isEvaluatedProperty) unevaluatedProperties.push(key)
     return isEvaluatedProperty
   })
-  return isUnevaluatedProperties || context.AddError({
-    keyword: 'unevaluatedProperties',
-    schemaPath,
-    instancePath,
-    params: { unevaluatedProperties }
-  })
+  return isUnevaluatedProperties ||
+    context.AddError('unevaluatedProperties', schemaPath, instancePath, { unevaluatedProperties })
 }

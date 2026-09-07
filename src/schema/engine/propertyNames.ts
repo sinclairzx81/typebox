@@ -29,29 +29,29 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { Unique } from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildPropertyNames(stack: Stack, context: BuildContext, schema: Schema.XPropertyNames, value: string): string {
+export function BuildPropertyNames(stack: Stack.XStack, context: BuildContext, schema: Schema.XPropertyNames, value: string): string {
   const [key, _index] = [Unique(), Unique()]
   return E.Every(E.Keys(value), E.Constant(0), [key, _index], BuildSchema(stack, context, schema.propertyNames, key))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckPropertyNames(stack: Stack, context: CheckContext, schema: Schema.XPropertyNames, value: Record<PropertyKey, unknown>): boolean {
+export function CheckPropertyNames(stack: Stack.XStack, context: CheckContext, schema: Schema.XPropertyNames, value: Record<PropertyKey, unknown>): boolean {
   return G.Every(G.Keys(value), 0, (key, _index) => CheckSchema(stack, context, schema.propertyNames, key))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorPropertyNames(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPropertyNames, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorPropertyNames(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPropertyNames, value: Record<PropertyKey, unknown>): boolean {
   const propertyNames: string[] = []
   const isPropertyNames = G.EveryAll(G.Keys(value), 0, (key, _index) => {
     const nextInstancePath = `${instancePath}/${key}`
@@ -60,10 +60,6 @@ export function ErrorPropertyNames(stack: Stack, context: ErrorContext, schemaPa
     if (!isPropertyName) propertyNames.push(key)
     return isPropertyName
   })
-  return isPropertyNames || context.AddError({
-    keyword: 'propertyNames',
-    schemaPath,
-    instancePath,
-    params: { propertyNames }
-  })
+  return isPropertyNames ||
+    context.AddError('propertyNames', schemaPath, instancePath, { propertyNames })
 }

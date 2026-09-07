@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildExclusiveMinimum(_stack: Stack, _context: BuildContext, schema: Schema.XExclusiveMinimum, value: string): string {
+export function BuildExclusiveMinimum(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XExclusiveMinimum, value: string): string {
   return E.IsGreaterThan(value, E.Constant(schema.exclusiveMinimum))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckExclusiveMinimum(_stack: Stack, _context: CheckContext, schema: Schema.XExclusiveMinimum, value: number | bigint): boolean {
+export function CheckExclusiveMinimum(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XExclusiveMinimum, value: number | bigint): boolean {
   return G.IsGreaterThan(value, schema.exclusiveMinimum)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorExclusiveMinimum(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XExclusiveMinimum, value: number | bigint): boolean {
-  return CheckExclusiveMinimum(stack, context, schema, value) || context.AddError({
-    keyword: 'exclusiveMinimum',
-    schemaPath,
-    instancePath,
-    params: { comparison: '>', limit: schema.exclusiveMinimum }
-  })
+export function ErrorExclusiveMinimum(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XExclusiveMinimum, value: number | bigint): boolean {
+  return CheckExclusiveMinimum(stack, context, schema, value) || 
+    context.AddError('exclusiveMinimum', schemaPath, instancePath, { comparison: '>', limit: schema.exclusiveMinimum })
 }

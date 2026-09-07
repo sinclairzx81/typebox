@@ -29,15 +29,15 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildPrefixItems(stack: Stack, context: BuildContext, schema: Schema.XPrefixItems, value: string): string {
+export function BuildPrefixItems(stack: Stack.XStack, context: BuildContext, schema: Schema.XPrefixItems, value: string): string {
   return E.ReduceAnd(schema.prefixItems.map((schema, index) => {
     const isLength = E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(index))
     const isSchema = BuildSchemaPushStack(stack, context, schema, `${value}[${index}]`)
@@ -49,7 +49,7 @@ export function BuildPrefixItems(stack: Stack, context: BuildContext, schema: Sc
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckPrefixItems(stack: Stack, context: CheckContext, schema: Schema.XPrefixItems, value: unknown[]): boolean {
+export function CheckPrefixItems(stack: Stack.XStack, context: CheckContext, schema: Schema.XPrefixItems, value: unknown[]): boolean {
   return G.IsEqual(value.length, 0) || G.Every(schema.prefixItems, 0, (schema, index) => {
     return G.IsLessEqualThan(value.length, index) 
       || (CheckSchemaPushStack(stack, context, schema, value[index]) && context.AddIndex(index))
@@ -58,7 +58,7 @@ export function CheckPrefixItems(stack: Stack, context: CheckContext, schema: Sc
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorPrefixItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPrefixItems, value: unknown[]): boolean {
+export function ErrorPrefixItems(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPrefixItems, value: unknown[]): boolean {
   return G.IsEqual(value.length, 0) || G.EveryAll(schema.prefixItems, 0, (schema, index) => {
     const nextSchemaPath = `${schemaPath}/prefixItems/${index}`
     const nextInstancePath = `${instancePath}/${index}`

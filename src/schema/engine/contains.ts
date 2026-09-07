@@ -29,9 +29,8 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { Unique } from './_unique.ts'
-
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema } from './schema.ts'
@@ -45,19 +44,19 @@ function IsValid(schema: Schema.XContains): boolean {
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildContainsStandard(stack: Stack, context: BuildContext, schema: Schema.XContains, value: string): string {
+function BuildContainsStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XContains, value: string): string {
   const [item, index] = [Unique(), Unique()]
   const isLength = E.Not(E.IsEqual(E.Member(value, 'length'), E.Constant(0)))
   const isSome = E.SomeAll(value, [item, index], E.And(BuildSchema(stack, context, schema.contains, item), context.AddIndex(index)))
   return E.And(isLength, isSome)
 }
-function BuildContainsFast(stack: Stack, context: BuildContext, schema: Schema.XContains, value: string): string {
+function BuildContainsFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XContains, value: string): string {
   const [item] = [Unique()]
   const isLength = E.Not(E.IsEqual(E.Member(value, 'length'), E.Constant(0)))
   const isSome = E.Some(value, [item, '_'], BuildSchema(stack, context, schema.contains, item))
   return E.And(isLength, isSome)
 }
-export function BuildContains(stack: Stack, context: BuildContext, schema: Schema.XContains, value: string): string {
+export function BuildContains(stack: Stack.XStack, context: BuildContext, schema: Schema.XContains, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
   return context.UseUnevaluated()
     ? BuildContainsStandard(stack, context, schema, value)
@@ -66,7 +65,7 @@ export function BuildContains(stack: Stack, context: BuildContext, schema: Schem
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckContains(stack: Stack, context: CheckContext, schema: Schema.XContains, value: unknown[]): boolean {
+export function CheckContains(stack: Stack.XStack, context: CheckContext, schema: Schema.XContains, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
   return !G.IsEqual(value.length, 0) && G.SomeAll(value, (item, index) => {
     return CheckSchema(stack, context, schema.contains, item) && context.AddIndex(index)
@@ -75,11 +74,7 @@ export function CheckContains(stack: Stack, context: CheckContext, schema: Schem
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorContains(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XContains, value: unknown[]): boolean {
-  return CheckContains(stack, context, schema, value) || context.AddError({
-    keyword: 'contains',
-    schemaPath,
-    instancePath,
-    params: { minContains: 1 },
-  })
+export function ErrorContains(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XContains, value: unknown[]): boolean {
+  return CheckContains(stack, context, schema, value) ||
+    context.AddError('contains', schemaPath, instancePath, { minContains: 1 })
 }

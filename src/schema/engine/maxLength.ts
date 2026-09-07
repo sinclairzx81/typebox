@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaxLength(_stack: Stack, _context: BuildContext, schema: Schema.XMaxLength, value: string): string {
+export function BuildMaxLength(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XMaxLength, value: string): string {
   return E.IsMaxLength(value, E.Constant(schema.maxLength))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaxLength(_stack: Stack, _context: CheckContext, schema: Schema.XMaxLength, value: string): boolean {
+export function CheckMaxLength(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XMaxLength, value: string): boolean {
   return G.IsMaxLength(value, schema.maxLength)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMaxLength(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaxLength, value: string): boolean {
-  return CheckMaxLength(stack, context, schema, value) || context.AddError({
-    keyword: 'maxLength',
-    schemaPath,
-    instancePath,
-    params: { limit: schema.maxLength }
-  })
+export function ErrorMaxLength(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaxLength, value: string): boolean {
+  return CheckMaxLength(stack, context, schema, value) ||
+    context.AddError('maxLength', schemaPath, instancePath, { limit: schema.maxLength })
 }

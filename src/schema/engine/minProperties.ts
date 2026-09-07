@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMinProperties(_stack: Stack, _context: BuildContext, schema: Schema.XMinProperties, value: string): string {
+export function BuildMinProperties(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XMinProperties, value: string): string {
   return E.IsGreaterEqualThan(E.Member(E.Keys(value), 'length'), E.Constant(schema.minProperties))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMinProperties(_stack: Stack, _context: CheckContext, schema: Schema.XMinProperties, value: Record<PropertyKey, unknown>): boolean {
+export function CheckMinProperties(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XMinProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.IsGreaterEqualThan(G.Keys(value).length, schema.minProperties)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMinProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinProperties, value: Record<PropertyKey, unknown>): boolean {
-  return CheckMinProperties(stack, context, schema, value) || context.AddError({
-    keyword: 'minProperties',
-    schemaPath,
-    instancePath,
-    params: { limit: schema.minProperties },
-  })
+export function ErrorMinProperties(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinProperties, value: Record<PropertyKey, unknown>): boolean {
+  return CheckMinProperties(stack, context, schema, value) ||
+    context.AddError('minProperties', schemaPath, instancePath, { limit: schema.minProperties })
 }

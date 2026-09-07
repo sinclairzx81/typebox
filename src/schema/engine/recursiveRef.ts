@@ -28,30 +28,34 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as Functions from './_functions.ts'
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
+import * as Resolve from '../resolve/index.ts'
+import * as Functions from './_functions.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { CheckSchema, ErrorSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildRecursiveRef(stack: Stack, context: BuildContext, schema: Schema.XRecursiveRef, value: string): string {
-  const target = stack.RecursiveRef(schema) ?? false
-  return Functions.CreateFunction(stack, context, target, value)
+export function BuildRecursiveRef(stack: Stack.XStack, context: BuildContext, schema: Schema.XRecursiveRef, value: string): string {
+  const target = Resolve.RecursiveRef(stack, schema) ?? false
+  const nextStack = target ? { ...stack, pendingResource: true } : stack
+  return Functions.CreateFunction(nextStack, context, target, value)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckRecursiveRef(stack: Stack, context: CheckContext, schema: Schema.XRecursiveRef, value: unknown): boolean {
-  const target = stack.RecursiveRef(schema) ?? false
-  return (Schema.IsSchema(target) && CheckSchema(stack, context, target, value))
+export function CheckRecursiveRef(stack: Stack.XStack, context: CheckContext, schema: Schema.XRecursiveRef, value: unknown): boolean {
+  const target = Resolve.RecursiveRef(stack, schema) ?? false
+  const nextStack = target ? { ...stack, pendingResource: true } : stack
+  return (Schema.IsSchema(target) && CheckSchema(nextStack, context, target, value))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRecursiveRef(stack: Stack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XRecursiveRef, value: unknown): boolean {
-  const target = stack.RecursiveRef(schema) ?? false
-  return (Schema.IsSchema(target) && ErrorSchema(stack, context, '#', instancePath, target, value))
+export function ErrorRecursiveRef(stack: Stack.XStack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XRecursiveRef, value: unknown): boolean {
+  const target = Resolve.RecursiveRef(stack, schema) ?? false
+  const nextStack = target ? { ...stack, pendingResource: true } : stack
+  return (Schema.IsSchema(target) && ErrorSchema(nextStack, context, '#', instancePath, target, value))
 }

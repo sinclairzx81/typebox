@@ -33,6 +33,7 @@ import { Arguments } from '../system/arguments/index.ts'
 import { type Static } from '../type/types/static.ts'
 import * as Engine from './engine/index.ts'
 import * as Schema from './types/index.ts'
+
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
@@ -46,7 +47,7 @@ export function Check(...args: unknown[]): boolean {
     3: (context, schema, value) => [context, schema, value],
     2: (schema, value) => [{}, schema, value]
   })
-  const stack = new Engine.Stack(context, schema)
+  const stack = Engine.Stack(context, schema)
   const checkContext = new Engine.CheckContext()
   return Engine.CheckSchema(stack, checkContext, schema, value)
 }

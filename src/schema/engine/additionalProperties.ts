@@ -28,9 +28,9 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import * as V from './_externals.ts'
-import { Stack } from './_stack.ts'
+import * as Schema from '../types/index.ts'
+import * as Stack from './_stack.ts'
+import * as Externals from './_externals.ts'
 import { Unique } from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { UnicodeRegExp } from './_regexp.ts'
@@ -44,7 +44,7 @@ import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from
 // we are not in an unevaluated context, noting that additional
 // properties are considered tracked, evaluated keys.
 // ------------------------------------------------------------------
-function IsAdditionalPropertiesIgnored(context: BuildContext, additionalProperties: S.XSchema): boolean {
+function IsAdditionalPropertiesIgnored(context: BuildContext, additionalProperties: Schema.XSchema): boolean {
   return !context.UseUnevaluated() &&
     (G.IsEqual(additionalProperties, true) ||
       (G.IsObject(additionalProperties) && G.IsEqual(G.Keys(additionalProperties).length, 0)))
@@ -64,10 +64,10 @@ function GetPropertyKeyAsPattern(key: string): string {
   const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   return `^${escaped}$`
 }
-function GetPropertiesPattern(schema: S.XSchemaObject): string {
+function GetPropertiesPattern(schema: Schema.XSchemaObject): string {
   const patterns: string[] = []
-  if (S.IsPatternProperties(schema)) patterns.push(...G.Keys(schema.patternProperties))
-  if (S.IsProperties(schema)) patterns.push(...G.Keys(schema.properties).map(GetPropertyKeyAsPattern))
+  if (Schema.IsPatternProperties(schema)) patterns.push(...G.Keys(schema.patternProperties))
+  if (Schema.IsProperties(schema)) patterns.push(...G.Keys(schema.properties).map(GetPropertyKeyAsPattern))
   return G.IsEqual(patterns.length, 0) ? '(?!)' : `(${patterns.join('|')})`
 }
 // ------------------------------------------------------------------
@@ -85,22 +85,22 @@ function GetPropertiesPattern(schema: S.XSchemaObject): string {
 // we can generate a simplified and efficient runtime check.
 //
 // ------------------------------------------------------------------
-export function CanAdditionalPropertiesFast(_context: BuildContext, schema: S.XAdditionalProperties, _value: string): schema is S.XAdditionalProperties & S.XRequired {
-  return S.IsRequired(schema)
-    && S.IsProperties(schema)
-    && !S.IsPatternProperties(schema)
+export function CanAdditionalPropertiesFast(_context: BuildContext, schema: Schema.XAdditionalProperties, _value: string): schema is Schema.XAdditionalProperties & Schema.XRequired {
+  return Schema.IsRequired(schema)
+    && Schema.IsProperties(schema)
+    && !Schema.IsPatternProperties(schema)
     && G.IsEqual(schema.additionalProperties, false)
     && G.IsEqual(G.Keys(schema.properties).length, schema.required.length)
 }
-export function BuildAdditionalPropertiesFast(_context: BuildContext, schema: S.XAdditionalProperties & S.XRequired, value: string): string {
+export function BuildAdditionalPropertiesFast(_context: BuildContext, schema: Schema.XAdditionalProperties & Schema.XRequired, value: string): string {
   return E.IsEqual(E.Member(E.Call(E.Member('Object', 'getOwnPropertyNames'), [value]), 'length'), E.Constant(schema.required.length))
 }
 // ------------------------------------------------------------------
 // BuildAdditionalPropertiesStandard
 // ------------------------------------------------------------------
-export function BuildAdditionalPropertiesStandard(stack: Stack, context: BuildContext, schema: S.XAdditionalProperties, value: string): string {
+export function BuildAdditionalPropertiesStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalProperties, value: string): string {
   const [key, _index] = [Unique(), Unique()]
-  const regexp = V.CreateVariable(UnicodeRegExp(GetPropertiesPattern(schema)))
+  const regexp = Externals.CreateVariable(UnicodeRegExp(GetPropertiesPattern(schema)))
   const isSchema = BuildSchemaPushStack(stack, context, schema.additionalProperties, `${value}[${key}]`)
   const isKey = E.Call(E.Member(regexp, 'test'), [key])
   const addKey = context.AddKey(key)
@@ -111,7 +111,7 @@ export function BuildAdditionalPropertiesStandard(stack: Stack, context: BuildCo
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildAdditionalProperties(stack: Stack, context: BuildContext, schema: S.XAdditionalProperties, value: string): string {
+export function BuildAdditionalProperties(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalProperties, value: string): string {
   if (IsAdditionalPropertiesIgnored(context, schema.additionalProperties)) return E.Constant(true)
   return CanAdditionalPropertiesFast(context, schema, value)
     ? BuildAdditionalPropertiesFast(context, schema, value)
@@ -120,7 +120,7 @@ export function BuildAdditionalProperties(stack: Stack, context: BuildContext, s
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckAdditionalProperties(stack: Stack, context: CheckContext, schema: S.XAdditionalProperties, value: Record<PropertyKey, unknown>): boolean {
+export function CheckAdditionalProperties(stack: Stack.XStack, context: CheckContext, schema: Schema.XAdditionalProperties, value: Record<PropertyKey, unknown>): boolean {
   const regexp = UnicodeRegExp(GetPropertiesPattern(schema))
   const isAdditionalProperties = G.Every(G.Keys(value), 0, (key, _index) => {
     return regexp.test(key) ||
@@ -131,7 +131,7 @@ export function CheckAdditionalProperties(stack: Stack, context: CheckContext, s
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorAdditionalProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XAdditionalProperties, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorAdditionalProperties(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XAdditionalProperties, value: Record<PropertyKey, unknown>): boolean {
   const regexp = UnicodeRegExp(GetPropertiesPattern(schema))
   const additionalProperties: string[] = []
   const isAdditionalProperties = G.EveryAll(G.Keys(value), 0, (key, _index) => {
@@ -143,10 +143,6 @@ export function ErrorAdditionalProperties(stack: Stack, context: ErrorContext, s
     if (!isAdditionalProperty) additionalProperties.push(key)
     return isAdditionalProperty
   })
-  return isAdditionalProperties || context.AddError({
-    keyword: 'additionalProperties',
-    schemaPath,
-    instancePath,
-    params: { additionalProperties },
-  })
+  return isAdditionalProperties ||
+    context.AddError('additionalProperties', schemaPath, instancePath, { additionalProperties })
 }

@@ -45,7 +45,7 @@ export function Errors(...args: unknown[]): [boolean, TLocalizedValidationError[
     3: (context, schema, value) => [context, schema, value],
     2: (schema, value) => [{}, schema, value]
   })
-  const stack = new Engine.Stack(context, schema)
+  const stack = Engine.Stack(context, schema)
   const errorContext = new Engine.ErrorContext()
   const result = Engine.ErrorSchema(stack, errorContext, '#', '', schema, value)
   const errors = errorContext.GetErrors()

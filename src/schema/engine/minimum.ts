@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMinimum(_stack: Stack, _context: BuildContext, schema: Schema.XMinimum, value: string): string {
+export function BuildMinimum(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XMinimum, value: string): string {
   return E.IsGreaterEqualThan(value, E.Constant(schema.minimum))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMinimum(_stack: Stack, _context: CheckContext, schema: Schema.XMinimum, value: number | bigint): boolean {
+export function CheckMinimum(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XMinimum, value: number | bigint): boolean {
   return G.IsGreaterEqualThan(value, schema.minimum)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMinimum(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinimum, value: number | bigint): boolean {
-  return CheckMinimum(stack, context, schema, value) || context.AddError({
-    keyword: 'minimum',
-    schemaPath,
-    instancePath,
-    params: { comparison: '>=', limit: schema.minimum }
-  })
+export function ErrorMinimum(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinimum, value: number | bigint): boolean {
+  return CheckMinimum(stack, context, schema, value) ||
+    context.AddError('minimum', schemaPath, instancePath, { comparison: '>=', limit: schema.minimum })
 }

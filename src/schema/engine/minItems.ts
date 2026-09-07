@@ -28,31 +28,27 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Stack } from './_stack.ts'
+import * as Schema from '../types/index.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
-import * as Schema from '../types/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMinItems(_stack: Stack, _context: BuildContext, schema: Schema.XMinItems, value: string): string {
+export function BuildMinItems(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XMinItems, value: string): string {
   return E.IsGreaterEqualThan(E.Member(value, 'length'), E.Constant(schema.minItems))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMinItems(_stack: Stack, _context: CheckContext, schema: Schema.XMinItems, value: unknown[]): boolean {
+export function CheckMinItems(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XMinItems, value: unknown[]): boolean {
   return G.IsGreaterEqualThan(value.length, schema.minItems)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMinItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinItems, value: unknown[]): boolean {
-  return CheckMinItems(stack, context, schema, value) || context.AddError({
-    keyword: 'minItems',
-    schemaPath,
-    instancePath,
-    params: { limit: schema.minItems }
-  })
+export function ErrorMinItems(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinItems, value: unknown[]): boolean {
+  return CheckMinItems(stack, context, schema, value) ||
+    context.AddError('minItems', schemaPath, instancePath, { limit: schema.minItems })
 }

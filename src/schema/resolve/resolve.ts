@@ -26,347 +26,340 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
 import { Guard } from '../../guard/index.ts'
 import { Pointer } from '../pointer/index.ts'
 import * as Schema from '../types/index.ts'
-
-export const DefaultBase = 'https://json-schema.org'
+import * as Stack from '../engine/_stack.ts'
 
 // ------------------------------------------------------------------
-// StackFrame
+// XRefResult
 //
-// A read-only snapshot of everything Stack has accumulated during
-// traversal that resolution needs in order to make a decision. This
-// is the sole channel through which Stack state reaches this module:
-// nothing below ever mutates it or reaches back into Stack.
+// Return shape for every top level resolution function: the
+// resolved schema (or undefined) plus the stack state after
+// following the reference, since crossing or deferring a resource
+// can change base URI and lexical scope for later steps.
 // ------------------------------------------------------------------
-export interface StackFrame {
-  context: Record<string, Schema.XSchema>
-  root: Schema.XSchemaObject
-  lexicalSchema: Schema.XSchemaObject
-  lexicalBase: string
-  referenceBase: string
-  resourceBase: string
-  ids: Schema.XId[]
-  recursiveAnchors: Schema.XRecursiveAnchor[]
-  dynamicAnchors: Schema.XDynamicAnchor[]
-  inRetrievedFrame: boolean
+export interface XRefResult {
+  schema: Schema.XSchema | undefined
+  stack: Stack.XStack
 }
 // ------------------------------------------------------------------
-// RefResult
+// (Internal) XDeferredResource | XResolvedResource
 //
-// The outcome of resolving a $ref. `schema` is the resolved target.
-// `retrievedResource` and `resolvedResource` are *instructions*: they
-// tell the caller (Stack) what bookkeeping, if any, it should apply
-// to its own state as a result of this resolution. This module never
-// applies them itself.
+// A deferred resource is a boundary detected but not yet entered,
+// typically a draft-4 style in-place base change. A resolved
+// resource is one the ref has definitely crossed into, identified
+// by $id, so the stack can advance into it right away.
 // ------------------------------------------------------------------
-export interface RetrievedResource {
+interface XDeferredResource {
   target: Schema.XSchemaObject
+  root: Schema.XSchemaObject
   base: string
-  root: Schema.XSchemaObject
 }
-export interface ResolvedResource {
-  target: Schema.XSchemaObject
+interface XResolvedResource {
   resource: Schema.XId
 }
-export interface RefResult {
-  schema: Schema.XSchema | undefined
-  retrievedResource?: RetrievedResource
-  resolvedResource?: ResolvedResource
+// ------------------------------------------------------------------
+// Helpers
+//
+// Shared utilities: effective base URI of a schema, normalizing a
+// base to an absolute URL, stripping a URL's fragment to get its
+// canonical href, finding a target schema's base URI, picking the
+// root a $ref resolves against, and detecting a JSON pointer
+// fragment versus a plain anchor name.
+// ------------------------------------------------------------------
+function RelativeBase(schema: unknown, base: URL): URL {
+  return Schema.IsSchemaObject(schema) && Schema.IsId(schema) ? Stack.NextUri(schema.$id, base.href) : base
+}
+function AbsoluteBase(base: string): URL {
+  return Stack.NextUri(base, Stack.DefaultUri)
+}
+function CanonicalHref(url: URL): string {
+  return url.href.split('#')[0]
+}
+function Base(schema: Schema.XSchema, base: string, target: Schema.XSchema): string | undefined {
+  return SearchBase(schema, AbsoluteBase(base), target)
+}
+function RefRoot(stack: Stack.XStack, ref: Schema.XRef): Schema.XSchema {
+  return (ref.$ref.startsWith('#') || stack.enteredResource) ? stack.lexicalSchema : stack.schema
+}
+function IsPointerFragment(fragment: string): boolean {
+  return fragment.startsWith('#/')
 }
 // ------------------------------------------------------------------
-// Find: FindDynamicAnchor
+// Search
+//
+// Recursive tree walks that locate things by identity, not URL.
+// SearchDynamicAnchor finds a node with a matching $dynamicAnchor.
+// SearchBase finds a specific target schema (by reference) and
+// returns its base URI, tracking $id rebasing as it descends.
 // ------------------------------------------------------------------
-function FindDynamicAnchor(schema: unknown, name: string): Schema.XDynamicAnchor | undefined {
+function SearchDynamicAnchor(schema: unknown, name: string): Schema.XDynamicAnchor | undefined {
   if (Guard.IsObject(schema) && Schema.IsDynamicAnchor(schema) && Guard.IsEqual(schema.$dynamicAnchor, name)) {
     return schema
   }
   if (Guard.IsObject(schema)) {
     for (const key of Guard.Keys(schema)) {
-      const result = FindDynamicAnchor(schema[key], name)
+      const result = SearchDynamicAnchor(schema[key], name)
       if (result) return result
     }
   }
-  // (no-coverage) - is it even possible to search for an anchor
-  // with embedded logical schema like allOf, anyOf, etc?
-  // if (Guard.IsArray(schema)) { // (no-coverage)
-  //   for (const item of schema) {
-  //     const result = FindDynamicAnchor(item, name)
-  //     if (result) return result
-  //   }
-  // }
   return undefined
 }
-// ------------------------------------------------------------------
-// Find: FindBase
-// ------------------------------------------------------------------
-function FindBase(schema: unknown, base: URL, target: Schema.XSchema): string | undefined {
+function SearchBase(schema: unknown, base: URL, target: Schema.XSchema): string | undefined {
   if (Guard.IsEqual(schema, target)) return base.href
-  const nextBase = Schema.IsSchemaObject(schema) && Schema.IsId(schema) ? new URL(schema.$id, base.href) : base
+  const nextBase = RelativeBase(schema, base)
   if (Guard.IsArray(schema)) {
     for (const item of schema) {
-      const result = FindBase(item, nextBase, target)
+      const result = SearchBase(item, nextBase, target)
       if (!Guard.IsUndefined(result)) return result
     }
   } else if (Guard.IsObject(schema)) {
     for (const key of Guard.Keys(schema)) {
-      const result = FindBase(schema[key], nextBase, target)
+      const result = SearchBase(schema[key], nextBase, target)
       if (!Guard.IsUndefined(result)) return result
     }
   }
   return undefined
 }
 // ------------------------------------------------------------------
-// Match: MatchId
+// Match
+//
+// Tests whether a schema node is what a reference URL points to.
+// MatchSchemaObject checks a single node in order: $id, $anchor,
+// $dynamicAnchor, then JSON pointer/hash. MatchFromArray,
+// MatchFromObject, and Match recurse through the tree to try every
+// node, skipping const and enum since their values are user data,
+// not schema.
 // ------------------------------------------------------------------
-function MatchId(schema: Schema.XId, base: URL, ref: URL): Schema.XSchema | undefined {
-  // ref is a bare fragment naming this schema's $id directly
+function MatchWithHash(schema: Schema.XSchemaObject, ref: URL): Schema.XSchema | undefined {
+  if (ref.href.endsWith('#')) return schema
+  if (!ref.hash.startsWith('#')) return undefined
+  const fragment = decodeURIComponent(ref.hash.slice(1))
+  if (!fragment.startsWith('/')) return undefined
+  return Pointer.Get(schema, fragment) as Schema.XSchema | undefined
+}
+function MatchWithId(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
+  if (!Schema.IsId(schema)) return undefined
   if (Guard.IsEqual(schema.$id, ref.hash)) return schema
   const absoluteRef = new URL(ref.href, base.href)
-  // ref shares this $id's document, so resolve the fragment within it
-  if (Guard.IsEqual(base.pathname, absoluteRef.pathname)) return ref.hash.startsWith('#') ? MatchHash(schema, ref) : schema
+  if (Guard.IsEqual(base.pathname, absoluteRef.pathname)) return ref.hash.startsWith('#') ? MatchWithHash(schema, ref) : schema
   return undefined
 }
-// ------------------------------------------------------------------
-// Match: MatchAnchor
-// ------------------------------------------------------------------
-function MatchAnchor(schema: Schema.XAnchor, base: URL, ref: URL): Schema.XSchema | undefined {
+function MatchWithAnchor(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
+  if (!Schema.IsAnchor(schema)) return undefined
   const absoluteAnchor = new URL(`#${schema.$anchor}`, base.href)
   const absoluteRef = new URL(ref.href, base.href)
   return Guard.IsEqual(absoluteAnchor.href, absoluteRef.href) ? schema : undefined
 }
-// ------------------------------------------------------------------
-// Match: MatchDynamicAnchor
-// ------------------------------------------------------------------
-function MatchDynamicAnchor(schema: Schema.XDynamicAnchor, base: URL, ref: URL): Schema.XSchema | undefined {
+function MatchWithDynamicAnchor(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
+  if (!Schema.IsDynamicAnchor(schema)) return undefined
   const absoluteAnchor = new URL(`#${schema.$dynamicAnchor}`, base.href)
   const absoluteRef = new URL(ref.href, base.href)
   const isMatch = Guard.IsEqual(absoluteAnchor.href, absoluteRef.href)
   return isMatch ? schema : undefined
 }
-// ------------------------------------------------------------------
-// Match: MatchHash
-// ------------------------------------------------------------------
-function MatchHash(schema: Schema.XSchemaObject, ref: URL): Schema.XSchema | undefined {
-  if (ref.href.endsWith('#')) return schema
-  if (!ref.hash.startsWith('#')) return undefined
-  const fragment = decodeURIComponent(ref.hash.slice(1))
-  if (!fragment.startsWith('/')) return undefined
-  const result = Pointer.Get(schema, fragment) as Schema.XSchema | undefined
-  return result
+function MatchSchemaObject(schema: unknown, base: URL, ref: URL): Schema.XSchema | undefined {
+  if (!Schema.IsSchemaObject(schema)) return undefined
+  return MatchWithId(schema, base, ref) ??
+    MatchWithAnchor(schema, base, ref) ??
+    MatchWithDynamicAnchor(schema, base, ref) ??
+    MatchWithHash(schema, ref)
 }
-// ------------------------------------------------------------------
-// Match: Match
-// ------------------------------------------------------------------
-function Match(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
-  if (Schema.IsId(schema)) {
-    const result = MatchId(schema, base, ref)
-    if (!Guard.IsUndefined(result)) return result
-  }
-  if (Schema.IsAnchor(schema)) {
-    const result = MatchAnchor(schema, base, ref)
-    if (!Guard.IsUndefined(result)) return result
-  }
-  if (Schema.IsDynamicAnchor(schema)) {
-    const result = MatchDynamicAnchor(schema, base, ref)
-    if (!Guard.IsUndefined(result)) return result
-  }
-  return MatchHash(schema, ref)
-}
-// ------------------------------------------------------------------
-// FromArray
-// ------------------------------------------------------------------
-function FromArray(schema: unknown[], base: URL, ref: URL): Schema.XSchema | undefined {
+function MatchFromArray(schema: unknown, base: URL, ref: URL): Schema.XSchema | undefined {
+  if (!Guard.IsArray(schema)) return undefined
   return schema.reduce<Schema.XSchema | undefined>((result, item) => {
-    const match = FromValue(item, base, ref)
+    const match = Match(item, base, ref)
     return !Guard.IsUndefined(match) ? match : result
   }, undefined)
 }
-// ------------------------------------------------------------------
-// FromObject
-// ------------------------------------------------------------------
-function SkipProperty(key: PropertyKey): boolean {
-  return Guard.IsEqual(key, 'const') || Guard.IsEqual(key, 'enum')
-}
-function FromObject(schema: Record<PropertyKey, unknown>, base: URL, ref: URL): Schema.XSchema | undefined {
+function MatchFromObject(schema: unknown, base: URL, ref: URL): Schema.XSchema | undefined {
+  if (!Guard.IsObject(schema)) return undefined
   return Guard.Keys(schema).reduce<Schema.XSchema | undefined>((result, key) => {
-    if (SkipProperty(key)) return result
-    const match = FromValue(schema[key], base, ref)
+    if (Guard.IsEqual(key, 'const') || Guard.IsEqual(key, 'enum')) return result
+    const match = Match(schema[key], base, ref)
     return !Guard.IsUndefined(match) ? match : result
   }, undefined)
 }
-// ------------------------------------------------------------------
-// FromValue
-// ------------------------------------------------------------------
-function FromValue(schema: unknown, base: URL, ref: URL): Schema.XSchema | undefined {
-  const nextBase = Schema.IsSchemaObject(schema) && Schema.IsId(schema) ? new URL(schema.$id, base.href) : base
-  if (Schema.IsSchemaObject(schema)) {
-    const result = Match(schema, nextBase, ref)
-    if (!Guard.IsUndefined(result)) return result
-  }
-  if (Guard.IsArray(schema)) return FromArray(schema, nextBase, ref)
-  if (Guard.IsObject(schema)) return FromObject(schema, nextBase, ref)
-  return undefined
-}
-// ------------------------------------------------------------------
-// Base
-// ------------------------------------------------------------------
-export function Base(schema: Schema.XSchemaObject, base: string, target: Schema.XSchema): string | undefined {
-  return FindBase(schema, new URL(base || '.', DefaultBase), target)
+function Match(schema: unknown, base: URL, ref: URL): Schema.XSchema | undefined {
+  const relativeBase = RelativeBase(schema, base)
+  return MatchSchemaObject(schema, relativeBase, ref) ??
+    MatchFromArray(schema, relativeBase, ref) ??
+    MatchFromObject(schema, relativeBase, ref)
 }
 // ------------------------------------------------------------------
 // Resource
+//
+// Wraps RefInternal to check whether the resolved schema is itself
+// a resource root (carries its own $id). Used by FindResolvedResource
+// to tell a boundary hit from a landing inside a resource.
 // ------------------------------------------------------------------
-export function Resource(context: Record<string, Schema.XSchema>, schema: Schema.XSchemaObject, base: string, ref: string): Schema.XId | undefined {
-  const result = Ref(context, schema, base, ref, false)
+function Resource(context: Record<string, Schema.XSchema>, schema: Schema.XSchemaObject, base: string, ref: string): Schema.XId | undefined {
+  const result = RefInternal(context, schema, base, ref)
   return Schema.IsSchemaObject(result) && Schema.IsId(result) ? result : undefined
 }
 // ------------------------------------------------------------------
-// CanonicalHref
-// ------------------------------------------------------------------
-function CanonicalHref(url: URL): string {
-  return url.href.split('#')[0]
-}
-// ------------------------------------------------------------------
-// Ref: RefRemote (Phase 1)
-// ------------------------------------------------------------------
-function RefContext(context: Record<string, Schema.XSchema>, ref: string): Schema.XSchema | undefined {
-  return Guard.HasPropertyKey(context, ref) ? context[ref] : undefined
-}
-// ------------------------------------------------------------------
-// Ref: RefRemote (Phase 2)
-// ------------------------------------------------------------------
-function RefLocal(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
-  return FromValue(schema, base, ref)
-}
-// ------------------------------------------------------------------
-// Ref: RefRemote (Phase 3)
-// ------------------------------------------------------------------
-function RefRemote(context: Record<string, Schema.XSchema>, base: URL, ref: URL): Schema.XSchema | undefined {
-  const canonicalHref = CanonicalHref(ref)
-  if (Guard.IsEqual(canonicalHref, CanonicalHref(base))) return undefined
-  if (!Guard.HasPropertyKey(context, canonicalHref)) return undefined
-  const remoteSchema = context[canonicalHref]
-  const remoteBase = (Schema.IsSchemaObject(remoteSchema) && Schema.IsId(remoteSchema)) ? new URL(remoteSchema.$id, canonicalHref) : new URL(canonicalHref)
-  const result = Guard.IsEqual(ref.hash, '') ? remoteSchema : FromValue(remoteSchema, remoteBase, ref)
-  return result
-}
-// ------------------------------------------------------------------
-// RetrievedResource: LegacyRetrievedResource
+// FindDeferredResource
 //
-// Draft-4 style schemas (no $schema keyword) treat a nested $id as an
-// in-place base URI change rather than a new resource boundary. A
-// local ('#...') ref that lands somewhere with a different base than
-// the current reference base needs a frame so later anchor/pointer
-// resolution is computed against the right base.
+// Legacy Draft-4 schemas (no $schema keyword) treat a nested $id as
+// an in-place base change, not a new resource. A local ('#...') ref
+// landing at a different base than the current one needs a stack
+// entry so later lookups use the right base.
 // ------------------------------------------------------------------
-function LegacyRetrievedResource(root: Schema.XSchemaObject, lexicalSchema: Schema.XSchemaObject, referenceBase: string, ref: Schema.XRef, schema: Schema.XSchemaObject): RetrievedResource | undefined {
+function FindDeferredResourceLegacy(stack: Stack.XStack, ref: Schema.XRef, schema: Schema.XSchemaObject): XDeferredResource | undefined {
   if (!ref.$ref.startsWith('#')) return undefined
-  if (Guard.HasPropertyKey(root, '$schema')) return undefined
-  const targetBase = Base(lexicalSchema, referenceBase, schema)
-  if (Guard.IsUndefined(targetBase) || Guard.IsEqual(targetBase, referenceBase)) return undefined
-  return { target: schema, base: targetBase, root: lexicalSchema }
+  if (!Schema.IsSchemaObject(stack.schema) || Guard.HasPropertyKey(stack.schema, '$schema')) return undefined
+  const targetBase = Base(stack.lexicalSchema, stack.referenceBase, schema)
+  if (Guard.IsUndefined(targetBase) || Guard.IsEqual(targetBase, stack.referenceBase)) return undefined
+  return { target: schema, base: targetBase, root: /* safe-object-root */ stack.lexicalSchema as Schema.XSchemaObject }
 }
-// ------------------------------------------------------------------
-// RetrievedResource: RemoteRetrievedResource
-//
-// The ref's canonical URL names a document already loaded into
-// context. That document becomes the frame's root going forward.
-// ------------------------------------------------------------------
-function RemoteRetrievedResource(context: Record<string, Schema.XSchema>, canonical: string, schema: Schema.XSchemaObject): RetrievedResource | undefined {
-  const remoteRoot = context[canonical]
+function FindDeferredResourceModern(stack: Stack.XStack, canonical: string, schema: Schema.XSchemaObject): XDeferredResource | undefined {
+  const remoteRoot = stack.context[canonical]
   if (!Schema.IsSchemaObject(remoteRoot)) return undefined
   return { target: schema, base: canonical, root: remoteRoot }
 }
-// ------------------------------------------------------------------
-// RetrievedResource
-//
-// A genuinely remote document frame always wins over a same-document
-// legacy one: only one frame is ever entered per ref.
-// ------------------------------------------------------------------
-function FindRetrievedResource(stackframe: StackFrame, ref: Schema.XRef, schema: Schema.XSchemaObject, canonical: string, isRemote: boolean): RetrievedResource | undefined {
-  const remote = isRemote ? RemoteRetrievedResource(stackframe.context, canonical, schema) : undefined
-  if (!Guard.IsUndefined(remote)) return remote
-  return LegacyRetrievedResource(stackframe.root, stackframe.lexicalSchema, stackframe.referenceBase, ref, schema)
+function FindDeferredResource(stack: Stack.XStack, ref: Schema.XRef, schema: Schema.XSchemaObject, canonical: string, isRemote: boolean): XDeferredResource | undefined {
+  const remote = isRemote ? FindDeferredResourceModern(stack, canonical, schema) : undefined
+  return Guard.IsUndefined(remote) ? FindDeferredResourceLegacy(stack, ref, schema) : remote
 }
 // ------------------------------------------------------------------
-// ResolvedResource: FindResolvedResource
+// FindResolvedResource
 //
-// The ref crossed into a different resource but landed on a schema
-// that doesn't itself carry that resource's $id (e.g. a pointer into
-// the middle of a remote document). The enclosing resource still
-// needs to be entered so lexical/base lookups behave as if traversal
-// had walked in from its top.
+// Handles a ref that crossed into a different resource but landed
+// on a schema without that resource's $id (e.g. a pointer into the
+// middle of a remote document). Enters the enclosing resource so
+// lexical/base lookups behave as if traversal walked in from its top.
 // ------------------------------------------------------------------
-function FindResolvedResource(context: Record<string, Schema.XSchema>, root: Schema.XSchemaObject, referenceBase: string, canonical: string, schema: Schema.XSchemaObject, ids: Schema.XId[]): ResolvedResource | undefined {
+function FindResolvedResource(stack: Stack.XStack, canonical: string, schema: Schema.XSchemaObject): XResolvedResource | undefined {
   if (Schema.IsId(schema)) return undefined
-  const resource = Resource(context, root, referenceBase, canonical)
-  if (!resource || ids.includes(resource)) return undefined
-  return { target: schema, resource }
+  const resource = Resource(stack.context, /* safe-object-root */ stack.schema as Schema.XSchemaObject, stack.referenceBase, canonical)
+  if (!resource || stack.ids.includes(resource)) return undefined
+  return { resource }
+}
+// ------------------------------------------------------------------
+// RefInternal
+//
+// Shared lookup used by Ref, RecursiveRef, and DynamicRef. Tries,
+// in order: exact match in the pre-registered context, then a local
+// search within the given schema, then a search in a remote
+// document. Returns just the schema; caller-specific bookkeeping
+// (deferred/resolved resources) happens one level up.
+// ------------------------------------------------------------------
+function RefInternalWithContext(context: Record<string, Schema.XSchema>, ref: string): Schema.XSchema | undefined {
+  return Guard.HasPropertyKey(context, ref) ? context[ref] : undefined
+}
+function RefInternalWithLocal(schema: Schema.XSchema, base: URL, ref: URL): Schema.XSchema | undefined {
+  return Match(schema, base, ref)
+}
+function RefInternalWithRemote(context: Record<string, Schema.XSchema>, base: URL, ref: URL): Schema.XSchema | undefined {
+  const canonicalHref = CanonicalHref(ref)
+  if (!Guard.HasPropertyKey(context, canonicalHref) || Guard.IsEqual(canonicalHref, CanonicalHref(base))) return undefined
+  const remoteSchema = context[canonicalHref]
+  const remoteBase = RelativeBase(remoteSchema, new URL(canonicalHref))
+  return Guard.IsEqual(ref.hash, '') ? remoteSchema : Match(remoteSchema, remoteBase, ref)
+}
+function RefInternal(context: Record<string, Schema.XSchema>, schema: Schema.XSchema, base: string, ref: string): Schema.XSchema | undefined {
+  const absoluteBase = AbsoluteBase(base)
+  const target = Stack.NextUri(ref, absoluteBase.href)
+  return RefInternalWithContext(context, ref) ??
+    RefInternalWithLocal(schema, absoluteBase, target) ??
+    RefInternalWithRemote(context, absoluteBase, target)
+}
+// ------------------------------------------------------------------
+// RefNextStack
+//
+// Computes the next stack state from any deferred or resolved
+// resource found while following a $ref, carrying existing stack
+// state forward rather than rebuilding it.
+// ------------------------------------------------------------------
+function RefNextStackDeferred(stack: Stack.XStack, deferredResource?: XDeferredResource): Stack.XStack {
+  if (!deferredResource) return stack
+  const resourceEntries = new Map(stack.resourceEntries)
+  resourceEntries.set(deferredResource.target, { base: deferredResource.base, root: deferredResource.root })
+  return { ...stack, resourceEntries }
+}
+function RefNextStackResolved(stack: Stack.XStack, resolvedResource?: XResolvedResource): Stack.XStack {
+  return resolvedResource ? Stack.NextStack(stack, resolvedResource.resource) : stack
+}
+function RefNextStack(stack: Stack.XStack, pendingResource: boolean, deferredResource?: XDeferredResource, resolvedResource?: XResolvedResource): Stack.XStack {
+  const withDeferred = RefNextStackDeferred({ ...stack, pendingResource }, deferredResource)
+  const withResolved = RefNextStackResolved(withDeferred, resolvedResource)
+  return withResolved
+}
+// ------------------------------------------------------------------
+// RefResult
+//
+// Builds the final XRefResult. RefResultFound gets the canonical
+// URL, checks if it's remote from the current resource, and looks
+// for a deferred or resolved resource crossing accordingly.
+// RefResultNotFound just advances pendingResource if a schema was
+// found without crossing into a resource.
+// ------------------------------------------------------------------
+function RefResultFound(stack: Stack.XStack, ref: Schema.XRef, schema: Schema.XSchemaObject): XRefResult {
+  const canonical = CanonicalHref(Stack.NextUri(ref.$ref, stack.referenceBase))
+  const isRemote = !Guard.IsEqual(canonical, stack.resourceBase)
+  const deferredResource = FindDeferredResource(stack, ref, schema, canonical, isRemote)
+  const resolvedResource = isRemote ? FindResolvedResource(stack, canonical, schema) : undefined
+  return { schema, stack: RefNextStack(stack, true, deferredResource, resolvedResource) }
+}
+function RefResultNotFound(stack: Stack.XStack, schema: Schema.XSchema | undefined): XRefResult {
+  return { schema, stack: RefNextStack(stack, !Guard.IsUndefined(schema)) }
 }
 // ------------------------------------------------------------------
 // Ref
-// ------------------------------------------------------------------
-export function Ref(remotes: Record<string, Schema.XSchema>, schema: Schema.XSchemaObject, base: string, ref: string, applySchemaId: boolean = true): Schema.XSchema | undefined {
-  const initialBase = new URL(base || '.', DefaultBase)
-  const resolvedBase = applySchemaId && Schema.IsId(schema) ? new URL(schema.$id, initialBase) : initialBase
-  const initialRef = new URL(ref, resolvedBase.href)
-  return RefContext(remotes, ref) ?? RefLocal(schema, resolvedBase, initialRef) ?? RefRemote(remotes, resolvedBase, initialRef)
-}
-// ------------------------------------------------------------------
-// DynamicRef
-// ------------------------------------------------------------------
-export function DynamicRef(context: Record<string, Schema.XSchema>, root: Schema.XSchemaObject, base: string, schema: Schema.XSchemaObject, dynamicRef: Schema.XDynamicRef, dynamicAnchors: Schema.XDynamicAnchor[]): Schema.XSchema | undefined {
-  const initialBase = new URL(base || '.', DefaultBase)
-  const fragmentRoot = dynamicRef.$dynamicRef.startsWith('#') ? schema : root
-  const fragmentTarget = Ref(context, fragmentRoot, base, dynamicRef.$dynamicRef, false)
-  if (Guard.IsUndefined(fragmentTarget)) {
-    const fragment = new URL(dynamicRef.$dynamicRef, initialBase).hash
-    if (!fragment.startsWith('#/') && fragment.startsWith('#')) {
-      const name = decodeURIComponent(fragment.slice(1))
-      const anchorTarget = dynamicAnchors.find((anchor) => Guard.IsEqual(anchor.$dynamicAnchor, name)) ?? FindDynamicAnchor(root, name)
-      return anchorTarget
-    }
-    return undefined
-  }
-  if (!Schema.IsSchemaObject(fragmentTarget) || !Schema.IsDynamicAnchor(fragmentTarget)) return fragmentTarget
-  const fragment = new URL(dynamicRef.$dynamicRef, initialBase).hash
-  if (fragment.startsWith('#/')) return fragmentTarget
-  const anchorTarget = dynamicAnchors.find((anchor) => Guard.IsEqual(anchor.$dynamicAnchor, fragmentTarget.$dynamicAnchor))
-  return anchorTarget ?? fragmentTarget
-}
-// ------------------------------------------------------------------
-// ResolveRef
 //
-// Resolves the schema a $ref points to, and describes whether that
-// crossing implies a "retrieved resource" frame or entering a
-// resource the target doesn't itself carry the $id for. The caller
-// decides whether and how to record these.
+// Picks the root to resolve against, and returns a XRefResult
+// containing the resolved schema and the next stack state for
+// subsequent evaluation.
 // ------------------------------------------------------------------
-export function ResolveRef(stackframe: StackFrame, ref: Schema.XRef): RefResult {
-  const source = stackframe.inRetrievedFrame ? stackframe.lexicalSchema : stackframe.root
-  const refRoot = ref.$ref.startsWith('#') ? stackframe.lexicalSchema : source
-  const schema = Ref(stackframe.context, refRoot, stackframe.referenceBase, ref.$ref, false)
-  if (!schema || !Schema.IsSchemaObject(schema)) return { schema }
-  const canonical = new URL(ref.$ref, stackframe.referenceBase).href.split('#')[0]
-  const isRemote = !Guard.IsEqual(canonical, stackframe.resourceBase)
-  const retrievedResource = FindRetrievedResource(stackframe, ref, schema, canonical, isRemote)
-  const resolvedResource = isRemote ? FindResolvedResource(stackframe.context, stackframe.root, stackframe.referenceBase, canonical, schema, stackframe.ids) : undefined
-  return { schema, retrievedResource, resolvedResource }
+export function Ref(stack: Stack.XStack, ref: Schema.XRef): XRefResult {
+  const schema = RefInternal(stack.context, RefRoot(stack, ref), stack.referenceBase, ref.$ref)
+  return Schema.IsSchemaObject(schema) ? RefResultFound(stack, ref, schema) : RefResultNotFound(stack, schema)
 }
 // ------------------------------------------------------------------
-// ResolveRecursiveRef
+// RecursiveRef: Draft 2019-09
+//
+// If a $recursiveAnchor is active in scope, it's used as the root
+// instead of the lexical schema, letting the ref bind to the
+// outermost applicable schema rather than the innermost.
 // ------------------------------------------------------------------
-export function ResolveRecursiveRef(stackframe: StackFrame, recursiveRef: Schema.XRecursiveRef): Schema.XSchema | undefined {
-  const refRoot = Schema.IsRecursiveAnchorTrue(stackframe.lexicalSchema) ? stackframe.recursiveAnchors[0] : stackframe.lexicalSchema
-  return Ref(stackframe.context, refRoot, stackframe.lexicalBase, recursiveRef.$recursiveRef, false)
+function IsRecursiveAnchorInScope(stack: Stack.XStack): boolean {
+  return Schema.IsSchemaObject(stack.lexicalSchema) && Schema.IsRecursiveAnchorTrue(stack.lexicalSchema)
+}
+export function RecursiveRef(stack: Stack.XStack, recursiveRef: Schema.XRecursiveRef): Schema.XSchema | undefined {
+  const schema = IsRecursiveAnchorInScope(stack) ? stack.recursiveAnchor : stack.lexicalSchema
+  return RefInternal(stack.context, schema as never, stack.lexicalBase, recursiveRef.$recursiveRef)
 }
 // ------------------------------------------------------------------
-// ResolveDynamicRef
+// DynamicRef: Draft 2020-12
+//
+// FindScopedDynamicAnchor checks anchors tracked on the stack first,
+// then falls back to a full tree search. If RefInternal finds a target
+// directly, DynamicRefWhenFound only continues the scoped search when
+// that target itself has a $dynamicAnchor. If RefInternal finds nothing,
+// DynamicRefWhenNotFound goes straight to a scoped anchor search
+// by name.
 // ------------------------------------------------------------------
-export function ResolveDynamicRef(stackframe: StackFrame, dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
-  return DynamicRef(stackframe.context, stackframe.root, stackframe.lexicalBase, stackframe.lexicalSchema, dynamicRef, stackframe.dynamicAnchors)
+function DynamicRefFragment(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef): string {
+  return Stack.NextUri(dynamicRef.$dynamicRef, AbsoluteBase(stack.lexicalBase).href).hash
+}
+function FindScopedDynamicAnchor(stack: Stack.XStack, name: string): Schema.XDynamicAnchor | undefined {
+  return stack.dynamicAnchors.find((anchor) => Guard.IsEqual(anchor.$dynamicAnchor, name)) ?? SearchDynamicAnchor(stack.schema, name)
+}
+function DynamicRefWhenFound(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef, fragmentTarget: Schema.XSchema): Schema.XSchema | undefined {
+  if (!Schema.IsSchemaObject(fragmentTarget) || !Schema.IsDynamicAnchor(fragmentTarget)) return fragmentTarget
+  const fragment = DynamicRefFragment(stack, dynamicRef)
+  // todo: review why we need to check if the fragment is a pointer before finding the scoped dynamic anchor
+  return IsPointerFragment(fragment) ? fragmentTarget : FindScopedDynamicAnchor(stack, fragmentTarget.$dynamicAnchor)
+}
+function DynamicRefWhenNotFound(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
+  const fragment = DynamicRefFragment(stack, dynamicRef)
+  // todo: we never observe this condition, we should review.
+  // if (IsPointerFragment(fragment) || !fragment.startsWith('#')) return undefined
+  return FindScopedDynamicAnchor(stack, decodeURIComponent(fragment.slice(1)))
+}
+export function DynamicRef(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
+  const fragmentRoot = dynamicRef.$dynamicRef.startsWith('#') ? stack.lexicalSchema : stack.schema
+  const fragmentTarget = RefInternal(stack.context, fragmentRoot, stack.lexicalBase, dynamicRef.$dynamicRef)
+  return Guard.IsUndefined(fragmentTarget) ? DynamicRefWhenNotFound(stack, dynamicRef) : DynamicRefWhenFound(stack, dynamicRef, fragmentTarget)
 }

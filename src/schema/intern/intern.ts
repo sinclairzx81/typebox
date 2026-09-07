@@ -31,6 +31,7 @@ import { Guard } from '../../guard/index.ts'
 import { Resolve } from '../resolve/index.ts'
 import { type XStatic } from '../static/index.ts'
 import * as S from '../types/index.ts'
+import * as Engine from '../engine/index.ts'
 
 // ----------------------------------------------------------------
 // UnsupportedKeyword
@@ -164,7 +165,7 @@ function FromPropertyNames(context: RefContext, schema: S.XPropertyNames): S.XSc
 // Ref
 // ----------------------------------------------------------------
 function ResolveRef(context: Record<string, S.XSchema>, schema: S.XSchemaObject, ref: string): S.XSchema {
-  return Resolve.Ref(context, schema, Resolve.DefaultBase, ref) ?? UnresolvableRef(ref)
+  return Resolve.Ref(Engine.Stack(context, schema), { $ref: ref }).schema ?? UnresolvableRef(ref)
 }
 function FromRef(context: RefContext, schema: S.XRef): S.XSchema {
   // Resolve target

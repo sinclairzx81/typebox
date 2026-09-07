@@ -29,19 +29,18 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
+import * as Stack from './_stack.ts'
 import * as Externals from './_externals.ts'
-import { Stack } from './_stack.ts'
 import { Unique } from './_unique.ts'
-
-import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { UnicodeRegExp } from './_regexp.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildPatternProperties(stack: Stack, context: BuildContext, schema: Schema.XPatternProperties, value: string): string {
+export function BuildPatternProperties(stack: Stack.XStack, context: BuildContext, schema: Schema.XPatternProperties, value: string): string {
   return E.ReduceAnd(G.Entries(schema.patternProperties).map(([pattern, schema]) => {
     const [key, prop] = [Unique(), Unique()]
     const regexp = Externals.CreateVariable(UnicodeRegExp(pattern))
@@ -55,7 +54,7 @@ export function BuildPatternProperties(stack: Stack, context: BuildContext, sche
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckPatternProperties(stack: Stack, context: CheckContext, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
+export function CheckPatternProperties(stack: Stack.XStack, context: CheckContext, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.Every(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
     const regexp = UnicodeRegExp(pattern)
     return G.Every(G.Entries(value), 0, ([key, prop]) => {
@@ -66,7 +65,7 @@ export function CheckPatternProperties(stack: Stack, context: CheckContext, sche
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorPatternProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorPatternProperties(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.EveryAll(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
     const nextSchemaPath = `${schemaPath}/patternProperties/${pattern}`
     const regexp = UnicodeRegExp(pattern)

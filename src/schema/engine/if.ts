@@ -29,15 +29,15 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildIf(stack: Stack, context: BuildContext, schema: Schema.XIf, value: string): string {
+export function BuildIf(stack: Stack.XStack, context: BuildContext, schema: Schema.XIf, value: string): string {
   const thenSchema = Schema.IsThen(schema) ? schema.then : true
   const elseSchema = Schema.IsElse(schema) ? schema.else : true
   return E.Ternary(BuildSchema(stack, context, schema.if, value),
@@ -47,7 +47,7 @@ export function BuildIf(stack: Stack, context: BuildContext, schema: Schema.XIf,
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckIf(stack: Stack, context: CheckContext, schema: Schema.XIf, value: unknown): boolean {
+export function CheckIf(stack: Stack.XStack, context: CheckContext, schema: Schema.XIf, value: unknown): boolean {
   const thenSchema = Schema.IsThen(schema) ? schema.then : true
   const elseSchema = Schema.IsElse(schema) ? schema.else : true
   return CheckSchema(stack, context, schema.if, value)
@@ -57,23 +57,15 @@ export function CheckIf(stack: Stack, context: CheckContext, schema: Schema.XIf,
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorIf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XIf, value: unknown): boolean {
+export function ErrorIf(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XIf, value: unknown): boolean {
   const thenSchema = Schema.IsThen(schema) ? schema.then : true
   const elseSchema = Schema.IsElse(schema) ? schema.else : true
   const trueContext = new ErrorContext()
   const isIf = ErrorSchema(stack, trueContext, `${schemaPath}/if`, instancePath, schema.if, value)
-    ? ErrorSchema(stack, trueContext, `${schemaPath}/then`, instancePath, thenSchema, value) || context.AddError({
-      keyword: 'if',
-      schemaPath,
-      instancePath,
-      params: { failingKeyword: 'then' },
-    })
-    : ErrorSchema(stack, context, `${schemaPath}/else`, instancePath, elseSchema, value) || context.AddError({
-      keyword: 'if',
-      schemaPath,
-      instancePath,
-      params: { failingKeyword: 'else' },
-    })
+    ? ErrorSchema(stack, trueContext, `${schemaPath}/then`, instancePath, thenSchema, value) ||
+    context.AddError('if', schemaPath, instancePath, { failingKeyword: 'then' })
+    : ErrorSchema(stack, context, `${schemaPath}/else`, instancePath, elseSchema, value) ||
+    context.AddError('if', schemaPath, instancePath, { failingKeyword: 'else' })
   if (isIf) context.Merge([trueContext])
   return isIf
-}
+} 

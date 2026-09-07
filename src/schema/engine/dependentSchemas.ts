@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
@@ -37,7 +37,7 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildDependentSchemas(stack: Stack, context: BuildContext, schema: Schema.XDependentSchemas, value: string): string {
+export function BuildDependentSchemas(stack: Stack.XStack, context: BuildContext, schema: Schema.XDependentSchemas, value: string): string {
   const isLength = E.IsEqual(E.Member(E.Keys(value), 'length'), E.Constant(0))
   const isEvery = E.ReduceAnd(G.Entries(schema.dependentSchemas).map(([key, schema]) => {
     const notKey = E.Not(E.HasPropertyKey(value, E.Constant(key)))
@@ -49,7 +49,7 @@ export function BuildDependentSchemas(stack: Stack, context: BuildContext, schem
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckDependentSchemas(stack: Stack, context: CheckContext, schema: Schema.XDependentSchemas, value: Record<PropertyKey, unknown>): boolean {
+export function CheckDependentSchemas(stack: Stack.XStack, context: CheckContext, schema: Schema.XDependentSchemas, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
   const isEvery = G.Every(G.Entries(schema.dependentSchemas), 0, ([key, schema]) => {
     return !G.HasPropertyKey(value, key) ||
@@ -60,7 +60,7 @@ export function CheckDependentSchemas(stack: Stack, context: CheckContext, schem
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorDependentSchemas(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDependentSchemas, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorDependentSchemas(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDependentSchemas, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
   const isEvery = G.EveryAll(G.Entries(schema.dependentSchemas), 0, ([key, schema]) => {
     const nextSchemaPath = `${schemaPath}/dependentSchemas/${key}`

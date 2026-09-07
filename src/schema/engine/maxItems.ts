@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaxItems(_stack: Stack, _context: BuildContext, schema: Schema.XMaxItems, value: string): string {
+export function BuildMaxItems(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XMaxItems, value: string): string {
   return E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(schema.maxItems))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaxItems(_stack: Stack, _context: CheckContext, schema: Schema.XMaxItems, value: unknown[]): boolean {
+export function CheckMaxItems(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XMaxItems, value: unknown[]): boolean {
   return G.IsLessEqualThan(value.length, schema.maxItems)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMaxItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaxItems, value: unknown[]): boolean {
-  return CheckMaxItems(stack, context, schema, value) || context.AddError({
-    keyword: 'maxItems',
-    schemaPath,
-    instancePath,
-    params: { limit: schema.maxItems }
-  })
+export function ErrorMaxItems(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaxItems, value: unknown[]): boolean {
+  return CheckMaxItems(stack, context, schema, value) ||
+    context.AddError('maxItems', schemaPath, instancePath, { limit: schema.maxItems })
 }

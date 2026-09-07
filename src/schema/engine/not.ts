@@ -29,31 +29,30 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
-import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import * as Stack from './_stack.ts'
 import { Reducer } from './_reducer.ts'
-import { EmitGuard as E } from '../../guard/index.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchema, CheckSchema } from './schema.ts'
-
+import { EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildNotStandard(stack: Stack, context: BuildContext, schema: Schema.XNot, value: string): string {
+function BuildNotStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XNot, value: string): string {
   return Reducer(stack, context, [schema.not], value, E.Not(E.IsEqual(E.Member('results', 'length'), E.Constant(1))))
 }
-function BuildNotFast(stack: Stack, context: BuildContext, schema: Schema.XNot, value: string): string {
+function BuildNotFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XNot, value: string): string {
   return E.Not(BuildSchema(stack, context, schema.not, value))
 }
-export function BuildNot(stack: Stack, context: BuildContext, schema: Schema.XNot, value: string): string {
-  return context.UseUnevaluated() 
-    ? BuildNotStandard(stack, context, schema, value) 
+export function BuildNot(stack: Stack.XStack, context: BuildContext, schema: Schema.XNot, value: string): string {
+  return context.UseUnevaluated()
+    ? BuildNotStandard(stack, context, schema, value)
     : BuildNotFast(stack, context, schema, value)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckNot(stack: Stack, context: CheckContext, schema: Schema.XNot, value: unknown): boolean {
+export function CheckNot(stack: Stack.XStack, context: CheckContext, schema: Schema.XNot, value: unknown): boolean {
   const nextContext = new CheckContext()
   const isSchema = !CheckSchema(stack, nextContext, schema.not, value)
   const isNot = isSchema && context.Merge([nextContext])
@@ -62,11 +61,7 @@ export function CheckNot(stack: Stack, context: CheckContext, schema: Schema.XNo
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorNot(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XNot, value: unknown): boolean {
-  return CheckNot(stack, context, schema, value) || context.AddError({
-    keyword: 'not',
-    schemaPath,
-    instancePath,
-    params: {},
-  })
+export function ErrorNot(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XNot, value: unknown): boolean {
+  return CheckNot(stack, context, schema, value) ||
+    context.AddError('not', schemaPath, instancePath, {})
 }

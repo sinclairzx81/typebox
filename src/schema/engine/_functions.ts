@@ -29,10 +29,11 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema } from './schema.ts'
+
 
 // ------------------------------------------------------------------
 // State
@@ -69,7 +70,7 @@ function CreateCallExpression(context: BuildContext, _schema: Schema.XSchema, na
 // ------------------------------------------------------------------
 // CreateFunctionExpression
 // ------------------------------------------------------------------
-function CreateFunctionExpression(stack: Stack, context: BuildContext, schema: Schema.XSchema, name: string): string {
+function CreateFunctionExpression(stack: Stack.XStack, context: BuildContext, schema: Schema.XSchema, name: string): string {
   const expression = BuildSchema(stack, context, schema, 'value')
   return context.UseUnevaluated()
     ? E.ConstDeclaration(`check_${name}`, E.ArrowFunction(['context', 'value'], expression))
@@ -92,8 +93,8 @@ export function GetFunctions(): string[] {
 // ------------------------------------------------------------------
 // CreateFunction
 // ------------------------------------------------------------------
-export function CreateFunction(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string): string {
-  const name = CreateName(schema, stack.LexicalBaseURL() as Href)
+export function CreateFunction(stack: Stack.XStack, context: BuildContext, schema: Schema.XSchema, value: string): string {
+  const name = CreateName(schema, stack.lexicalBase as Href)
   const call = CreateCallExpression(context, schema, name, value)
   if (funcs.has(name)) return call
   funcs.set(name, '')

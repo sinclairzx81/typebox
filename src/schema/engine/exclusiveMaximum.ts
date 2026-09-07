@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildExclusiveMaximum(_stack: Stack, _context: BuildContext, schema: Schema.XExclusiveMaximum, value: string): string {
+export function BuildExclusiveMaximum(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XExclusiveMaximum, value: string): string {
   return E.IsLessThan(value, E.Constant(schema.exclusiveMaximum))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckExclusiveMaximum(_stack: Stack, _context: CheckContext, schema: Schema.XExclusiveMaximum, value: number | bigint): boolean {
+export function CheckExclusiveMaximum(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XExclusiveMaximum, value: number | bigint): boolean {
   return G.IsLessThan(value, schema.exclusiveMaximum)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorExclusiveMaximum(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XExclusiveMaximum, value: number | bigint): boolean {
-  return CheckExclusiveMaximum(stack, context, schema, value) || context.AddError({
-    keyword: 'exclusiveMaximum',
-    schemaPath,
-    instancePath,
-    params: { comparison: '<', limit: schema.exclusiveMaximum }
-  })
+export function ErrorExclusiveMaximum(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XExclusiveMaximum, value: number | bigint): boolean {
+  return CheckExclusiveMaximum(stack, context, schema, value) ||
+    context.AddError('exclusiveMaximum', schemaPath, instancePath, { comparison: '<', limit: schema.exclusiveMaximum })
 }
