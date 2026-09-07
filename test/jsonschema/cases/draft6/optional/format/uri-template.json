@@ -91,6 +91,21 @@
         "valid": true
       },
       {
+        "description": "a literal with a lone percent sign is invalid",
+        "data": "a%",
+        "valid": false
+      },
+      {
+        "description": "a literal with an incomplete percent-encoded triplet is invalid",
+        "data": "a%4",
+        "valid": false
+      },
+      {
+        "description": "a literal with non-hex percent encoding is invalid",
+        "data": "a%GG",
+        "valid": false
+      },
+      {
         "description": "a supplementary plane character in a literal is valid",
         "data": "a😀b",
         "valid": true
@@ -154,6 +169,21 @@
         "description": "a variable name may start with a percent-encoded triplet",
         "data": "{%41}",
         "valid": true
+      },
+      {
+        "description": "a variable name with a lone percent sign is invalid",
+        "data": "{%}",
+        "valid": false
+      },
+      {
+        "description": "a variable name with an incomplete percent-encoded triplet is invalid",
+        "data": "{%4}",
+        "valid": false
+      },
+      {
+        "description": "a variable name with non-hex percent encoding is invalid",
+        "data": "{%GG}",
+        "valid": false
       },
       {
         "description": "a four-digit prefix max-length is valid",
