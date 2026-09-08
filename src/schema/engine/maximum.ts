@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaximum(_stack: Stack, _context: BuildContext, schema: Schema.XMaximum, value: string): string {
+export function BuildMaximum(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XMaximum, value: string): string {
   return E.IsLessEqualThan(value, E.Constant(schema.maximum))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaximum(_stack: Stack, _context: CheckContext, schema: Schema.XMaximum, value: number | bigint): boolean {
+export function CheckMaximum(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XMaximum, value: number | bigint): boolean {
   return G.IsLessEqualThan(value, schema.maximum)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMaximum(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaximum, value: number | bigint): boolean {
-  return CheckMaximum(stack, context, schema, value) || context.AddError({
-    keyword: 'maximum',
-    schemaPath,
-    instancePath,
-    params: { comparison: '<=', limit: schema.maximum }
-  })
+export function ErrorMaximum(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaximum, value: number | bigint): boolean {
+  return CheckMaximum(stack, context, schema, value) ||
+    context.AddError('maximum', schemaPath, instancePath, { comparison: '<=', limit: schema.maximum })
 }

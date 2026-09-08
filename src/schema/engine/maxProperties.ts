@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaxProperties(_stack: Stack, _context: BuildContext, schema: Schema.XMaxProperties, value: string): string {
+export function BuildMaxProperties(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XMaxProperties, value: string): string {
   return E.IsLessEqualThan(E.Member(E.Keys(value), 'length'), E.Constant(schema.maxProperties))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaxProperties(_stack: Stack, _context: CheckContext, schema: Schema.XMaxProperties, value: Record<PropertyKey, unknown>): boolean {
+export function CheckMaxProperties(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XMaxProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.IsLessEqualThan(G.Keys(value).length, schema.maxProperties)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function ErrorMaxProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaxProperties, value: Record<PropertyKey, unknown>): boolean {
-  return CheckMaxProperties(stack, context, schema, value) || context.AddError({
-    keyword: 'maxProperties',
-    schemaPath,
-    instancePath,
-    params: { limit: schema.maxProperties },
-  })
+export function ErrorMaxProperties(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaxProperties, value: Record<PropertyKey, unknown>): boolean {
+  return CheckMaxProperties(stack, context, schema, value) ||
+    context.AddError('maxProperties', schemaPath, instancePath, { limit: schema.maxProperties })
 }

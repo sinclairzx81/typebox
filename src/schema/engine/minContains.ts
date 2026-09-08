@@ -29,9 +29,8 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { Unique } from './_unique.ts'
-
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema } from './schema.ts'
@@ -45,17 +44,17 @@ function IsValid(schema: Schema.XMinContains): schema is Schema.XMinContains & S
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildMinContainsStandard(stack: Stack, context: BuildContext, schema: Schema.XMinContains & Schema.XContains, value: string): string {
+function BuildMinContainsStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XMinContains & Schema.XContains, value: string): string {
   const [item, index] = [Unique(), Unique()]
   const count = E.Counted(value, [item, index], E.And(BuildSchema(stack, context, schema.contains, item), context.AddIndex(index)))
   return E.IsGreaterEqualThan(count, E.Constant(schema.minContains))
 }
-function BuildMinContainsFast(stack: Stack, context: BuildContext, schema: Schema.XMinContains & Schema.XContains, value: string): string {
+function BuildMinContainsFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XMinContains & Schema.XContains, value: string): string {
   const [item] = [Unique()]
   const count = E.Counted(value, [item, '_'], BuildSchema(stack, context, schema.contains, item))
   return E.IsGreaterEqualThan(count, E.Constant(schema.minContains))
 }
-export function BuildMinContains(stack: Stack, context: BuildContext, schema: Schema.XMinContains, value: string): string {
+export function BuildMinContains(stack: Stack.XStack, context: BuildContext, schema: Schema.XMinContains, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
   return context.UseUnevaluated()
     ? BuildMinContainsStandard(stack, context, schema, value)
@@ -64,9 +63,9 @@ export function BuildMinContains(stack: Stack, context: BuildContext, schema: Sc
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMinContains(stack: Stack, context: CheckContext, schema: Schema.XMinContains, value: unknown[]): boolean {
+export function CheckMinContains(stack: Stack.XStack, context: CheckContext, schema: Schema.XMinContains, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
-  const count = G.Counted(value, (item, index) => 
+  const count = G.Counted(value, (item, index) =>
     CheckSchema(stack, context, schema.contains, item) && context.AddIndex(index)
   )
   return G.IsGreaterEqualThan(count, schema.minContains)
@@ -74,13 +73,9 @@ export function CheckMinContains(stack: Stack, context: CheckContext, schema: Sc
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMinContains(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinContains, value: unknown[]): boolean {
-  return CheckMinContains(stack, context, schema, value) || context.AddError({
-    keyword: 'contains',
-    schemaPath,
-    instancePath,
-    params: { minContains: schema.minContains }
-  })
+export function ErrorMinContains(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinContains, value: unknown[]): boolean {
+  return CheckMinContains(stack, context, schema, value) ||
+    context.AddError('contains', schemaPath, instancePath, { minContains: schema.minContains })
 }
 
 

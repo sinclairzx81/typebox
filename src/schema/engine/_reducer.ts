@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Schema from '../types/index.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema } from './schema.ts'
@@ -68,7 +68,7 @@ import { BuildSchema } from './schema.ts'
 // })()
 //
 // ------------------------------------------------------------------
-export function Reducer(stack: Stack, context: BuildContext, schemas: S.XSchema[], value: string, check: string): string {
+export function Reducer(stack: Stack.XStack, context: BuildContext, schemas: Schema.XSchema[], value: string, check: string): string {
   const results = E.ConstDeclaration('results', '[]')
   const context_n = schemas.map((_schema, index) => E.ConstDeclaration(`context_${index}`, E.New('CheckContext', [])))
   const condition_n = schemas.map((schema, index) => E.ConstDeclaration(`condition_${index}`, E.Call(E.ArrowFunction(['context'], BuildSchema(stack, context, schema, value)), [`context_${index}`])))

@@ -28,23 +28,22 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 import { InexactOptionalCheck, InexactOptionalBuild, IsExactOptional } from './_exact_optional.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildProperties(stack: Stack, context: BuildContext, schema: Schema.XProperties, value: string): string {
+export function BuildProperties(stack: Stack.XStack, context: BuildContext, schema: Schema.XProperties, value: string): string {
   const required = Schema.IsRequired(schema) ? schema.required : []
   const everyKey = G.Entries(schema.properties).map(([key, schema]) => {
     const notKey = E.Not(E.HasPropertyKey(value, E.Constant(key)))
     const isSchema = BuildSchemaPushStack(stack, context, schema, E.Member(value, key))
     const addKey = context.AddKey(E.Constant(key))
     const guarded = context.UseUnevaluated() ? E.And(isSchema, addKey) : isSchema
-    
     // --------------------------------------------------------------
     // Optimization
     //
@@ -53,7 +52,6 @@ export function BuildProperties(stack: Stack, context: BuildContext, schema: Sch
     // only valid when Required is evaluated before Properties.
     //
     // --------------------------------------------------------------
-
     const isProperty = required.includes(key) ? guarded : E.Or(notKey, guarded)
 
     // --------------------------------------------------------------
@@ -81,7 +79,7 @@ export function BuildProperties(stack: Stack, context: BuildContext, schema: Sch
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckProperties(stack: Stack, context: CheckContext, schema: Schema.XProperties, value: Record<PropertyKey, unknown>): boolean {
+export function CheckProperties(stack: Stack.XStack, context: CheckContext, schema: Schema.XProperties, value: Record<PropertyKey, unknown>): boolean {
   const required = Schema.IsRequired(schema) ? schema.required : []
   const isProperties = G.Every(G.Entries(schema.properties), 0, ([key, schema]) => {
     const isProperty = !G.HasPropertyKey(value, key) || (CheckSchemaPushStack(stack, context, schema, value[key]) && context.AddKey(key))
@@ -94,7 +92,7 @@ export function CheckProperties(stack: Stack, context: CheckContext, schema: Sch
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XProperties, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorProperties(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XProperties, value: Record<PropertyKey, unknown>): boolean {
   const required = Schema.IsRequired(schema) ? schema.required : []
   const isProperties = G.EveryAll(G.Entries(schema.properties), 0, ([key, schema]) => {
     const nextSchemaPath = `${schemaPath}/properties/${key}`

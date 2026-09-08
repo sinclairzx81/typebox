@@ -36,6 +36,7 @@ import { Guard } from '../guard/index.ts'
 import { Format } from '../format/index.ts'
 
 import * as Engine from './engine/index.ts'
+import * as Resolve from './resolve/index.ts'
 import * as Schema from './types/index.ts'
 
 // ------------------------------------------------------------------
@@ -59,7 +60,7 @@ function CreateEvaluatedCheck(build: BuildResult, code: string): CheckFunction {
 // CreateDynamicCheck
 // ------------------------------------------------------------------
 function CreateDynamicCheck(build: BuildResult): CheckFunction {
-  const stack = new Engine.Stack(build.Context(), build.Schema())
+  const stack = Engine.Stack(build.Context(), build.Schema())
   const context = new Engine.CheckContext()
   return (value: unknown) => Engine.CheckSchema(stack, context, build.Schema(), value)
 }
@@ -153,7 +154,7 @@ export function Build(...args: unknown[]): BuildResult {
   })
   Engine.ResetExternal()
   Engine.ResetFunctions()
-  const stack = new Engine.Stack(context, schema)
+  const stack = Engine.Stack(context, schema)
   const build = new Engine.BuildContext(Engine.HasUnevaluated(context, schema))
   const call = Engine.CreateFunction(stack, build, schema, 'value')
   const functions = Engine.GetFunctions()

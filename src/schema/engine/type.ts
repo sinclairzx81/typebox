@@ -29,14 +29,14 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // TypeName
 // ------------------------------------------------------------------
-function BuildTypeName(_stack: Stack, _context: BuildContext, type: string, value: string): string {
+function BuildTypeName(_stack: Stack.XStack, _context: BuildContext, type: string, value: string): string {
   return (
     // jsonschema
     G.IsEqual(type, 'object') ? E.IsObjectNotArray(value) :
@@ -56,7 +56,7 @@ function BuildTypeName(_stack: Stack, _context: BuildContext, type: string, valu
     E.Constant(true)
   )
 }
-function CheckTypeName(_stack: Stack, _context: CheckContext, type: string, _schema: Schema.XSchemaObject, value: unknown): boolean {
+function CheckTypeName(_stack: Stack.XStack, _context: CheckContext, type: string, _schema: Schema.XSchemaObject, value: unknown): boolean {
   return (
     // jsonschema
     G.IsEqual(type, 'object') ? G.IsObjectNotArray(value) :
@@ -79,27 +79,23 @@ function CheckTypeName(_stack: Stack, _context: CheckContext, type: string, _sch
 // ------------------------------------------------------------------
 // TypeNames
 // ------------------------------------------------------------------
-function BuildTypeNames(stack: Stack, context: BuildContext, typenames: string[], value: string): string {
+function BuildTypeNames(stack: Stack.XStack, context: BuildContext, typenames: string[], value: string): string {
   return E.ReduceOr(typenames.map(type => BuildTypeName(stack, context, type, value)))
 }
-function CheckTypeNames(stack: Stack, context: CheckContext, types: string[], schema: Schema.XSchemaObject, value: unknown): boolean {
+function CheckTypeNames(stack: Stack.XStack, context: CheckContext, types: string[], schema: Schema.XSchemaObject, value: unknown): boolean {
   return G.Some(types, type => CheckTypeName(stack, context, type, schema, value))
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export function BuildType(stack: Stack, context: BuildContext, schema: Schema.XType, value: string): string {
+export function BuildType(stack: Stack.XStack, context: BuildContext, schema: Schema.XType, value: string): string {
   return G.IsArray(schema.type) ? BuildTypeNames(stack, context, schema.type, value) : BuildTypeName(stack, context, schema.type, value)
 }
-export function CheckType(stack: Stack, context: CheckContext, schema: Schema.XType, value: unknown): boolean {
+export function CheckType(stack: Stack.XStack, context: CheckContext, schema: Schema.XType, value: unknown): boolean {
   return G.IsArray(schema.type) ? CheckTypeNames(stack, context, schema.type, schema, value) : CheckTypeName(stack, context, schema.type, schema, value)
 }
-export function ErrorType(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XType, value: unknown): boolean {
+export function ErrorType(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XType, value: unknown): boolean {
   const isType = G.IsArray(schema.type) ? CheckTypeNames(stack, context, schema.type, schema, value) : CheckTypeName(stack, context, schema.type, schema, value)
-  return isType || context.AddError({
-    keyword: 'type',
-    schemaPath,
-    instancePath,
-    params: { type: schema.type }
-  })
+  return isType ||
+    context.AddError('type', schemaPath, instancePath, { type: schema.type })
 }

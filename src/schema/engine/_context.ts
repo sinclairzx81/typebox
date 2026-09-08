@@ -148,14 +148,27 @@ export class ErrorContext extends CheckContext {
     super()
     this.errors = []
   }
+  // ----------------------------------------------------------------
+  // Public
+  // ----------------------------------------------------------------
   public AtCapacity(): boolean {
     return this.errors.length >= Settings.Get().maxErrors
   }
-  public AddError(error: TValidationError): false {
-    if(!this.AtCapacity()) this.errors.push(error)
+  public AddError<Keyword extends TValidationError['keyword']>(keyword: Keyword, schemaPath: string, instancePath: string, params: Extract<TValidationError, { keyword: Keyword }>['params']): false {
+    return this.AddErrorObject({ keyword, schemaPath, instancePath, params } as TValidationError)
+  }
+  public AddErrors(error: TValidationError[]): false {
+    error.forEach(error => this.AddErrorObject(error))
     return false
   }
   public GetErrors(): TValidationError[] {
     return this.errors
+  }
+  // ----------------------------------------------------------------
+  // Private
+  // ----------------------------------------------------------------
+  private AddErrorObject(error: TValidationError): false {
+    if (!this.AtCapacity()) this.errors.push(error)
+    return false
   }
 }

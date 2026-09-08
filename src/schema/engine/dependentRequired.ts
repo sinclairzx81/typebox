@@ -29,14 +29,14 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildDependentRequired(_stack: Stack, _context: BuildContext, schema: Schema.XDependentRequired, value: string): string {
+export function BuildDependentRequired(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XDependentRequired, value: string): string {
   const isLength = E.IsEqual(E.Member(E.Keys(value), 'length'), E.Constant(0))
   const isEvery = E.ReduceAnd(
     G.Entries(schema.dependentRequired).map(([key, keys]) => {
@@ -50,7 +50,7 @@ export function BuildDependentRequired(_stack: Stack, _context: BuildContext, sc
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckDependentRequired(_stack: Stack, _context: CheckContext, schema: Schema.XDependentRequired, value: Record<PropertyKey, unknown>): boolean {
+export function CheckDependentRequired(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XDependentRequired, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
   const isEvery = G.Every(G.Entries(schema.dependentRequired), 0, ([key, keys]) => {
     return !G.HasPropertyKey(value, key) ||
@@ -61,15 +61,11 @@ export function CheckDependentRequired(_stack: Stack, _context: CheckContext, sc
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorDependentRequired(_stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDependentRequired, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorDependentRequired(_stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDependentRequired, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
   const isEveryEntry = G.EveryAll(G.Entries(schema.dependentRequired), 0, ([key, keys]) => {
-    return !G.HasPropertyKey(value, key) || G.EveryAll(keys, 0, (dependency) => G.HasPropertyKey(value, dependency) || context.AddError({
-      keyword: 'dependentRequired',
-      schemaPath,
-      instancePath,
-      params: { property: key, dependencies: keys },
-    }))
+    return !G.HasPropertyKey(value, key) || G.EveryAll(keys, 0, (dependency) => G.HasPropertyKey(value, dependency) ||
+      context.AddError('dependentRequired', schemaPath, instancePath, { property: key, dependencies: keys }))
   })
   return isLength || isEveryEntry
 }

@@ -8,12 +8,12 @@ JSON Schema is JSON like any other, and can be validated the same way. TypeBox i
 
 TypeBox provides inline definitions for the following JSON Schema draft meta schemas, also available at these URLs:
 
-- [Draft 3](http://json-schema.org/draft-03/schema#)
-- [Draft 4](http://json-schema.org/draft-04/schema#)
-- [Draft 6](http://json-schema.org/draft-06/schema#)
-- [Draft 7](http://json-schema.org/draft-07/schema#)
-- [Draft 2019-09](https://json-schema.org/draft/2019-09/schema)
 - [Draft 2020-12](https://json-schema.org/draft/2020-12/schema)
+- [Draft 2019-09](https://json-schema.org/draft/2019-09/schema)
+- [Draft 7](http://json-schema.org/draft-07/schema#)
+- [Draft 6](http://json-schema.org/draft-06/schema#)
+- [Draft 4](http://json-schema.org/draft-04/schema#)
+- [Draft 3](http://json-schema.org/draft-03/schema#)
 
 ### Usage
 

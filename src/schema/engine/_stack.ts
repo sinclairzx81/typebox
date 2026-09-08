@@ -26,248 +26,184 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
-import * as Schema from '../types/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { Resolve } from '../resolve/index.ts'
+import * as Schema from '../types/index.ts'
 
-// --------------------------------------------------------------------------
+// ------------------------------------------------------------------
+// DefaultUri
+// ------------------------------------------------------------------
+export const DefaultUri = 'urn:typebox:root'
+
+// ------------------------------------------------------------------
+// XStack
+//
+// Immutable frame tracking traversal and resolution state for a
+// single schema visit.
+// ------------------------------------------------------------------
+export interface XStack {
+  /** The schema context. */
+  readonly context: Record<string, Schema.XSchema>
+  /** The entry schema. */
+  readonly schema: Schema.XSchema
+  /** Visited $id schemas, kept only to detect resource re-entry (see resolve.ts FindResolvedResource). */
+  readonly ids: Schema.XId[]
+  /** Nearest enclosing $id schema, used as the root for local pointer resolution. */
+  readonly lexicalSchema: Schema.XSchema
+  /** First $recursiveAnchor: true schema seen on the path. */
+  readonly recursiveAnchor: Schema.XRecursiveAnchor | undefined
+  /** Dynamic anchors visible at this point in the traversal. */
+  readonly dynamicAnchors: Schema.XDynamicAnchor[]
+  /** Lexical base URL, used to resolve relative $id and $ref values within the current schema. */
+  readonly lexicalBase: string
+  /** Base URL of the current resource, reset each time a new resource $id is entered. */
+  readonly resourceBase: string
+  /** Base URL that $ref values resolve against. */
+  readonly referenceBase: string
+  /** Resource entry point bookkeeping: schema -> the base/root to apply when that schema is next pushed. */
+  readonly resourceEntries: Map<Schema.XSchemaObject, { base: string; root: Schema.XSchemaObject }>
+  /** True while referenceBase should track resourceBase rather than lexicalBase. */
+  readonly useResourceBaseForReference: boolean
+  /** True until the next $id schema is entered, marking it as a fresh resource root. */
+  readonly pendingResource: boolean
+  /** True once traversal has entered a retrieved or legacy resource. */
+  readonly enteredResource: boolean
+}
+// ------------------------------------------------------------------
+// NextUri
+//
+// Resolves a relative or absolute ref against a base URI or URN.
+// Hierarchical bases (http, https, etc.) resolve using the normal
+// URL rules. URN bases have no path to resolve against, so the ref
+// is appended after the base's last ':' segment instead.
+// ------------------------------------------------------------------
+export function NextUri(ref: string, base: string): URL {
+  return (URL.canParse(ref, base)) ? new URL(ref, base) : Guard.IsEqual(base, DefaultUri) ? new URL(`${base}:${ref}`) : new URL(`${base.slice(0, base.lastIndexOf(':'))}:${ref}`)
+}
+// ------------------------------------------------------------------
 // Stack
 //
-// Tracks traversal state ($ids, $anchors, stack frames) and applies scope
-// updates. Reference resolution rules ($ref, $dynamicRef) are delegated to
-// the Resolve functions using state snapshots (Resolve.Scope).
-// --------------------------------------------------------------------------
-export class Stack {
-  private readonly ids: Schema.XId[] = []
-  private readonly resourceIds: Schema.XId[] = []
-  private readonly anchors: Schema.XAnchor[] = []
-  private readonly recursiveAnchors: Schema.XRecursiveAnchor[] = []
-  private readonly dynamicAnchors: Schema.XDynamicAnchor[] = []
-  private readonly retrievedResources: Map<Schema.XSchemaObject, { base: string; root: Schema.XSchemaObject }> = new Map()
-  private readonly retrievedFrames: { schema: Schema.XSchemaObject; base: string; idDepth: number; resourceDepth: number }[] = []
-  private readonly resolvedResources: Map<Schema.XSchemaObject, Schema.XId> = new Map()
-  private pendingResource: boolean = true
-  constructor(
-    private readonly context: Record<PropertyKey, Schema.XSchema>,
-    private readonly schema: Schema.XSchema
-  ) {}
-  // ----------------------------------------------------------------
-  // LexicalBaseURL
-  // ----------------------------------------------------------------
-  public LexicalBaseURL(): string {
-    return this.#BuildBase(this.ids)
+// Creates the root frame a schema traversal starts from.
+// ------------------------------------------------------------------
+export function Stack(context: Record<string, Schema.XSchema>, schema: Schema.XSchema): XStack {
+  const base = Schema.IsSchemaObject(schema) && Schema.IsId(schema) ? NextUri(schema.$id, DefaultUri).href : DefaultUri
+  return {
+    context,
+    schema,
+    lexicalSchema: schema,
+    lexicalBase: base,
+    resourceBase: base,
+    referenceBase: base,
+    ids: [],
+    useResourceBaseForReference: true,
+    recursiveAnchor: undefined,
+    dynamicAnchors: [],
+    resourceEntries: new Map(),
+    pendingResource: true,
+    enteredResource: false
   }
-  // ----------------------------------------------------------------
-  // Push
-  // ----------------------------------------------------------------
-  public Push(schema: Schema.XSchema) {
-    if (!Schema.IsSchemaObject(schema)) return
-    if (Schema.IsId(schema)) this.#RegisterResource(schema)
-    if (Schema.IsAnchor(schema)) this.anchors.push(schema)
-    if (Schema.IsRecursiveAnchorTrue(schema)) this.recursiveAnchors.push(schema)
-    if (Schema.IsDynamicAnchor(schema)) this.dynamicAnchors.push(schema)
-    const retrievedResource = this.retrievedResources.get(schema)
-    if (retrievedResource) {
-      this.retrievedFrames.push({
-        schema: retrievedResource.root,
-        base: retrievedResource.base,
-        idDepth: this.ids.length,
-        resourceDepth: this.resourceIds.length
-      })
+}
+// ------------------------------------------------------------------
+// RegisterResourceAnchors
+//
+// Collects $dynamicAnchor schemas reachable from a resource root,
+// stopping at nested $id boundaries which own their own anchors.
+// ------------------------------------------------------------------
+function RegisterResourceAnchors(anchors: Schema.XDynamicAnchor[], schema: unknown, isRoot: boolean = true): Schema.XDynamicAnchor[] {
+  if (Schema.IsSchemaBoolean(schema)) return anchors
+  if (Array.isArray(schema)) return schema.reduce((result, item) => RegisterResourceAnchors(result, item, false), anchors)
+  if (!Schema.IsSchemaObject(schema)) return anchors
+  if (!isRoot && Schema.IsId(schema)) return anchors
+  const next = !isRoot && Schema.IsDynamicAnchor(schema) ? [...anchors, schema] : anchors
+  return Object.keys(schema).reduce((result, key) => RegisterResourceAnchors(result, (schema as never)[key], false), next)
+}
+// ------------------------------------------------------------------
+// ResourceEntry
+//
+// A ref crossing (Resolve.Ref) may have marked `schema` as the entry
+// point of a retrieved/legacy resource. If so the frame resets to
+// that resource's base/root instead of chaining onto the parent.
+// ------------------------------------------------------------------
+function ResourceEntry(stack: XStack, schema: Schema.XSchemaObject): { base: string; root: Schema.XSchemaObject } | undefined {
+  return stack.resourceEntries.get(schema)
+}
+function NextEnteredResource(stack: XStack, schema: Schema.XSchemaObject): boolean {
+  return stack.enteredResource || ResourceEntry(stack, schema) !== undefined
+}
+// ------------------------------------------------------------------
+// NextStack
+//
+// Each Next* helper below computes one XStack field in isolation from
+// the previous frame and the schema being pushed.
+// ------------------------------------------------------------------
+function IsRelativeId(schema: Schema.XId): boolean {
+  return !/^[A-Za-z][A-Za-z0-9+.-]*:/.test(schema.$id)
+}
+function NextIds(stack: XStack, schema: Schema.XSchemaObject): Schema.XId[] {
+  return Schema.IsId(schema) ? [...stack.ids, schema] : stack.ids
+}
+function NextRecursiveAnchor(stack: XStack, schema: Schema.XSchemaObject): Schema.XRecursiveAnchor | undefined {
+  return stack.recursiveAnchor ?? (Schema.IsRecursiveAnchorTrue(schema) ? schema : undefined)
+}
+function NextDynamicAnchors(stack: XStack, schema: Schema.XSchemaObject): Schema.XDynamicAnchor[] {
+  const registered = Schema.IsId(schema) ? RegisterResourceAnchors(stack.dynamicAnchors, schema) : stack.dynamicAnchors
+  return Schema.IsDynamicAnchor(schema) ? [...registered, schema] : registered
+}
+function NextPendingResource(stack: XStack, schema: Schema.XSchemaObject): boolean {
+  return Schema.IsId(schema) ? false : stack.pendingResource
+}
+function NextLexicalBase(stack: XStack, schema: Schema.XSchemaObject): string {
+  const entry = ResourceEntry(stack, schema)
+  if (entry) return entry.base
+  return Schema.IsId(schema) ? NextUri(schema.$id, stack.lexicalBase).href : stack.lexicalBase
+}
+function NextResourceBase(stack: XStack, schema: Schema.XSchemaObject): string {
+  const entry = ResourceEntry(stack, schema)
+  if (entry) return entry.base
+  return (Schema.IsId(schema) && stack.pendingResource) ? NextUri(schema.$id, stack.resourceBase).href : stack.resourceBase
+}
+function NextUseResourceBaseForReference(stack: XStack, schema: Schema.XSchemaObject): boolean {
+  return Schema.IsId(schema) ? !IsRelativeId(schema) : stack.useResourceBaseForReference
+}
+function NextReferenceBase(stack: XStack, schema: Schema.XSchemaObject): string {
+  const isRetrieved = NextEnteredResource(stack, schema)
+  const useResourceBaseForReference = NextUseResourceBaseForReference(stack, schema)
+  return (isRetrieved || useResourceBaseForReference) ? NextResourceBase(stack, schema) : NextLexicalBase(stack, schema)
+}
+function NextLexicalSchema(stack: XStack, schema: Schema.XSchemaObject): Schema.XSchema {
+  const entry = ResourceEntry(stack, schema)
+  if (entry) return entry.root
+  return Schema.IsId(schema) ? schema : stack.lexicalSchema
+}
+// ------------------------------------------------------------------
+// NextStack | HasStackKeywords (Optimization)
+//
+// HasStackKeywords narrows schema to an object and checks whether it
+// carries $id, $dynamicAnchor, a first-seen $recursiveAnchor, or a
+// resource-entry point. When none apply, NextStack skips the frame
+// rebuild and returns the parent stack as-is.
+// ------------------------------------------------------------------
+function HasStackKeywords(stack: XStack, schema: Schema.XSchema): schema is Schema.XSchemaObject {
+  return Schema.IsSchemaObject(schema) && (
+    Schema.IsId(schema) ||
+    Schema.IsDynamicAnchor(schema) ||
+    (Guard.IsUndefined(stack.recursiveAnchor) && Schema.IsRecursiveAnchorTrue(schema)) ||
+    !Guard.IsUndefined(ResourceEntry(stack, schema))
+  )
+}
+export function NextStack(stack: XStack, schema: Schema.XSchema): XStack {
+  return HasStackKeywords(stack, schema)
+    ? {
+      ...stack,
+      ids: NextIds(stack, schema),
+      dynamicAnchors: NextDynamicAnchors(stack, schema),
+      recursiveAnchor: NextRecursiveAnchor(stack, schema),
+      pendingResource: NextPendingResource(stack, schema),
+      lexicalBase: NextLexicalBase(stack, schema),
+      resourceBase: NextResourceBase(stack, schema),
+      useResourceBaseForReference: NextUseResourceBaseForReference(stack, schema),
+      referenceBase: NextReferenceBase(stack, schema),
+      lexicalSchema: NextLexicalSchema(stack, schema),
+      enteredResource: NextEnteredResource(stack, schema)
     }
-  }
-  // ----------------------------------------------------------------
-  // Pop
-  // ----------------------------------------------------------------
-  public Pop(schema: Schema.XSchema) {
-    if (!Schema.IsSchemaObject(schema)) return
-    if (Schema.IsId(schema)) this.#UnregisterResource(schema)
-    if (Schema.IsAnchor(schema)) this.anchors.pop()
-    if (Schema.IsRecursiveAnchorTrue(schema)) this.recursiveAnchors.pop()
-    if (Schema.IsDynamicAnchor(schema)) this.dynamicAnchors.pop()
-    if (this.retrievedResources.has(schema)) this.retrievedFrames.pop()
-    this.#ExitResolvedResource(schema)
-  }
-  // ----------------------------------------------------------------
-  // Ref
-  // ----------------------------------------------------------------
-  public Ref(ref: Schema.XRef): Schema.XSchema | undefined {
-    const result = Resolve.ResolveRef(this.#StackFrame(), ref)
-    this.#ApplyRefResult(result)
-    return result.schema
-  }
-  // ----------------------------------------------------------------
-  // RecursiveRef
-  // ----------------------------------------------------------------
-  public RecursiveRef(recursiveRef: Schema.XRecursiveRef): Schema.XSchema | undefined {
-    const result = Resolve.ResolveRecursiveRef(this.#StackFrame(), recursiveRef)
-    if (result) this.pendingResource = true
-    return result
-  }
-  // ----------------------------------------------------------------
-  // DynamicRef
-  // ----------------------------------------------------------------
-  public DynamicRef(dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
-    const result = Resolve.ResolveDynamicRef(this.#StackFrame(), dynamicRef)
-    if (result) this.pendingResource = true
-    return result
-  }
-  // ----------------------------------------------------------------
-  // StackFrame
-  //
-  // Encodes the current stack state into a read-only snapshot that
-  // Resolve needs to make resolution decisions. Nothing in Resolve
-  // mutates this or reaches back into Stack. We currently do this to
-  // decouple Stack and Resolve, but we may just pass Stack directly
-  // to Resolve in future revisions (review).
-  // ----------------------------------------------------------------
-  #StackFrame(): Resolve.StackFrame {
-    return {
-      context: this.context,
-      root: this.schema as Schema.XSchemaObject,
-      ids: this.ids,
-      lexicalSchema: this.#LexicalSchema(),
-      lexicalBase: this.LexicalBaseURL(),
-      referenceBase: this.#ReferenceBaseURL(),
-      resourceBase: this.#ResourceBaseURL(),
-      recursiveAnchors: this.recursiveAnchors,
-      dynamicAnchors: this.dynamicAnchors,
-      inRetrievedFrame: this.retrievedFrames.length > 0
-    }
-  }
-  // ----------------------------------------------------------------
-  // ApplyRefResult
-  //
-  // Updates stack state after reference resolution to reflect target
-  // scope boundaries. It immediately enters new base URIs for resolved
-  // $ids, flags the target as a pending resource root for upcoming
-  // traversal, or maps external document roots so Push can manage
-  // frame boundaries when traversal reaches them.
-  // ----------------------------------------------------------------
-  #ApplyRefResult(result: Resolve.RefResult): void {
-    if (!Guard.IsUndefined(result.schema)) this.pendingResource = true
-    if (!Guard.IsUndefined(result.resolvedResource)) {
-      this.#EnterResolvedResource(
-        result.resolvedResource.target,
-        result.resolvedResource.resource
-      )
-    }
-    if (!Guard.IsUndefined(result.retrievedResource)) {
-      this.retrievedResources.set(result.retrievedResource.target, {
-        base: result.retrievedResource.base,
-        root: result.retrievedResource.root
-      })
-    }
-  }
-  // ----------------------------------------------------------------
-  // BuildBase
-  // ----------------------------------------------------------------
-  #BuildBase(stack: Schema.XId[]): string {
-    const frame = this.retrievedFrames[this.retrievedFrames.length - 1]
-    const base = frame ? new URL(frame.base) : new URL(Resolve.DefaultBase)
-    const scoped = frame ? stack.slice(frame.idDepth) : stack
-    return scoped.reduce((result, schema) => new URL(schema.$id, result), base).href
-  }
-  // ----------------------------------------------------------------
-  // ResourceBaseURL
-  // ----------------------------------------------------------------
-  #ResourceBaseURL(): string {
-    const frame = this.retrievedFrames[this.retrievedFrames.length - 1]
-    if (!frame) return this.#BuildBase(this.resourceIds)
-    return this.resourceIds.slice(frame.resourceDepth).reduce((result, schema) => new URL(schema.$id, result), new URL(frame.base)).href
-  }
-  // ----------------------------------------------------------------
-  // ReferenceBaseURL
-  // ----------------------------------------------------------------
-  #ReferenceBaseURL(): string {
-    if (this.retrievedFrames.length > 0) return this.#ResourceBaseURL()
-    const lexical = this.ids[this.ids.length - 1]
-    if (lexical && !/^[A-Za-z][A-Za-z0-9+.-]*:/.test(lexical.$id)) return this.LexicalBaseURL()
-    return this.#ResourceBaseURL()
-  }
-  // ----------------------------------------------------------------
-  // LexicalSchema
-  // ----------------------------------------------------------------
-  #LexicalSchema(): Schema.XSchemaObject {
-    const frame = this.retrievedFrames[this.retrievedFrames.length - 1]
-    if (frame) return this.ids.length > frame.idDepth ? this.ids[this.ids.length - 1] : frame.schema
-    return this.ids.length > 0 ? this.ids[this.ids.length - 1] : (this.schema as Schema.XSchemaObject)
-  }
-  // ----------------------------------------------------------------
-  // RegisterResourceAnchorArray
-  //
-  // Note: Invalid $refs may land here, presumably via anchors
-  // embedded in logical allOf/anyOf operands. I noted a few
-  // test suite cases commented as invalid that trigger this
-  // code path. We may be able to remove these in the future as,
-  // technically, we shouldn't need to traverse arrays inside
-  // the stack instances (review).
-  // ----------------------------------------------------------------
-  #RegisterResourceAnchorArray(schema: unknown[]): void {
-    schema.forEach((schema) => this.#RegisterResourceAnchors(schema, false))
-  }
-  #UnregisterResourceAnchorArray(schema: unknown[]): void {
-    schema.forEach((schema) => this.#UnregisterResourceAnchors(schema, false))
-  }
-  // ----------------------------------------------------------------
-  // RegisterResourceAnchors
-  // ----------------------------------------------------------------
-  #RegisterResourceAnchors(schema: unknown, isRoot: boolean = true): void {
-    if (Schema.IsSchemaBoolean(schema)) return
-    if (Guard.IsArray(schema)) return this.#RegisterResourceAnchorArray(schema)
-    if (!Schema.IsSchemaObject(schema)) return
-    const current = schema as Record<PropertyKey, unknown>
-    if (!isRoot && Schema.IsId(current)) return
-    if (!isRoot && Schema.IsDynamicAnchor(current)) this.dynamicAnchors.push(current)
-    for (const key of Guard.Keys(current)) this.#RegisterResourceAnchors(current[key], false)
-  }
-  // ----------------------------------------------------------------
-  // UnregisterResourceAnchors
-  // ----------------------------------------------------------------
-  #UnregisterResourceAnchors(schema: unknown, isRoot: boolean = true): void {
-    if (Schema.IsSchemaBoolean(schema)) return
-    if (Guard.IsArray(schema)) return this.#UnregisterResourceAnchorArray(schema)
-    if (!Schema.IsSchemaObject(schema)) return
-    const current = schema as Record<PropertyKey, unknown>
-    if (!isRoot && Schema.IsId(current)) return
-    if (!isRoot && Schema.IsDynamicAnchor(current)) this.dynamicAnchors.pop()
-    for (const key of Guard.Keys(current)) this.#UnregisterResourceAnchors(current[key], false)
-  }
-  // ----------------------------------------------------------------
-  // RegisterResource
-  // ----------------------------------------------------------------
-  #RegisterResource(schema: Schema.XId): void {
-    this.ids.push(schema)
-    const isResource = this.pendingResource
-    this.pendingResource = false
-    if (isResource) this.resourceIds.push(schema)
-    this.#RegisterResourceAnchors(schema, true)
-  }
-  // ----------------------------------------------------------------
-  // UnregisterResource
-  // ----------------------------------------------------------------
-  #UnregisterResource(schema: Schema.XId): void {
-    this.ids.pop()
-    const isResource = this.resourceIds.length > 0 && Guard.IsEqual(this.resourceIds[this.resourceIds.length - 1], schema)
-    if (isResource) this.resourceIds.pop()
-    this.#UnregisterResourceAnchors(schema, true)
-  }
-  // ----------------------------------------------------------------
-  // EnterResolvedResource
-  // ----------------------------------------------------------------
-  #EnterResolvedResource(target: Schema.XSchemaObject, resource: Schema.XId): void {
-    this.#RegisterResource(resource)
-    this.resolvedResources.set(target, resource)
-  }
-  // ----------------------------------------------------------------
-  // ExitResolvedResource
-  // ----------------------------------------------------------------
-  #ExitResolvedResource(target: Schema.XSchemaObject): void {
-    if (!this.resolvedResources.has(target)) return
-    const resource = this.resolvedResources.get(target)!
-    this.#UnregisterResource(resource)
-    this.resolvedResources.delete(target)
-  }
+    : stack
 }

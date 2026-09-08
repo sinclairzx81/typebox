@@ -28,35 +28,32 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import * as V from './_externals.ts'
-import { Stack } from './_stack.ts'
+import * as Schema from '../types/index.ts'
+import * as Stack from './_stack.ts'
+import * as Externals from './_externals.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildRefine(_stack: Stack, _context: BuildContext, schema: S.XRefine, value: string): string {
-  const refinements = V.CreateVariable(schema['~refine'].map((refinement) => refinement))
+export function BuildRefine(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XRefine, value: string): string {
+  const refinements = Externals.CreateVariable(schema['~refine'].map((refinement) => refinement))
   return E.Every(refinements, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'check'), [value]))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckRefine(_stack: Stack, _context: CheckContext, schema: S.XRefine, value: unknown): boolean {
+export function CheckRefine(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XRefine, value: unknown): boolean {
   return G.Every(schema['~refine'], 0, (refinement, _) => refinement.check(value))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRefine(_stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRefine, value: unknown): boolean {
+export function ErrorRefine(_stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRefine, value: unknown): boolean {
   return G.EveryAll(schema['~refine'], 0, (refinement, index) => {
-    return refinement.check(value) || context.AddError({
-      keyword: '~refine',
-      schemaPath,
-      instancePath,
-      params: { index, message: refinement.error(value) },
+    return refinement.check(value) || context.AddError('~refine', schemaPath, instancePath, {
+      index, message: refinement.error(value)
     })
   })
 }

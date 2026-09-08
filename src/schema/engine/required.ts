@@ -29,36 +29,32 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildRequired(_stack: Stack, _context: BuildContext, schema: Schema.XRequired, value: string): string {
+export function BuildRequired(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XRequired, value: string): string {
   return E.ReduceAnd(schema.required.map((key) => E.HasPropertyKey(value, E.Constant(key))))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckRequired(_stack: Stack, _context: CheckContext, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
+export function CheckRequired(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
   return G.Every(schema.required, 0, (key) => G.HasPropertyKey(value, key))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRequired(_stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorRequired(_stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
   const requiredProperties: string[] = []
   const isRequired = G.EveryAll(schema.required, 0, (key) => {
     const hasKey = G.HasPropertyKey(value, key)
     if (!hasKey) requiredProperties.push(key)
     return hasKey
   })
-  return isRequired || context.AddError({
-    keyword: 'required',
-    schemaPath,
-    instancePath,
-    params: { requiredProperties }
-  })
+  return isRequired ||
+    context.AddError('required', schemaPath, instancePath, { requiredProperties })
 }

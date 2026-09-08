@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Reducer } from './_reducer.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
@@ -38,13 +38,13 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildAllOfStandard(stack: Stack, context: BuildContext, schema: Schema.XAllOf, value: string): string {
+function BuildAllOfStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XAllOf, value: string): string {
   return Reducer(stack, context, schema.allOf, value, E.IsEqual(E.Member('results', 'length'), E.Constant(schema.allOf.length)))
 }
-function BuildAllOfFast(stack: Stack, context: BuildContext, schema: Schema.XAllOf, value: string): string {
+function BuildAllOfFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XAllOf, value: string): string {
   return E.ReduceAnd(schema.allOf.map((schema) => BuildSchema(stack, context, schema, value)))
 }
-export function BuildAllOf(stack: Stack, context: BuildContext, schema: Schema.XAllOf, value: string): string {
+export function BuildAllOf(stack: Stack.XStack, context: BuildContext, schema: Schema.XAllOf, value: string): string {
   return context.UseUnevaluated()
     ? BuildAllOfStandard(stack, context, schema, value)
     : BuildAllOfFast(stack, context, schema, value)
@@ -52,7 +52,7 @@ export function BuildAllOf(stack: Stack, context: BuildContext, schema: Schema.X
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckAllOf(stack: Stack, context: CheckContext, schema: Schema.XAllOf, value: unknown): boolean {
+export function CheckAllOf(stack: Stack.XStack, context: CheckContext, schema: Schema.XAllOf, value: unknown): boolean {
   const results = schema.allOf.reduce<CheckContext[]>((result, schema) => {
     const nextContext = new CheckContext()
     return CheckSchema(stack, nextContext, schema, value) ? [...result, nextContext] : result
@@ -62,7 +62,7 @@ export function CheckAllOf(stack: Stack, context: CheckContext, schema: Schema.X
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorAllOf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XAllOf, value: unknown): boolean {
+export function ErrorAllOf(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XAllOf, value: unknown): boolean {
   const failedContexts: ErrorContext[] = []
   const results = schema.allOf.reduce<ErrorContext[]>((result, schema, index) => {
     const nextSchemaPath = `${schemaPath}/allOf/${index}`
@@ -72,6 +72,6 @@ export function ErrorAllOf(stack: Stack, context: ErrorContext, schemaPath: stri
     return isSchema ? [...result, nextContext] : result
   }, [])
   const isAllOf = G.IsEqual(results.length, schema.allOf.length) && context.Merge(results)
-  if (!isAllOf) failedContexts.forEach(failed => failed.GetErrors().forEach(error => context.AddError(error)))
+  if (!isAllOf) failedContexts.forEach(failed => context.AddErrors(failed.GetErrors()))
   return isAllOf
 }

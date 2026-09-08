@@ -1,9 +1,9 @@
 <h1>Schema.Coverage</h1>
-<p>TypeBox has broad coverage for all major JSON Schema drafts and is verified against the <a href="https://github.com/json-schema-org/JSON-Schema-Test-Suite">Official JSON Schema Test Suite</a>. TypeBox uses a progressive adoption strategy where legacy specifications are supported wherever they can be reconciled with the modern specification. Where they cannot, the modern specification takes precedence.</p>
+<p>TypeBox has broad support for all JSON Schema drafts and is heavily tested against the <a href="https://github.com/json-schema-org/JSON-Schema-Test-Suite">Official JSON Schema Test Suite</a>. TypeBox targets modern versions of the specification, but supports legacy drafts as well: legacy semantics are honored unless they conflict with a modern specification, in which case the modern behavior takes precedence.</p>
 <blockquote>
-<p>⚠️ TypeBox does not require a specific draft version by default; it will accept schematics from any supported draft. If an implementation needs to mandate a specific draft, use the Schema.Meta namespace to validate schematics against that draft version. TypeBox treats meta schema validation the same as ordinary schema validation, allowing developers to progressively upgrade to modern specifications without exhaustive schema rewrites.</p>
+<p>⚠️ TypeBox will accept schematics from any JSON Schema draft. If an application needs to enforce a specific draft, use <code>Schema.Meta</code> to validate schematics against that draft.</p>
 </blockquote>
-<p>The following shows test coverage for each draft.</p>
+<p>The table below shows test coverage per draft. Failing tests in legacy drafts are expected where legacy semantics conflict with modern drafts.</p>
 <h2>Required Keywords</h2>
 <table>
 <thead>
@@ -207,16 +207,6 @@
 <td align="left">✅</td>
 <td align="left">✅</td>
 <td align="left">✅</td>
-</tr>
-<tr>
-<td align="left">format</td>
-<td align="left">✅</td>
-<td align="left">✅</td>
-<td align="left">✅</td>
-<td align="left">✅</td>
-<td align="left">✅</td>
-<td align="left">114/133</td>
-<td align="left">-</td>
 </tr>
 <tr>
 <td align="left">if-then-else</td>

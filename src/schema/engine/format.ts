@@ -28,33 +28,28 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Format } from '../../format/index.ts'
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
+import { Format } from '../../format/index.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
-
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildFormat(_stack: Stack, _context: BuildContext, schema: Schema.XFormat, value: string): string {
+export function BuildFormat(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XFormat, value: string): string {
   return E.Call(E.Member('Format', 'Test'), [E.Constant(schema.format), value])
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckFormat(_stack: Stack, _context: CheckContext, schema: Schema.XFormat, value: string): boolean {
+export function CheckFormat(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XFormat, value: string): boolean {
   return Format.Test(schema.format, value)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorFormat(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XFormat, value: string): boolean {
-  return CheckFormat(stack, context, schema, value) || context.AddError({
-    keyword: 'format',
-    schemaPath,
-    instancePath,
-    params: { format: schema.format },
-  })
+export function ErrorFormat(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XFormat, value: string): boolean {
+  return CheckFormat(stack, context, schema, value) ||
+    context.AddError('format', schemaPath, instancePath, { format: schema.format })
 }

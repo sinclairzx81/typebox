@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMinLength(_stack: Stack, _context: BuildContext, schema: Schema.XMinLength, value: string): string {
+export function BuildMinLength(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XMinLength, value: string): string {
   return E.IsMinLength(value, E.Constant(schema.minLength))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMinLength(_stack: Stack, _context: CheckContext, schema: Schema.XMinLength, value: string): boolean {
+export function CheckMinLength(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XMinLength, value: string): boolean {
   return G.IsMinLength(value, schema.minLength)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMinLength(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinLength, value: string): boolean {
-  return CheckMinLength(stack, context, schema, value) || context.AddError({
-    keyword: 'minLength',
-    schemaPath,
-    instancePath,
-    params: { limit: schema.minLength }
-  })
+export function ErrorMinLength(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinLength, value: string): boolean {
+  return CheckMinLength(stack, context, schema, value) ||
+    context.AddError('minLength', schemaPath, instancePath, { limit: schema.minLength })
 }

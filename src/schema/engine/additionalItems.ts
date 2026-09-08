@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Unique } from './_unique.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
@@ -44,20 +44,20 @@ function IsValid(schema: Schema.XSchemaObject): schema is Schema.XItems & { item
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildAdditionalItemsStandard(stack: Stack, context: BuildContext, schema: Schema.XAdditionalItems & Schema.XItems & { items: Schema.XSchema[] }, value: string): string {
+function BuildAdditionalItemsStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalItems & Schema.XItems & { items: Schema.XSchema[] }, value: string): string {
   const [item, index] = [Unique(), Unique()]
   const isSchema = BuildSchemaPushStack(stack, context, schema.additionalItems, item)
   const isLength = E.IsLessThan(index, E.Constant(schema.items.length))
   const addIndex = context.AddIndex(index)
   return E.Every(value, E.Constant(0), [item, index], E.Or(isLength, E.And(isSchema, addIndex)))
 }
-function BuildAdditionalItemsFast(stack: Stack, context: BuildContext, schema: Schema.XAdditionalItems & Schema.XItems & { items: Schema.XSchema[] }, value: string): string {
+function BuildAdditionalItemsFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalItems & Schema.XItems & { items: Schema.XSchema[] }, value: string): string {
   const [item, index] = [Unique(), Unique()]
   const isSchema = BuildSchemaPushStack(stack, context, schema.additionalItems, item)
   const isLength = E.IsLessThan(index, E.Constant(schema.items.length))
   return E.Every(value, E.Constant(0), [item, index], E.Or(isLength, isSchema))
 }
-export function BuildAdditionalItems(stack: Stack, context: BuildContext, schema: Schema.XAdditionalItems, value: string): string {
+export function BuildAdditionalItems(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalItems, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
   return context.UseUnevaluated()
     ? BuildAdditionalItemsStandard(stack, context, schema, value)
@@ -66,7 +66,7 @@ export function BuildAdditionalItems(stack: Stack, context: BuildContext, schema
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckAdditionalItems(stack: Stack, context: CheckContext, schema: Schema.XAdditionalItems, value: unknown[]): boolean {
+export function CheckAdditionalItems(stack: Stack.XStack, context: CheckContext, schema: Schema.XAdditionalItems, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
   const isAdditionalItems = G.Every(value, 0, (item, index) => {
     return G.IsLessThan(index, schema.items.length)
@@ -77,7 +77,7 @@ export function CheckAdditionalItems(stack: Stack, context: CheckContext, schema
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorAdditionalItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XAdditionalItems, value: unknown[]): boolean {
+export function ErrorAdditionalItems(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XAdditionalItems, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
   const isAdditionalItems = G.Every(value, 0, (item, index) => {
     const nextSchemaPath = `${schemaPath}/additionalItems`

@@ -29,30 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
+import * as Stack from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMultipleOf(_stack: Stack, _context: BuildContext, schema: Schema.XMultipleOf, value: string): string {
+export function BuildMultipleOf(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XMultipleOf, value: string): string {
   return E.MultipleOf(value, E.Constant(schema.multipleOf))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMultipleOf(_stack: Stack, _context: CheckContext, schema: Schema.XMultipleOf, value: number | bigint): boolean {
+export function CheckMultipleOf(_stack: Stack.XStack, _context: CheckContext, schema: Schema.XMultipleOf, value: number | bigint): boolean {
   return G.IsMultipleOf(value, schema.multipleOf)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMultipleOf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMultipleOf, value: number | bigint): boolean {
-  return CheckMultipleOf(stack, context, schema, value) || context.AddError({
-    keyword: 'multipleOf',
-    schemaPath,
-    instancePath,
-    params: { multipleOf: schema.multipleOf }
-  })
+export function ErrorMultipleOf(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMultipleOf, value: number | bigint): boolean {
+  return CheckMultipleOf(stack, context, schema, value) ||
+    context.AddError('multipleOf', schemaPath, instancePath, { multipleOf: schema.multipleOf })
 }

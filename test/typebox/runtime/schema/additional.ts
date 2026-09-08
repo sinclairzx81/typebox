@@ -185,3 +185,20 @@ Test('Should Coverage 16', () => {
   Assert.IsFalse(validator.Check({ x: null }))
   Assert.IsFalse(validator.Check(0))
 })
+// ------------------------------------------------------------------
+// Coverage: Non-resolvable RecursiveRef and DynamicRef is false.
+// ------------------------------------------------------------------
+Test('Should Coverage 17', () => {
+  const schema = { $dynamicRef: '#non-resolvable' }
+  const validator = Schema.Compile(schema)
+  Assert.IsFalse(validator.Check(1))
+  Assert.IsFalse(Schema.Check(schema, 1))
+  Assert.IsFalse(Schema.Errors(schema, 1)[0])
+})
+Test('Should Coverage 18', () => {
+  const schema = { $recursiveRef: '#non-resolvable' }
+  const validator = Schema.Compile(schema)
+  Assert.IsFalse(validator.Check(1))
+  Assert.IsFalse(Schema.Check(schema, 1))
+  Assert.IsFalse(Schema.Errors(schema, 1)[0])
+})

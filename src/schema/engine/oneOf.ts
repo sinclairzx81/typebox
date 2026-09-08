@@ -29,26 +29,26 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
-import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import * as Stack from './_stack.ts'
 import { Reducer } from './_reducer.ts'
-import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
-import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 import { Unique } from './_unique.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildOneOfStandard(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
+function BuildOneOfStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
   return Reducer(stack, context, schema.oneOf, value, E.IsEqual(E.Member('results', 'length'), E.Constant(1)))
 }
-function BuildOneOfFast(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
+function BuildOneOfFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
   const [result] = [Unique()]
   const results = E.ArrayLiteral(schema.oneOf.map((schema) => BuildSchema(stack, context, schema, value)))
   const count = E.Counted(results, [result, '_'], E.IsEqual(result, E.Constant(true)))
   return E.IsEqual(count, E.Constant(1))
 }
-export function BuildOneOf(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
+export function BuildOneOf(stack: Stack.XStack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
   return context.UseUnevaluated() 
     ? BuildOneOfStandard(stack, context, schema, value) 
     : BuildOneOfFast(stack, context, schema, value)
@@ -56,7 +56,7 @@ export function BuildOneOf(stack: Stack, context: BuildContext, schema: Schema.X
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckOneOf(stack: Stack, context: CheckContext, schema: Schema.XOneOf, value: unknown): boolean {
+export function CheckOneOf(stack: Stack.XStack, context: CheckContext, schema: Schema.XOneOf, value: unknown): boolean {
   const passedContexts = schema.oneOf.reduce<CheckContext[]>((result, schema) => {
     const nextContext = new CheckContext()
     return CheckSchema(stack, nextContext, schema, value) ? [...result, nextContext] : result
@@ -66,10 +66,9 @@ export function CheckOneOf(stack: Stack, context: CheckContext, schema: Schema.X
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorOneOf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XOneOf, value: unknown): boolean {
+export function ErrorOneOf(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XOneOf, value: unknown): boolean {
   const failedContexts: ErrorContext[] = []
   const passingSchemas: number[] = []
-
   const passedContexts = schema.oneOf.reduce<ErrorContext[]>((result, schema, index) => {
     const nextContext = new ErrorContext()
     const nextSchemaPath = `${schemaPath}/oneOf/${index}`
@@ -78,13 +77,8 @@ export function ErrorOneOf(stack: Stack, context: ErrorContext, schemaPath: stri
     if (!isSchema) failedContexts.push(nextContext)
     return isSchema ? [...result, nextContext] : result
   }, [])
-
+  
   const isOneOf = G.IsEqual(passedContexts.length, 1) && context.Merge(passedContexts)
-  if (!isOneOf && G.IsEqual(passingSchemas.length, 0)) failedContexts.forEach(failed => failed.GetErrors().forEach(error => context.AddError(error)))
-  return isOneOf || context.AddError({
-    keyword: 'oneOf',
-    schemaPath,
-    instancePath,
-    params: { passingSchemas },
-  })
+  if (!isOneOf && G.IsEqual(passingSchemas.length, 0)) failedContexts.forEach(failed => context.AddErrors(failed.GetErrors()))
+  return isOneOf || context.AddError('oneOf', schemaPath, instancePath, { passingSchemas })
 }

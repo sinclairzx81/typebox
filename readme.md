@@ -231,7 +231,7 @@ const result = Vector.Parse({ x: 1, y: 0, z: 0 })  // const result: {
 
 [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) | [JSON Schema Compliance Suite](https://github.com/sinclairzx81/json-schema-compliance-suite)
 
-TypeBox supports all major JSON Schema draft versions and tracks compliance against the official JSON Schema Test Suite. It also maintains a separate JavaScript compliance suite to track ecosystem adoption as JSON Schema moves toward the V1 candidate. The following table shows TypeBox specification coverage.
+TypeBox has broad support for all JSON Schema drafts and is heavily tested against the official JSON Schema Test Suite. TypeBox targets modern versions of the specification, but supports legacy drafts as well: legacy semantics are honored unless they conflict with a modern specification, in which case the modern behavior takes precedence.
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|
@@ -254,7 +254,6 @@ TypeBox supports all major JSON Schema draft versions and tracks compliance agai
 | enum | 16/18 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMaximum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMinimum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
-| format | ✅ | ✅ | ✅ | ✅ | ✅ | 114/133 | - |
 | if-then-else | - | - | - | ✅ | ✅ | ✅ | ✅ |
 | infinite-loop-detection | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | items | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -287,43 +286,47 @@ TypeBox supports all major JSON Schema draft versions and tracks compliance agai
 
 ### Performance
 
-TypeBox tracks comparative performance against AJV8 as the de facto performance standard. For broader comparative benchmarks, refer to the community maintained projects below.
+TypeBox tracks performance against AJV8 only as the defacto performance standard. For broader comparative benchmarks, refer to the following community maintained projects.
 
 [Runtime Benchmarks](https://moltar.github.io/typescript-runtime-type-benchmarks/) | [Schema Benchmarks](https://schemabenchmarks.dev/)
 
-The following table shows compilation performance for various JSON Schema structures. These benchmarks measure the time required to JIT compile schematics, with faster compilation resulting in faster application startup.
+### Compile
+
+The following table shows compile performance for various JSON Schema structures. These benchmarks measure the time required to build and runtime JIT schematics. Faster compilation results in faster application startup.
 
 ```python
 ┌──────────────────────┬──────────────┬──────────────┐
 │ Compile              │ TB1X         │ AJV8         │
 ├──────────────────────┼──────────────┼──────────────┤
-│ Boolean              │  50.4K ops/s │   7.1K ops/s │
-│ Number               │ 129.9K ops/s │   7.9K ops/s │
-│ String               │ 128.9K ops/s │   9.1K ops/s │
-│ Null                 │  91.3K ops/s │   8.4K ops/s │
-│ Literal_String       │  63.1K ops/s │   7.4K ops/s │
-│ Literal_Number       │  74.5K ops/s │   7.6K ops/s │
-│ Literal_Boolean      │ 143.3K ops/s │   7.7K ops/s │
-│ Pattern              │  94.2K ops/s │   6.4K ops/s │
-│ Object_Open          │  19.4K ops/s │   1.3K ops/s │
-│ Object_Close         │  17.6K ops/s │    991 ops/s │
-│ Object_Vector3       │  46.1K ops/s │   3.3K ops/s │
-│ Object_Basis3        │    16K ops/s │    848 ops/s │
-│ Intersect_And        │  41.3K ops/s │   4.2K ops/s │
-│ Intersect_Structural │  25.3K ops/s │   1.5K ops/s │
-│ Union_Or             │  58.6K ops/s │   2.4K ops/s │
-│ Union_Structural     │  31.5K ops/s │   1.8K ops/s │
-│ Tuple_Values         │  18.2K ops/s │   1.9K ops/s │
-│ Tuple_Objects        │   3.9K ops/s │    437 ops/s │
-│ Array_Numbers_4      │ 114.5K ops/s │   4.2K ops/s │
-│ Array_Numbers_8      │ 128.3K ops/s │   3.9K ops/s │
-│ Array_Numbers_16     │ 128.4K ops/s │     4K ops/s │
-│ Array_Objects_Open   │    22K ops/s │    780 ops/s │
-│ Array_Objects_Close  │    22K ops/s │     1K ops/s │
+│ Boolean              │  54.9K ops/s │     7K ops/s │
+│ Number               │ 154.2K ops/s │   7.8K ops/s │
+│ String               │ 161.4K ops/s │   9.7K ops/s │
+│ Null                 │ 111.9K ops/s │   8.9K ops/s │
+│ Literal_String       │  34.6K ops/s │   7.5K ops/s │
+│ Literal_Number       │  78.1K ops/s │   7.6K ops/s │
+│ Literal_Boolean      │  79.7K ops/s │   8.4K ops/s │
+│ Pattern              │  92.1K ops/s │   6.1K ops/s │
+│ Object_Open          │  18.6K ops/s │   1.3K ops/s │
+│ Object_Close         │    17K ops/s │    975 ops/s │
+│ Object_Vector3       │  33.3K ops/s │   3.4K ops/s │
+│ Object_Basis3        │  18.9K ops/s │    858 ops/s │
+│ Intersect_And        │  63.5K ops/s │   3.6K ops/s │
+│ Intersect_Structural │  25.7K ops/s │   1.7K ops/s │
+│ Union_Or             │  58.2K ops/s │   3.3K ops/s │
+│ Union_Structural     │  33.7K ops/s │     2K ops/s │
+│ Tuple_Values         │  19.5K ops/s │     2K ops/s │
+│ Tuple_Objects        │     4K ops/s │    388 ops/s │
+│ Array_Numbers_4      │  90.7K ops/s │   4.3K ops/s │
+│ Array_Numbers_8      │ 121.8K ops/s │   3.8K ops/s │
+│ Array_Numbers_16     │ 116.6K ops/s │   3.9K ops/s │
+│ Array_Objects_Open   │  22.6K ops/s │    802 ops/s │
+│ Array_Objects_Close  │  18.4K ops/s │    930 ops/s │
 └──────────────────────┴──────────────┴──────────────┘
 ```
 
-The following tables shows validation performance for various JSON Schema structures. These benchmarks measure overall validation throughput for JIT compiled schematics.
+### Validate
+
+The following table shows validation performance for various JSON Schema structures. These benchmarks measure overall validation throughput for compiled schematics.
 
 ```python
 ┌──────────────────────┬──────────────┬──────────────┐

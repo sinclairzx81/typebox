@@ -84,7 +84,7 @@ function process(context: Record<string, Schema.XSchema>): JSONSchemaTestSuite {
 // ------------------------------------------------------------------
 function report(suite: JSONSchemaTestSuite): void {
   const requiredTable = Report.reportRequired(suite, {
-    ignore: ['divisibleBy', 'disallow', 'extends', 'vocabulary']
+    ignore: ['format', 'divisibleBy', 'disallow', 'extends', 'vocabulary']
   })
   console.log('')
   console.log('## Required Keywords')

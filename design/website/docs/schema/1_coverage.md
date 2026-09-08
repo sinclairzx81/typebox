@@ -1,10 +1,10 @@
 # Schema.Coverage
 
-TypeBox has broad coverage for all major JSON Schema drafts and is verified against the [Official JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). TypeBox uses a progressive adoption strategy where legacy specifications are supported wherever they can be reconciled with the modern specification. Where they cannot, the modern specification takes precedence.
+TypeBox has broad support for all JSON Schema drafts and is heavily tested against the [Official JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). TypeBox targets modern versions of the specification, but supports legacy drafts as well: legacy semantics are honored unless they conflict with a modern specification, in which case the modern behavior takes precedence.
 
-> ⚠️ TypeBox does not require a specific draft version by default; it will accept schematics from any supported draft. If an implementation needs to mandate a specific draft, use the Schema.Meta namespace to validate schematics against that draft version. TypeBox treats meta schema validation the same as ordinary schema validation, allowing developers to progressively upgrade to modern specifications without exhaustive schema rewrites.
+> ⚠️ TypeBox will accept schematics from any JSON Schema draft. If an application needs to enforce a specific draft, use `Schema.Meta` to validate schematics against that draft.
 
-The following shows test coverage for each draft.
+The table below shows test coverage per draft. Failing tests in legacy drafts are expected where legacy semantics conflict with modern drafts.
 
 ## Required Keywords
 
@@ -29,7 +29,6 @@ The following shows test coverage for each draft.
 | enum | 16/18 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMaximum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMinimum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
-| format | ✅ | ✅ | ✅ | ✅ | ✅ | 114/133 | - |
 | if-then-else | - | - | - | ✅ | ✅ | ✅ | ✅ |
 | infinite-loop-detection | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | items | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |

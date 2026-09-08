@@ -29,9 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildRefine, CheckRefine, ErrorRefine } from './_refine.ts'
+import * as Stack from './_stack.ts'
 
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
@@ -172,215 +172,212 @@ function HasNumberKeywords(schema: Schema.XSchemaObject): boolean {
 // ----------------------------------------------------------------
 // Build
 // ----------------------------------------------------------------
-export function BuildSchemaPushStack(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string) {
+export function BuildSchemaPushStack(stack: Stack.XStack, context: BuildContext, schema: Schema.XSchema, value: string) {
   return context.UseUnevaluated()
     ? E.And(E.And(context.Push(), BuildSchema(stack, context, schema, value)), context.Pop())
     : BuildSchema(stack, context, schema, value)
 }
-export function BuildSchema(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string): string {
-  stack.Push(schema)
+export function BuildSchema(stack: Stack.XStack, context: BuildContext, schema: Schema.XSchema, value: string): string {
+  const current = Stack.NextStack(stack, schema)
   const conditions: string[] = []
-  if (Schema.IsSchemaBoolean(schema)) return BuildSchemaBoolean(stack, context, schema, value)
-  if (Schema.IsType(schema)) conditions.push(BuildType(stack, context, schema, value))
+  if (Schema.IsSchemaBoolean(schema)) return BuildSchemaBoolean(current, context, schema, value)
+  if (Schema.IsType(schema)) conditions.push(BuildType(current, context, schema, value))
   if (HasObjectKeywords(schema)) {
     const constraints = []
-    if (Schema.IsRequired(schema)) constraints.push(BuildRequired(stack, context, schema, value))
-    if (Schema.IsAdditionalProperties(schema)) constraints.push(BuildAdditionalProperties(stack, context, schema, value))
-    if (Schema.IsDependencies(schema)) constraints.push(BuildDependencies(stack, context, schema, value))
-    if (Schema.IsDependentRequired(schema)) constraints.push(BuildDependentRequired(stack, context, schema, value))
-    if (Schema.IsDependentSchemas(schema)) constraints.push(BuildDependentSchemas(stack, context, schema, value))
-    if (Schema.IsPatternProperties(schema)) constraints.push(BuildPatternProperties(stack, context, schema, value))
-    if (Schema.IsProperties(schema)) constraints.push(BuildProperties(stack, context, schema, value))
-    if (Schema.IsPropertyNames(schema)) constraints.push(BuildPropertyNames(stack, context, schema, value))
-    if (Schema.IsMinProperties(schema)) constraints.push(BuildMinProperties(stack, context, schema, value))
-    if (Schema.IsMaxProperties(schema)) constraints.push(BuildMaxProperties(stack, context, schema, value))
+    if (Schema.IsRequired(schema)) constraints.push(BuildRequired(current, context, schema, value))
+    if (Schema.IsAdditionalProperties(schema)) constraints.push(BuildAdditionalProperties(current, context, schema, value))
+    if (Schema.IsDependencies(schema)) constraints.push(BuildDependencies(current, context, schema, value))
+    if (Schema.IsDependentRequired(schema)) constraints.push(BuildDependentRequired(current, context, schema, value))
+    if (Schema.IsDependentSchemas(schema)) constraints.push(BuildDependentSchemas(current, context, schema, value))
+    if (Schema.IsPatternProperties(schema)) constraints.push(BuildPatternProperties(current, context, schema, value))
+    if (Schema.IsProperties(schema)) constraints.push(BuildProperties(current, context, schema, value))
+    if (Schema.IsPropertyNames(schema)) constraints.push(BuildPropertyNames(current, context, schema, value))
+    if (Schema.IsMinProperties(schema)) constraints.push(BuildMinProperties(current, context, schema, value))
+    if (Schema.IsMaxProperties(schema)) constraints.push(BuildMaxProperties(current, context, schema, value))
     const reduced = E.ReduceAnd(constraints)
     const guarded = E.Or(E.Not(E.IsObjectNotArray(value)), reduced)
     conditions.push(HasObjectType(schema) ? reduced : guarded)
   }
   if (HasArrayKeywords(schema)) {
     const constraints = []
-    if (Schema.IsAdditionalItems(schema)) constraints.push(BuildAdditionalItems(stack, context, schema, value))
-    if (Schema.IsContains(schema)) constraints.push(BuildContains(stack, context, schema, value))
-    if (Schema.IsItems(schema)) constraints.push(BuildItems(stack, context, schema, value))
-    if (Schema.IsMaxContains(schema)) constraints.push(BuildMaxContains(stack, context, schema, value))
-    if (Schema.IsMaxItems(schema)) constraints.push(BuildMaxItems(stack, context, schema, value))
-    if (Schema.IsMinContains(schema)) constraints.push(BuildMinContains(stack, context, schema, value))
-    if (Schema.IsMinItems(schema)) constraints.push(BuildMinItems(stack, context, schema, value))
-    if (Schema.IsPrefixItems(schema)) constraints.push(BuildPrefixItems(stack, context, schema, value))
-    if (Schema.IsUniqueItems(schema)) constraints.push(BuildUniqueItems(stack, context, schema, value))
+    if (Schema.IsAdditionalItems(schema)) constraints.push(BuildAdditionalItems(current, context, schema, value))
+    if (Schema.IsContains(schema)) constraints.push(BuildContains(current, context, schema, value))
+    if (Schema.IsItems(schema)) constraints.push(BuildItems(current, context, schema, value))
+    if (Schema.IsMaxContains(schema)) constraints.push(BuildMaxContains(current, context, schema, value))
+    if (Schema.IsMaxItems(schema)) constraints.push(BuildMaxItems(current, context, schema, value))
+    if (Schema.IsMinContains(schema)) constraints.push(BuildMinContains(current, context, schema, value))
+    if (Schema.IsMinItems(schema)) constraints.push(BuildMinItems(current, context, schema, value))
+    if (Schema.IsPrefixItems(schema)) constraints.push(BuildPrefixItems(current, context, schema, value))
+    if (Schema.IsUniqueItems(schema)) constraints.push(BuildUniqueItems(current, context, schema, value))
     const reduced = E.ReduceAnd(constraints)
     const guarded = E.Or(E.Not(E.IsArray(value)), reduced)
     conditions.push(HasArrayType(schema) ? reduced : guarded)
   }
   if (HasStringKeywords(schema)) {
     const constraints = []
-    if (Schema.IsMaxLength(schema)) constraints.push(BuildMaxLength(stack, context, schema, value))
-    if (Schema.IsMinLength(schema)) constraints.push(BuildMinLength(stack, context, schema, value))
-    if (Schema.IsFormat(schema)) constraints.push(BuildFormat(stack, context, schema, value))
-    if (Schema.IsPattern(schema)) constraints.push(BuildPattern(stack, context, schema, value))
+    if (Schema.IsMaxLength(schema)) constraints.push(BuildMaxLength(current, context, schema, value))
+    if (Schema.IsMinLength(schema)) constraints.push(BuildMinLength(current, context, schema, value))
+    if (Schema.IsFormat(schema)) constraints.push(BuildFormat(current, context, schema, value))
+    if (Schema.IsPattern(schema)) constraints.push(BuildPattern(current, context, schema, value))
     const reduced = E.ReduceAnd(constraints)
     const guarded = E.Or(E.Not(E.IsString(value)), reduced)
     conditions.push(HasStringType(schema) ? reduced : guarded)
   }
   if (HasNumberKeywords(schema)) {
     const constraints = []
-    if (Schema.IsExclusiveMaximum(schema)) constraints.push(BuildExclusiveMaximum(stack, context, schema, value))
-    if (Schema.IsExclusiveMinimum(schema)) constraints.push(BuildExclusiveMinimum(stack, context, schema, value))
-    if (Schema.IsMaximum(schema)) constraints.push(BuildMaximum(stack, context, schema, value))
-    if (Schema.IsMinimum(schema)) constraints.push(BuildMinimum(stack, context, schema, value))
-    if (Schema.IsMultipleOf(schema)) constraints.push(BuildMultipleOf(stack, context, schema, value))
+    if (Schema.IsExclusiveMaximum(schema)) constraints.push(BuildExclusiveMaximum(current, context, schema, value))
+    if (Schema.IsExclusiveMinimum(schema)) constraints.push(BuildExclusiveMinimum(current, context, schema, value))
+    if (Schema.IsMaximum(schema)) constraints.push(BuildMaximum(current, context, schema, value))
+    if (Schema.IsMinimum(schema)) constraints.push(BuildMinimum(current, context, schema, value))
+    if (Schema.IsMultipleOf(schema)) constraints.push(BuildMultipleOf(current, context, schema, value))
     const reduced = E.ReduceAnd(constraints)
     const guarded = E.Or(E.Not(E.Or(E.IsNumber(value), E.IsBigInt(value))), reduced)
     conditions.push(HasNumberType(schema) ? reduced : guarded)
   }
-  if (Schema.IsRef(schema)) conditions.push(BuildRef(stack, context, schema, value))
-  if (Schema.IsRecursiveRef(schema)) conditions.push(BuildRecursiveRef(stack, context, schema, value))
-  if (Schema.IsDynamicRef(schema)) conditions.push(BuildDynamicRef(stack, context, schema, value))
-  if (Schema.IsConst(schema)) conditions.push(BuildConst(stack, context, schema, value))
-  if (Schema.IsEnum(schema)) conditions.push(BuildEnum(stack, context, schema, value))
-  if (Schema.IsIf(schema)) conditions.push(BuildIf(stack, context, schema, value))
-  if (Schema.IsNot(schema)) conditions.push(BuildNot(stack, context, schema, value))
-  if (Schema.IsAllOf(schema)) conditions.push(BuildAllOf(stack, context, schema, value))
-  if (Schema.IsAnyOf(schema)) conditions.push(BuildAnyOf(stack, context, schema, value))
-  if (Schema.IsOneOf(schema)) conditions.push(BuildOneOf(stack, context, schema, value))
-  if (Schema.IsUnevaluatedItems(schema)) conditions.push(E.Or(E.Not(E.IsArray(value)), BuildUnevaluatedItems(stack, context, schema, value)))
-  if (Schema.IsUnevaluatedProperties(schema)) conditions.push(E.Or(E.Not(E.IsObject(value)), BuildUnevaluatedProperties(stack, context, schema, value)))
-  if (Schema.IsRefine(schema)) conditions.push(BuildRefine(stack, context, schema, value))
+  if (Schema.IsRef(schema)) conditions.push(BuildRef(current, context, schema, value))
+  if (Schema.IsRecursiveRef(schema)) conditions.push(BuildRecursiveRef(current, context, schema, value))
+  if (Schema.IsDynamicRef(schema)) conditions.push(BuildDynamicRef(current, context, schema, value))
+  if (Schema.IsConst(schema)) conditions.push(BuildConst(current, context, schema, value))
+  if (Schema.IsEnum(schema)) conditions.push(BuildEnum(current, context, schema, value))
+  if (Schema.IsIf(schema)) conditions.push(BuildIf(current, context, schema, value))
+  if (Schema.IsNot(schema)) conditions.push(BuildNot(current, context, schema, value))
+  if (Schema.IsAllOf(schema)) conditions.push(BuildAllOf(current, context, schema, value))
+  if (Schema.IsAnyOf(schema)) conditions.push(BuildAnyOf(current, context, schema, value))
+  if (Schema.IsOneOf(schema)) conditions.push(BuildOneOf(current, context, schema, value))
+  if (Schema.IsUnevaluatedItems(schema)) conditions.push(E.Or(E.Not(E.IsArray(value)), BuildUnevaluatedItems(current, context, schema, value)))
+  if (Schema.IsUnevaluatedProperties(schema)) conditions.push(E.Or(E.Not(E.IsObject(value)), BuildUnevaluatedProperties(current, context, schema, value)))
+  if (Schema.IsRefine(schema)) conditions.push(BuildRefine(current, context, schema, value))
   const result = E.ReduceAnd(conditions)
-  stack.Pop(schema)
   return result
 }
 // ----------------------------------------------------------------
 // Check
 // ----------------------------------------------------------------
-export function CheckSchemaPushStack(stack: Stack, context: CheckContext, schema: Schema.XSchema, value: unknown): boolean {
+export function CheckSchemaPushStack(stack: Stack.XStack, context: CheckContext, schema: Schema.XSchema, value: unknown): boolean {
   return (context.Push() && CheckSchema(stack, context, schema, value)) && context.Pop()
 }
-export function CheckSchema(stack: Stack, context: CheckContext, schema: Schema.XSchema, value: unknown): boolean {
-  stack.Push(schema)
-  const result = Schema.IsSchemaBoolean(schema) ? CheckSchemaBoolean(stack, context, schema, value) : (
-    (!Schema.IsType(schema) || CheckType(stack, context, schema, value)) &&
+export function CheckSchema(stack: Stack.XStack, context: CheckContext, schema: Schema.XSchema, value: unknown): boolean {
+  const current = Stack.NextStack(stack, schema)
+  const result = Schema.IsSchemaBoolean(schema) ? CheckSchemaBoolean(current, context, schema, value) : (
+    (!Schema.IsType(schema) || CheckType(current, context, schema, value)) &&
     (!(G.IsObject(value) && !G.IsArray(value)) || (
-      (!Schema.IsRequired(schema) || CheckRequired(stack, context, schema, value)) &&
-      (!Schema.IsAdditionalProperties(schema) || CheckAdditionalProperties(stack, context, schema, value)) &&
-      (!Schema.IsDependencies(schema) || CheckDependencies(stack, context, schema, value)) &&
-      (!Schema.IsDependentRequired(schema) || CheckDependentRequired(stack, context, schema, value)) &&
-      (!Schema.IsDependentSchemas(schema) || CheckDependentSchemas(stack, context, schema, value)) &&
-      (!Schema.IsPatternProperties(schema) || CheckPatternProperties(stack, context, schema, value)) &&
-      (!Schema.IsProperties(schema) || CheckProperties(stack, context, schema, value)) &&
-      (!Schema.IsPropertyNames(schema) || CheckPropertyNames(stack, context, schema, value)) &&
-      (!Schema.IsMinProperties(schema) || CheckMinProperties(stack, context, schema, value)) &&
-      (!Schema.IsMaxProperties(schema) || CheckMaxProperties(stack, context, schema, value))
+      (!Schema.IsRequired(schema) || CheckRequired(current, context, schema, value)) &&
+      (!Schema.IsAdditionalProperties(schema) || CheckAdditionalProperties(current, context, schema, value)) &&
+      (!Schema.IsDependencies(schema) || CheckDependencies(current, context, schema, value)) &&
+      (!Schema.IsDependentRequired(schema) || CheckDependentRequired(current, context, schema, value)) &&
+      (!Schema.IsDependentSchemas(schema) || CheckDependentSchemas(current, context, schema, value)) &&
+      (!Schema.IsPatternProperties(schema) || CheckPatternProperties(current, context, schema, value)) &&
+      (!Schema.IsProperties(schema) || CheckProperties(current, context, schema, value)) &&
+      (!Schema.IsPropertyNames(schema) || CheckPropertyNames(current, context, schema, value)) &&
+      (!Schema.IsMinProperties(schema) || CheckMinProperties(current, context, schema, value)) &&
+      (!Schema.IsMaxProperties(schema) || CheckMaxProperties(current, context, schema, value))
     )) &&
     (!G.IsArray(value) || (
-      (!Schema.IsAdditionalItems(schema) || CheckAdditionalItems(stack, context, schema, value)) &&
-      (!Schema.IsContains(schema) || CheckContains(stack, context, schema, value)) &&
-      (!Schema.IsItems(schema) || CheckItems(stack, context, schema, value)) &&
-      (!Schema.IsMaxContains(schema) || CheckMaxContains(stack, context, schema, value)) &&
-      (!Schema.IsMaxItems(schema) || CheckMaxItems(stack, context, schema, value)) &&
-      (!Schema.IsMinContains(schema) || CheckMinContains(stack, context, schema, value)) &&
-      (!Schema.IsMinItems(schema) || CheckMinItems(stack, context, schema, value)) &&
-      (!Schema.IsPrefixItems(schema) || CheckPrefixItems(stack, context, schema, value)) &&
-      (!Schema.IsUniqueItems(schema) || CheckUniqueItems(stack, context, schema, value))
+      (!Schema.IsAdditionalItems(schema) || CheckAdditionalItems(current, context, schema, value)) &&
+      (!Schema.IsContains(schema) || CheckContains(current, context, schema, value)) &&
+      (!Schema.IsItems(schema) || CheckItems(current, context, schema, value)) &&
+      (!Schema.IsMaxContains(schema) || CheckMaxContains(current, context, schema, value)) &&
+      (!Schema.IsMaxItems(schema) || CheckMaxItems(current, context, schema, value)) &&
+      (!Schema.IsMinContains(schema) || CheckMinContains(current, context, schema, value)) &&
+      (!Schema.IsMinItems(schema) || CheckMinItems(current, context, schema, value)) &&
+      (!Schema.IsPrefixItems(schema) || CheckPrefixItems(current, context, schema, value)) &&
+      (!Schema.IsUniqueItems(schema) || CheckUniqueItems(current, context, schema, value))
     )) &&
     (!G.IsString(value) || (
-      (!Schema.IsMaxLength(schema) || CheckMaxLength(stack, context, schema, value)) &&
-      (!Schema.IsMinLength(schema) || CheckMinLength(stack, context, schema, value)) &&
-      (!Schema.IsFormat(schema) || CheckFormat(stack, context, schema, value)) &&
-      (!Schema.IsPattern(schema) || CheckPattern(stack, context, schema, value))
+      (!Schema.IsMaxLength(schema) || CheckMaxLength(current, context, schema, value)) &&
+      (!Schema.IsMinLength(schema) || CheckMinLength(current, context, schema, value)) &&
+      (!Schema.IsFormat(schema) || CheckFormat(current, context, schema, value)) &&
+      (!Schema.IsPattern(schema) || CheckPattern(current, context, schema, value))
     )) &&
     (!(G.IsNumber(value) || G.IsBigInt(value)) || (
-      (!Schema.IsExclusiveMaximum(schema) || CheckExclusiveMaximum(stack, context, schema, value)) &&
-      (!Schema.IsExclusiveMinimum(schema) || CheckExclusiveMinimum(stack, context, schema, value)) &&
-      (!Schema.IsMaximum(schema) || CheckMaximum(stack, context, schema, value)) &&
-      (!Schema.IsMinimum(schema) || CheckMinimum(stack, context, schema, value)) &&
-      (!Schema.IsMultipleOf(schema) || CheckMultipleOf(stack, context, schema, value))
+      (!Schema.IsExclusiveMaximum(schema) || CheckExclusiveMaximum(current, context, schema, value)) &&
+      (!Schema.IsExclusiveMinimum(schema) || CheckExclusiveMinimum(current, context, schema, value)) &&
+      (!Schema.IsMaximum(schema) || CheckMaximum(current, context, schema, value)) &&
+      (!Schema.IsMinimum(schema) || CheckMinimum(current, context, schema, value)) &&
+      (!Schema.IsMultipleOf(schema) || CheckMultipleOf(current, context, schema, value))
     )) &&
-    (!Schema.IsRef(schema) || CheckRef(stack, context, schema, value)) &&
-    (!Schema.IsRecursiveRef(schema) || CheckRecursiveRef(stack, context, schema, value)) &&
-    (!Schema.IsDynamicRef(schema) || CheckDynamicRef(stack, context, schema, value)) &&
-    (!Schema.IsConst(schema) || CheckConst(stack, context, schema, value)) &&
-    (!Schema.IsEnum(schema) || CheckEnum(stack, context, schema, value)) &&
-    (!Schema.IsIf(schema) || CheckIf(stack, context, schema, value)) &&
-    (!Schema.IsNot(schema) || CheckNot(stack, context, schema, value)) &&
-    (!Schema.IsAllOf(schema) || CheckAllOf(stack, context, schema, value)) &&
-    (!Schema.IsAnyOf(schema) || CheckAnyOf(stack, context, schema, value)) &&
-    (!Schema.IsOneOf(schema) || CheckOneOf(stack, context, schema, value)) &&
-    (!Schema.IsUnevaluatedItems(schema) || (!G.IsArray(value) || CheckUnevaluatedItems(stack, context, schema, value))) &&
-    (!Schema.IsUnevaluatedProperties(schema) || (!G.IsObject(value) || CheckUnevaluatedProperties(stack, context, schema, value))) &&
-    (!Schema.IsRefine(schema) || CheckRefine(stack, context, schema, value))
+    (!Schema.IsRef(schema) || CheckRef(current, context, schema, value)) &&
+    (!Schema.IsRecursiveRef(schema) || CheckRecursiveRef(current, context, schema, value)) &&
+    (!Schema.IsDynamicRef(schema) || CheckDynamicRef(current, context, schema, value)) &&
+    (!Schema.IsConst(schema) || CheckConst(current, context, schema, value)) &&
+    (!Schema.IsEnum(schema) || CheckEnum(current, context, schema, value)) &&
+    (!Schema.IsIf(schema) || CheckIf(current, context, schema, value)) &&
+    (!Schema.IsNot(schema) || CheckNot(current, context, schema, value)) &&
+    (!Schema.IsAllOf(schema) || CheckAllOf(current, context, schema, value)) &&
+    (!Schema.IsAnyOf(schema) || CheckAnyOf(current, context, schema, value)) &&
+    (!Schema.IsOneOf(schema) || CheckOneOf(current, context, schema, value)) &&
+    (!Schema.IsUnevaluatedItems(schema) || (!G.IsArray(value) || CheckUnevaluatedItems(current, context, schema, value))) &&
+    (!Schema.IsUnevaluatedProperties(schema) || (!G.IsObject(value) || CheckUnevaluatedProperties(current, context, schema, value))) &&
+    (!Schema.IsRefine(schema) || CheckRefine(current, context, schema, value))
   )
-  stack.Pop(schema)
   return result
 }
 // ----------------------------------------------------------------
 // Error
 // ----------------------------------------------------------------
-export function ErrorSchemaPushStack(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
+export function ErrorSchemaPushStack(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
   return (context.Push() && ErrorSchema(stack, context, schemaPath, instancePath, schema, value)) && context.Pop()
 }
-export function ErrorSchema(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
+export function ErrorSchema(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
   // Optimization: We can safely terminate here when the context is at capacity because we are unable to
   // append additional errors. It is worth being mindful that logical keywords such as allOf, anyOf,
   // oneOf pass a new context per operand, so the capacity check applies per context, not across the
   // full set of errors accumulated by the schema as a whole. (review)
   if(context.AtCapacity()) return false
-  stack.Push(schema)
-  const result = (Schema.IsSchemaBoolean(schema)) ? ErrorSchemaBoolean(stack, context, schemaPath, instancePath, schema, value) : (
+  const current = Stack.NextStack(stack, schema)
+  const result = (Schema.IsSchemaBoolean(schema)) ? ErrorSchemaBoolean(current, context, schemaPath, instancePath, schema, value) : (
     !!(
-      +(!Schema.IsType(schema) || ErrorType(stack, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsType(schema) || ErrorType(current, context, schemaPath, instancePath, schema, value)) &
       +(!(G.IsObject(value) && !G.IsArray(value)) || !!(
-        +(!Schema.IsRequired(schema) || ErrorRequired(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsAdditionalProperties(schema) || ErrorAdditionalProperties(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsDependencies(schema) || ErrorDependencies(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsDependentRequired(schema) || ErrorDependentRequired(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsDependentSchemas(schema) || ErrorDependentSchemas(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsPatternProperties(schema) || ErrorPatternProperties(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsProperties(schema) || ErrorProperties(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsPropertyNames(schema) || ErrorPropertyNames(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMinProperties(schema) || ErrorMinProperties(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMaxProperties(schema) || ErrorMaxProperties(stack, context, schemaPath, instancePath, schema, value))
+        +(!Schema.IsRequired(schema) || ErrorRequired(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsAdditionalProperties(schema) || ErrorAdditionalProperties(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsDependencies(schema) || ErrorDependencies(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsDependentRequired(schema) || ErrorDependentRequired(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsDependentSchemas(schema) || ErrorDependentSchemas(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsPatternProperties(schema) || ErrorPatternProperties(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsProperties(schema) || ErrorProperties(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsPropertyNames(schema) || ErrorPropertyNames(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMinProperties(schema) || ErrorMinProperties(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMaxProperties(schema) || ErrorMaxProperties(current, context, schemaPath, instancePath, schema, value))
       )) &
       +(!G.IsArray(value) || !!(
-        +(!Schema.IsAdditionalItems(schema) || ErrorAdditionalItems(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsContains(schema) || ErrorContains(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsItems(schema) || ErrorItems(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMaxContains(schema) || ErrorMaxContains(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMaxItems(schema) || ErrorMaxItems(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMinContains(schema) || ErrorMinContains(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMinItems(schema) || ErrorMinItems(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsPrefixItems(schema) || ErrorPrefixItems(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsUniqueItems(schema) || ErrorUniqueItems(stack, context, schemaPath, instancePath, schema, value))
+        +(!Schema.IsAdditionalItems(schema) || ErrorAdditionalItems(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsContains(schema) || ErrorContains(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsItems(schema) || ErrorItems(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMaxContains(schema) || ErrorMaxContains(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMaxItems(schema) || ErrorMaxItems(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMinContains(schema) || ErrorMinContains(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMinItems(schema) || ErrorMinItems(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsPrefixItems(schema) || ErrorPrefixItems(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsUniqueItems(schema) || ErrorUniqueItems(current, context, schemaPath, instancePath, schema, value))
       )) &
       +(!G.IsString(value) || !!(
-        +(!Schema.IsMaxLength(schema) || ErrorMaxLength(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMinLength(schema) || ErrorMinLength(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsFormat(schema) || ErrorFormat(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsPattern(schema) || ErrorPattern(stack, context, schemaPath, instancePath, schema, value))
+        +(!Schema.IsMaxLength(schema) || ErrorMaxLength(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMinLength(schema) || ErrorMinLength(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsFormat(schema) || ErrorFormat(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsPattern(schema) || ErrorPattern(current, context, schemaPath, instancePath, schema, value))
       )) &
       +(!(G.IsNumber(value) || G.IsBigInt(value)) || !!(
-        +(!Schema.IsExclusiveMaximum(schema) || ErrorExclusiveMaximum(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsExclusiveMinimum(schema) || ErrorExclusiveMinimum(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMaximum(schema) || ErrorMaximum(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMinimum(schema) || ErrorMinimum(stack, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMultipleOf(schema) || ErrorMultipleOf(stack, context, schemaPath, instancePath, schema, value))
+        +(!Schema.IsExclusiveMaximum(schema) || ErrorExclusiveMaximum(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsExclusiveMinimum(schema) || ErrorExclusiveMinimum(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMaximum(schema) || ErrorMaximum(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMinimum(schema) || ErrorMinimum(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMultipleOf(schema) || ErrorMultipleOf(current, context, schemaPath, instancePath, schema, value))
       )) &
-      +(!Schema.IsRef(schema) || ErrorRef(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsRecursiveRef(schema) || ErrorRecursiveRef(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsDynamicRef(schema) || ErrorDynamicRef(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsConst(schema) || ErrorConst(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsEnum(schema) || ErrorEnum(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsIf(schema) || ErrorIf(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsNot(schema) || ErrorNot(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsAllOf(schema) || ErrorAllOf(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsAnyOf(schema) || ErrorAnyOf(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsOneOf(schema) || ErrorOneOf(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsUnevaluatedItems(schema) || (!G.IsArray(value) || ErrorUnevaluatedItems(stack, context, schemaPath, instancePath, schema, value))) &
-      +(!Schema.IsUnevaluatedProperties(schema) || (!G.IsObject(value) || ErrorUnevaluatedProperties(stack, context, schemaPath, instancePath, schema, value)))
+      +(!Schema.IsRef(schema) || ErrorRef(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsRecursiveRef(schema) || ErrorRecursiveRef(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsDynamicRef(schema) || ErrorDynamicRef(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsConst(schema) || ErrorConst(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsEnum(schema) || ErrorEnum(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsIf(schema) || ErrorIf(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsNot(schema) || ErrorNot(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsAllOf(schema) || ErrorAllOf(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsAnyOf(schema) || ErrorAnyOf(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsOneOf(schema) || ErrorOneOf(current, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsUnevaluatedItems(schema) || (!G.IsArray(value) || ErrorUnevaluatedItems(current, context, schemaPath, instancePath, schema, value))) &
+      +(!Schema.IsUnevaluatedProperties(schema) || (!G.IsObject(value) || ErrorUnevaluatedProperties(current, context, schemaPath, instancePath, schema, value)))
     ) &&
-    (!Schema.IsRefine(schema) || ErrorRefine(stack, context, schemaPath, instancePath, schema, value))
+    (!Schema.IsRefine(schema) || ErrorRefine(current, context, schemaPath, instancePath, schema, value))
   )
-  stack.Pop(schema)
   return result
 }
