@@ -31,7 +31,7 @@ THE SOFTWARE.
 import * as Functions from './_functions.ts'
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
-import * as Resolve from '../resolve/index.ts'
+import { Resolve } from '../resolve/index.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 import { CheckSchema, ErrorSchema } from './schema.ts'

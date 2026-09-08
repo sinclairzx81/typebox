@@ -30,8 +30,8 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
-import * as Resolve from '../resolve/index.ts'
 import * as Functions from './_functions.ts'
+import { Resolve } from '../resolve/index.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { CheckSchema, ErrorSchema } from './schema.ts'
 
