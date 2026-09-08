@@ -1,6 +1,6 @@
 # Script.Parameters
 
-Scripts can be parameterized using a leading context object, where each key is a referable type name. This can be used to pass exterior types into Script.
+Script can accept exterior types using a leading context argument.
 
 ### Parameters
 

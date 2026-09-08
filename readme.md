@@ -30,12 +30,12 @@ import Type from 'typebox'
 
 const T = Type.Object({                     // const T = {
   x: Type.Number(),                         //   type: 'object',
-  y: Type.Number(),                         //   properties: {
-  z: Type.Number()                          //     x: { type: 'number' },
-})                                          //     y: { type: 'number' },
+  y: Type.Number(),                         //   required: ['x', 'y', 'z']
+  z: Type.Number()                          //   properties: {
+})                                          //     x: { type: 'number' },
+                                            //     y: { type: 'number' },
                                             //     z: { type: 'number' }
                                             //   },
-                                            //   required: ['x', 'y', 'z']
                                             // }
 
 type T = Type.Static<typeof T>              // type T = {
@@ -69,9 +69,9 @@ License: MIT
 
 ## Type
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview) | [Example](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvueHb7kafo16ix4ic2oBjCADsAzvACqC1FDgBeREQB0AeWIArVNJgAKAN5wbtu-Yc26cWYpVqN2y5RvAAJgBcOmi6AMowUMByAObmAJQANI7JKfbONoRoQXgQxqYweAk+cHIAhiCoQYKoYRFRsYmpTQ7pcGDYaLDAqApB3jaoIKXAADZVeuGRMVaY0EMw2YPDI3hwAL5xya2+gXDWmZX4SlPRq2tFG81X11v0dmUVfXAH2cf1Z0U3X99w23BLoyexR+INSfwyRFedRihTgwNBCLSd3sGDmpQW+ABKzhiNxdj+a3heIRrUJxLxrSgqAAjgBXYBU3YAbSJ5J+fzw-lhrLZXw5D1Q3N5JORNjwWKowtBrQAujypc1nIThJJVWr1XxnOF0cBpCqNQbDZxqAc4Kp1FpgjVtTBdQAeA4QDBmjwAPmuzlN5s8e3lCqarX8QTeMU+-u+rQFweh0TD4ZurSx0ZOfvjjiVQA)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview) | [Example](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgYwgDsBneAVUdSjgF5EiA6APLEAVqhowAFAG84sufIWLZAemVw6TVu048plWcAAmALl5o+AZRhRg9AOYSAlABolb9wtVzCaU3ggiYjB4zvpw9ACGIKimyOZWNvZOrh6pnmqyUKgAjgCuwFkmcADaYaggEcAANrH8CbYOMhjQFTB+5ZVVeHAAvo5uXvJ4RiFwlH1pk1MDGXJ4kdGjYdMrK4NzHdVUqztT6wC6obvHHutg2GiwwKiMpnonD4rrBkUyPjH4zIl23T1HjwC4M9wlEPm8iH4vg1fv9AQ9gZsanAZMs4cdgbJ3pDrNDXKi0TsMZgWhE2vhEd18QS1rNZD0qdS9rN6Yzdl56ZR3nA2BxuGZUJYYKTgDQADzvCAYbnaAB8TLgXJ5OmRDNZaXWRlMUPssLV03WCw+2rsur1k3WiK1OPsqrNM16QA)
 
-TypeBox types are JSON Schema fragments that compose into more complex types. The library offers a set of types used to construct JSON Schema compliant schematics as well as a set of extended types used to model constructs native to the JavaScript language. The schematics produced by TypeBox can be passed directly to any JSON Schema compliant validator.
+TypeBox types are JSON Schema fragments that compose into more complex types. The library provides a core set of types for constructing JSON Schema compliant schematics, alongside extended types designed to model constructs native to JavaScript and TypeScript. The JSON Schema schematics produced by TypeBox can be passed directly to any compliant validator.
 
 ### Example
 
@@ -80,38 +80,33 @@ The following creates a User type and infers with Static.
 ```typescript
 import Type from 'typebox'
 
-// Type
-
 const User = Type.Object({                       // const User = {
   id: Type.String(),                             //   type: 'object',
-  name: Type.String(),                           //   properties: {
-  email: Type.String({ format: 'email' })        //     id: { type: 'string' },
-})                                               //     name: { type: 'string' },
+  name: Type.String(),                           //   required: [
+  email: Type.String({ format: 'email' })        //     'id', 
+})                                               //     'name', 
+                                                 //     'email'
+                                                 //   ],
+                                                 //   properties: {
+                                                 //     id: { type: 'string' },
+                                                 //     name: { type: 'string' },
                                                  //     email: { 
                                                  //       type: 'string', 
                                                  //       format: 'email' 
                                                  //     }
-                                                 //   },
-                                                 //   required: [
-                                                 //     'id', 
-                                                 //     'name', 
-                                                 //     'email'
-                                                 //   ]
+                                                 //   }
                                                  // }
-
-// Static
 
 type User = Type.Static<typeof User>              // type User = {
                                                   //   id: string,
                                                   //   name: string,
                                                   //   email: string
                                                   // }
-
 ```
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkBDGAC0YgBMBXAG1WoBjCADsAzvGZs4AXkREAdAGVBUYGBgAKAAaU4cQmjgA1VIJjQALLLgBvOGQBccEdxDFUUADRwkz1+6ePgBe-m4e3nAA7mGBUHAAvnoGRCZmFlAAzDb2Ti7hQb6xESHFnonJhuim5tAATDkOZZF++XEV2gCU1HRwAOJQTGCswIJiHDz8QqIS-YPDo+NyyGjKqupaUqw+uvpVabCoZDnJ+pBiwDDAos41GZZepy7QIEy8t+nQmY-6+twAbh9alA6skkntUn1UDhUDAoEgTr84P9PFdBKgxB9DmQANoAXR+v2AIk4owxzXxYMqqSknmAb0RvyY7mAqBEMCB90J+lJGAw3DEqE5Vm5cDEaEEfCYUGFUEsVIhRgYGPYclsTwA5tCQLD4c4oTC4UhRa8YHS3s5aWo3lSutR9sqxKr5KslDAWKMADxVCAYOZDEZjHF4R2sPB4gB8+l6DpVjKRCcTSeTKZTvX0WsNerscAUecSotTReLJfTcFN5veObzCgqJfrDeTvQSQA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkBDGAC0YgBMBXAG1WoBjCADsAzvABqqQTGgAWOAF5ERAHQB5YgCsZMABQBvOGQBcqtGoBy3EMVRR9ASgA0cJOeSWbdh87cAXp7qPvaOrnAA7sHetmHOcAC+TpTC4lJ60ADMyhaomjp6RiYx+aF+ER551nEVgaU1vuFJKWkScNKy0ABMuV75WrqyxWbV5eFuVf2N8U4t1HRwAOJQTGCswIJiHDz8QqLt0rCoZH3qg0WGlHBwkGLAMMCi5p1yUPIu13Ai0CBMvC9MlAsp8btwAG6ArpQbqUZKpA7wJaoHCoGBQJBnSwXYZXG7ghyPQSoMQNACCUFWSH0RxgJ1cX2AIk4mxJ5MpTGp03GzhS8La8GYdKgwH+WIGhVxXyYdmAqBEMChbw+XxZGAw3DEqCVClBcDEaEEfCYUB170+-MRjBJ7BU0xxBjxcAA5iiQGiMeZkaj0Ug9X9haKAYwWA4g3CUpRCGhrWJbdUAMowFibAA80ZRGFjrAAfDd8wXC4sM9nck7CxXK1XqzX84sbq6fZ64MY1G2knra13u1363AA2H-uZW+3El8exPJ3X6IkgA)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgYwgDsBneAWQEMYALOAXkSIB0AZRpRgYGAAoABpThxCaOADVUNGNAAsvOAG84ZAFxx6AVxDFUUADRwkxsxau2AXg-OWbcAO7unUOABfOQUiFTUNKABmHX0jEw9nOz9PVxSrIJDFdFV1aAAmWIN0r3sE-0zpAEpqOiZ4AHEoNjBOYBpGHWQ0YVFxKXYuW1l5bPDYVDJYkPlIRmAYYAZjXMjNaxmTaBA2ABsViOgojfl5UwA3A7yofJDg0bCG1BxUGCgkadO4c6tFmlRGAcJmQANoAXROp2A9AAJu0ASVwXcsmFBlZgHtPqc2BZgKh6DArmtIfI4RgMKZGKgiVoSXBGGgaKZdmwoDSoJpkQ8lCwAdw+LpNgBzZ4gV7vYxPF5vJB0nYwdF7YxosR7ZHVahjXmMfn8HpCGAcdoAHmyEAwcCaLTaHRBeG1nDwYIAfPIAPRu0I8vlYr5+-0BwNBoMe04i6USvRwAQxoJ04MJxNJ0PyeWK-ZRmMCTJJ3N5wOhwJAA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkBDGAC0YgBMBXAG1WoBjCADsAzvABqqQTGgAWOAF5ERAHQB5YgCsZMABQBvOGQBcqtGoBy3EMVRR9ASgA0cJOeSWbdh87cAXp7qPvaOrnAA7sHetmHOcAC+TpTC4lJ60ADMyhaomjp6RiYx+aF+ER551nEVgaU1vuFJKWkScNKy0ABMuV75WrqyxWbV5eFuVf2N8U4t1HRwAOJQTGCswIJiHDz8QqLt0rCoZH3qg0WGlHBwkGLAMMCi5p1yUPIu13Ai0CBMvC9MlAsp8btwAG6ArpQbqUZKpA7wJaoHCoGBQJBnSwXYZXG7ghyPQSoMQNACCUFWSH0RxgJ1cX2AIk4mxJ5MpTGp03GzhS8La8GYdKgwH+WIGhVxXyYdmAqBEMChbw+XxZGAw3DEqCVClBcDEaEEfCYUB170+-MRjBJ7BU0xxBjxcAA5iiQGiMeZkaj0Ug9X9haKAYwWA4g3CUpRCGhrWJbdUAMowFibAA80ZRGFjrAAfDd8wXC4sM9nck7CxXK1XqzX84sbq6fZ64MY1G2knra13u1363AA2H-uZW+3El8exPJ3X6IkgA)
 
 TypeBox includes a micro TypeScript engine that can transform TypeScript definitions to JSON Schema. The engine is fully type-safe and supports many programmable constructs including Conditional, Mapped, Indexed, Generics, Distributive Generics, and more.
 
@@ -122,15 +117,11 @@ Syntax highlighting is available via the [Visual Studio Marketplace](https://mar
 ```typescript
 import Type from 'typebox'
 
-// Math Module
-
 const Math = Type.Script(`
   type Vector4 = { x: number, y: number, z: number, w: number }
   type Vector3 = { x: number, y: number, z: number }
   type Vector2 = { x: number, y: number }
 `)
-
-// Graphics Module
 
 const Graphics = Type.Script(Math, `
   type Vertex = {
@@ -163,9 +154,9 @@ type Mesh = Type.Static<typeof Graphics['Mesh']>  // type Mesh = {
 
 ## Schema
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/schema/overview) | [Example 1](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAZQMYAsCmICGcBmUIhwDkMAnmGgEYQAeA9AM6oaZEBQbddcAtH-wMFDhI0WPESenbgGECYYABs003pPUbNW-hyQQAdg3gBVBmihwAvImZYAdHPBK0ACgDebOHDIUAXMQhKACs0JBgiABpPODB8ClhgNAZ-Dy8vYAATFO9yNH8iIyhgfQBzIjgAXyi0uH1MEDy4Nxy-YkLissrqtJYlbJ9Ggpgi0sjcaCwYfN7FcoroquioNABHAFdgZay4AG1oryJMsf3iOobjmqIZ9i8AXTYKgEoOLjVtd4+P1QAFTCgzVSfIHAyS6AxGOBrMwWaymcx2X7-VzNGqotHouCvPSGeBQ8wpaKZfIANgArDgAIyYABMlAAzEgACwZUloYk4ADsmAAHJQAJxIAAMGQpYwx6Ne6W27VK3TOgzxUDF4pVqq8ktq9UaMpK3Rm+UVAAEMgRMMU7HoQOU1SqNfq4DqHo8bS7XajXhUrHA7D6gA) | [Example 2](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAZQMYAsCmICGcBmUIhwDkMAnmGgEYQAeA9AM6oaZEBQokscAKuWrnyES-ajXZs6dOAFo58hYqXKVqteo0zJ0gMIEwwADZptszeYuWr8tmyQQAdg3gBVBmihwAvImZYAdHrgRmgAFHwU-gDylABWaEgwoQDebHBwwAAmAFy8-P4IMFDADgDmoQCUADRpcA6YIGi5EWgFRSXl1bUsRs35hcVlKbjQWDC5RD2GRHAAvhVs8wum1qtr61pScAAKmFDuKxtHx6q29k7wAK7unj5uHv67+2HJ6W-vH5-vW+fOcNceXKpdJZCYANgArDgAIyYABMlAAzEgACyZCFoME4ADsmAAHJQAJxIAAMmWhRCqX2pcC2IJycGcg1KNXS9UaEwBUEpNN5fO+0jZDSajPaZVZcCmnJuAAFMgRMCV-PYQDN+by6ZKsL1RczFhV1YajR8trNvHB-JagA)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/schema/overview) | [Example 1](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAZQMYAsCmICGcBmUIhwDkMAnmGgEYQAeA9AM6oaZEBQokscAKuWrnyES-ajXZs6dOAGECYYABs0bNkggA7BvABqaJDGhwAvImZYAdHPBK0ACj4ULyKMDAw7AAwDebOHBoALjgNAFcQSjQoPzhSYLCIqJiAL3jwyOiAX08AShzVKVl0JABrVXUteAA3TEVgABMTOD0DaCtikrtvAOCARgAaWOCABkHUuGG4TJz-OEKK7Tgauvrg6ghlTA0C6QAFTCgGFTVNRag0BlDFeFMWwygLfcP7bqC4AaGJsZGpmbnpBbwc6Xa7BbqzfwxCHQmGwuHwhGFfxvBIZKEIjGYrH+JGfVFJbGEokw3HjfHRYmUomFTJAA) | [Example 2](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAZQMYAsCmICGcBmUIhwDkMAnmGgEYQAeA9AM6oaZEBQokscAKuWrnyES-ajXZs6dOAGECYYABs0bNkggA7BvABqaJDGhwAvImZYAdHPBK0ACj4ULAeUoArfTDsBvNnDg0AFy8-BYAcgCuIJRoUHYAlAA0fnCkwY5o4VExcUkpAF7poZHRsQlsAL7x8apSsuhIANaq6lrwAG6YisAAJiZwegbQVg2NPgHBAIyJqcEADDOFcHNwVf5wda3acJ3dPcHUEMqYGrXSAAqYUAwqaprbUGgMEYrwpoOGUBaX1-beE3BprNlot5qt4v5Nvd4I9nq9gv91v4UkjUWj0RjMVi6v4gnANNlYiisSTSWTIdJ-Gl8YSoMTyQzGRT1ksCaU6UzOYy6hUgA) | [Example 3](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAZQMYAsCmICGcBmUIhwDkMAnmGgEYQAeA9AM6oaZEBQbddcAwgWMAA2aDkggA7BvABqaJDGhwAvImZYAdH3BC0ACgDebOHDIUAXMQiUAVnJhEANEbhQ0ARwCuwVwBMLAbSIaR2JSEKIALyIAXSdjMHwKWGA0BgtDY2MadJNyNAsicQ8QSjQoIjgAXzjM0hzTfOIikrKK6udjCPq8gubS8qrnSrZKgEoOLl50JABrUQkpOAA3TEFgH2U4WXloTWmZgzhsuABGBzg6uAAGc67rqtHMybFJeBW1vzhqCGFMcQnuAAFTBQBgiNgvRauBgeQTwFTbBRQdTA0F6fRHCxnC4WG5wO5XB7GZ4LeDQ2EwHKZYwdal0+kMxlMpmTLIWPplWnM7k83lwVk4uAcqBcvli8X87iddnFfqiiUK5mTSpAA)
 
-TypeBox includes a high-performance JIT compiler that supports JSON Schema Draft 3 through to 2020-12. It is designed to be a lightweight industry-grade alternative to Ajv and offers improved compilation and validation performance. It also provides automatic fallback to dynamic validation in JIT restricted environments such as Cloudflare Workers.
+TypeBox includes a high-performance JSON Schema JIT compiler that supports Draft 3 through to 2020-12. The compiler is designed to be a lightweight industry-grade alternative to Ajv and offers improved compilation and validation performance. It also offers automatic fallback to dynamic validation in JIT restricted environments such as Cloudflare Workers.
 
 The compiler is available via optional sub module import.
 
@@ -175,37 +166,9 @@ import Schema from 'typebox/schema'
 
 ### Compile
 
-The compiler accepts either TypeBox types or native JSON Schema.
+The compiler accepts both TypeBox types and plain JSON Schema objects. The Compile function will return a new Validator instance which can be used to check and parse values. The example below compiles a Script definition into a validator.
 
 ```typescript
-
-// Type
-
-const VectorA = Schema.Compile(Type.Object({       // const VectorA: Validator<TObject<{
-  x: Type.Number(),                                //   x: TNumber
-  y: Type.Number(),                                //   y: TNumber
-  z: Type.Number()                                 //   z: TNumber
-}))                                                // }>>
-
-// Schema
-
-const VectorB = Schema.Compile({                   // const VectorB: Validator<{
-  type: 'object',                                  //   type: "object";
-  required: ['x', 'y', 'z'],                       //   required: ["x", "y", "z"];
-  properties: {                                    //   properties: { ... };
-    x: { type: 'number' },                         // }, { ... }>
-    y: { type: 'number' },
-    z: { type: 'number' }
-  }
-})
-```
-
-### Validate
-
-Compiled validator instances provide functions to Check and Parse values.
-
-```typescript
-
 // Compile
 
 const Vector = Schema.Compile(Type.Script(`{
@@ -227,11 +190,11 @@ const result = Vector.Parse({ x: 1, y: 0, z: 0 })  // const result: {
                                                    // }
 ```
 
-### Coverage
+### Compatibility
 
 [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) | [JSON Schema Compliance Suite](https://github.com/sinclairzx81/json-schema-compliance-suite)
 
-TypeBox has broad support for all JSON Schema drafts and is heavily tested against the official JSON Schema Test Suite. TypeBox targets modern versions of the specification, but supports legacy drafts as well: legacy semantics are honored unless they conflict with a modern specification, in which case the modern behavior takes precedence.
+TypeBox supports all versions of JSON Schema and is heavily tested against the official JSON Schema Test Suite. It prioritizes compatibility with modern specifications while also maintaining broad support for legacy versions provided their semantics are not in conflict with modern specifications.
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|

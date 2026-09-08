@@ -1,6 +1,6 @@
 # Script
 
-TypeScript Syntax Engine For JSON Schema
+TypeScript Engine for JSON Schema
 
 ## Overview
 
@@ -13,15 +13,11 @@ Syntax highlighting is available via the [Visual Studio Marketplace](https://mar
 ```typescript
 import Type from 'typebox'
 
-// Math Module
-
 const Math = Type.Script(`
   type Vector4 = { x: number, y: number, z: number, w: number }
   type Vector3 = { x: number, y: number, z: number }
   type Vector2 = { x: number, y: number }
 `)
-
-// Graphics Module
 
 const Graphics = Type.Script(Math, `
   type Vertex = {

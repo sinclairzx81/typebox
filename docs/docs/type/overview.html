@@ -1,51 +1,31 @@
 <h1>Type</h1>
 <p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
 <h2>Overview</h2>
-<p>TypeBox types are JSON Schema fragments that compose into more complex types. The library offers a set of types used to construct JSON Schema compliant schematics as well as a set of extended types used to model constructs native to the JavaScript language. The schematics produced by TypeBox can be passed directly to any JSON Schema compliant validator.</p>
-<h2>Example</h2>
+<p>TypeBox types are JSON Schema fragments that compose into more complex types. The library provides a core set of types for constructing JSON Schema compliant schematics, alongside extended types designed to model constructs native to JavaScript and TypeScript. The JSON Schema schematics produced by TypeBox can be passed directly to any compliant validator.</p>
+<h3>Example</h3>
 <p>The following creates a User type and infers with Static.</p>
 <pre><code class="language-typescript">import Type from &#39;typebox&#39;
 
-// -------------------------------------------------------------------------------
-// Type
-// -------------------------------------------------------------------------------
-
 const User = Type.Object({                       // const User = {
   id: Type.String(),                             //   type: &#39;object&#39;,
-  name: Type.String(),                           //   properties: {
-  email: Type.String({ format: &#39;email&#39; })        //     id: { type: &#39;string&#39; },
-})                                               //     name: { type: &#39;string&#39; },
+  name: Type.String(),                           //   required: [
+  email: Type.String({ format: &#39;email&#39; })        //     &#39;id&#39;, 
+})                                               //     &#39;name&#39;, 
+                                                 //     &#39;email&#39;
+                                                 //   ],
+                                                 //   properties: {
+                                                 //     id: { type: &#39;string&#39; },
+                                                 //     name: { type: &#39;string&#39; },
                                                  //     email: { 
                                                  //       type: &#39;string&#39;, 
                                                  //       format: &#39;email&#39; 
                                                  //     }
                                                  //   }
-                                                 //   required: [
-                                                 //     &#39;id&#39;, 
-                                                 //     &#39;name&#39;, 
-                                                 //     &#39;email&#39;
-                                                 //   ]
                                                  // }
-
-// -------------------------------------------------------------------------------
-// Static
-// -------------------------------------------------------------------------------
 
 type User = Type.Static&lt;typeof User&gt;              // type User = {
                                                   //   id: string,
                                                   //   name: string,
                                                   //   email: string
                                                   // }
-</code></pre>
-<p>Options and constraints can be passed on the last argument of any given type.</p>
-<pre><code class="language-typescript">const T = Type.Number({                            // const T = {
-  minimum: 0,                                      //   type: &#39;number&#39;,
-  maximum: 100                                     //   minimum: 0,
-})                                                 //   maximum: 100
-                                                   // }
-
-const S = Type.String({                            // const S = {
-  format: &#39;email&#39;                                  //   type: &#39;string&#39;,
-})                                                 //   format: &#39;email&#39;
-                                                   // }
 </code></pre>

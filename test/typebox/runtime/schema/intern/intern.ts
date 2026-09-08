@@ -6,21 +6,21 @@ const Test = Assert.Context('Schema.Intern')
 // ------------------------------------------------------------------
 // Idempotent Check
 // ------------------------------------------------------------------
-function Idempotent(a: Schema.XSchema): void {
-  Assert.IsEqual(Intern(a), Intern(Intern(a)))
+function Idempotent(schema: Schema.XSchema): void {
+  Assert.IsEqual(Intern(schema), Intern(Intern(schema)))
 }
 // ------------------------------------------------------------------
-// Parity Check
+// ContextParity Check
 // ------------------------------------------------------------------
-function Parity(a: Schema.XSchema, value: unknown): boolean {
-  Idempotent(a)
-  const b = Intern(a)
-  const R1 = Schema.Compile(a).Check(value)
-  const R2 = Schema.Compile(b).Check(value)
-  const R3 = Schema.Check(a, value)
-  const R4 = Schema.Check(b, value)
-  const R5 = Schema.Errors(a, value)[0]
-  const R6 = Schema.Errors(b, value)[0]
+function ContextParity(context: Record<string, Schema.XSchema>, schema: Schema.XSchema, value: unknown): boolean {
+  const intern = Intern(context, schema)
+  Idempotent(intern)
+  const R1 = Schema.Compile(context, schema).Check(value)
+  const R2 = Schema.Compile(intern).Check(value)
+  const R3 = Schema.Check(context, schema, value)
+  const R4 = Schema.Check(intern, value)
+  const R5 = Schema.Errors(context, schema, value)[0]
+  const R6 = Schema.Errors(intern, value)[0]
   if (
     R1 === R2 &&
     R1 === R3 &&
@@ -28,7 +28,34 @@ function Parity(a: Schema.XSchema, value: unknown): boolean {
     R1 === R5 &&
     R1 === R6
   ) return R1
-  throw Error('InternParityCheck Failed', { cause: { a, b } })
+  throw Error('InternParityCheck Failed', { cause: { a: schema, b: intern } })
+}
+function ContextOk(context: Record<string, Schema.XSchema>, schema: Schema.XSchema, value: unknown) {
+  Assert.IsTrue(ContextParity(context, schema, value))
+}
+function ContextFail(context: Record<string, Schema.XSchema>, schema: Schema.XSchema, value: unknown) {
+  Assert.IsFalse(ContextParity(context, schema, value))
+}
+// ------------------------------------------------------------------
+// Parity Check
+// ------------------------------------------------------------------
+function Parity(schema: Schema.XSchema, value: unknown): boolean {
+  Idempotent(schema)
+  const intern = Intern(schema)
+  const R1 = Schema.Compile(schema).Check(value)
+  const R2 = Schema.Compile(intern).Check(value)
+  const R3 = Schema.Check(schema, value)
+  const R4 = Schema.Check(intern, value)
+  const R5 = Schema.Errors(schema, value)[0]
+  const R6 = Schema.Errors(intern, value)[0]
+  if (
+    R1 === R2 &&
+    R1 === R3 &&
+    R1 === R4 &&
+    R1 === R5 &&
+    R1 === R6
+  ) return R1
+  throw Error('InternParityCheck Failed', { cause: { a: schema, b: intern } })
 }
 function Ok(schema: Schema.XSchema, value: unknown) {
   Assert.IsTrue(Parity(schema, value))
@@ -36,6 +63,7 @@ function Ok(schema: Schema.XSchema, value: unknown) {
 function Fail(schema: Schema.XSchema, value: unknown) {
   Assert.IsFalse(Parity(schema, value))
 }
+
 // ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
@@ -836,14 +864,14 @@ Test('Should Intern 124', () => {
 // ----------------------------------------------------------------
 // BooleanIntern
 // ----------------------------------------------------------------
-Test('Should Intern 124', () => {
+Test('Should Intern 125', () => {
   const A = {
     $defs: { foo: true },
     $ref: '#/$defs/foo'
   }
   Ok(A, 1)
 })
-Test('Should Intern 125', () => {
+Test('Should Intern 126', () => {
   const A = {
     $defs: { foo: false },
     $ref: '#/$defs/foo'
@@ -851,34 +879,9 @@ Test('Should Intern 125', () => {
   Fail(A, 1)
 })
 // ----------------------------------------------------------------
-// UnsupportedKeyword
-// ----------------------------------------------------------------
-Test('Should Intern 128', () => {
-  Assert.Throws(() => Schema.Intern({ $dynamicRef: 'x' }))
-})
-Test('Should Intern 129', () => {
-  Assert.Throws(() => Schema.Intern({ $recursiveRef: 'x' }))
-})
-// ----------------------------------------------------------------
-// UnresolvableRef
-// ----------------------------------------------------------------
-Test('Should Intern 130', () => {
-  Assert.Throws(() => Schema.Intern({ $ref: 'unresolvable' }))
-})
-Test('Should Intern 131', () => {
-  Assert.Throws(() =>
-    Schema.Intern({
-      $defs: {
-        A: { $ref: 'unresolvable' }
-      },
-      $ref: '#/defs/A'
-    })
-  )
-})
-// ----------------------------------------------------------------
 // Multi-Ref-Indirection
 // ----------------------------------------------------------------
-Test('Should Intern 132', () => {
+Test('Should Intern 127', () => {
   const A = {
     $defs: {
       foo: { $ref: '#/$defs/bar' },
@@ -888,7 +891,7 @@ Test('Should Intern 132', () => {
   }
   Ok(A, 1)
 })
-Test('Should Intern 133', () => {
+Test('Should Intern 128', () => {
   const A = {
     $defs: {
       foo: { $ref: '#/$defs/bar' },
@@ -898,7 +901,7 @@ Test('Should Intern 133', () => {
   }
   Fail(A, 1)
 })
-Test('Should Intern 134', () => {
+Test('Should Intern 129', () => {
   // 2 levels of indirection
   const A = {
     $defs: {
@@ -910,7 +913,7 @@ Test('Should Intern 134', () => {
   Ok(A, 1)
   Fail(A, 'hello')
 })
-Test('Should Intern 135', () => {
+Test('Should Intern 130', () => {
   // 3 levels of indirection
   const A = {
     $defs: {
@@ -923,7 +926,7 @@ Test('Should Intern 135', () => {
   Ok(A, 'hello')
   Fail(A, 123)
 })
-Test('Should Intern 136', () => {
+Test('Should Intern 131', () => {
   // 4 levels of indirection
   const A = {
     $defs: {
@@ -937,7 +940,7 @@ Test('Should Intern 136', () => {
   Ok(A, true)
   Fail(A, 'true')
 })
-Test('Should Intern 137', () => {
+Test('Should Intern 132', () => {
   // 4 levels of indirection pointing to an object schema
   const A = {
     $defs: {
@@ -954,7 +957,7 @@ Test('Should Intern 137', () => {
 // ----------------------------------------------------------------
 // Pathological: Indirect Mutual Cycles + Shared Subexpressions
 // ----------------------------------------------------------------
-Test('Should Intern 138', () => {
+Test('Should Intern 133', () => {
   const A = {
     $defs: {
       A: { $ref: '#/$defs/B' },
@@ -986,4 +989,478 @@ Test('Should Intern 138', () => {
   Ok(A, { val: 1, next: { val: 2, next: { val: 3 } } })
   Fail(A, { val: 'invalid' })
   Fail(A, { val: 1, next: { val: 'invalid' } })
+})
+Test('Should Intern 134', () => {
+  const A = {
+    properties: {
+      a: { $dynamicAnchor: 'x', type: 'number' },
+      b: { $dynamicRef: '#x' }
+    }
+  }
+  Ok(A, { a: 1, b: 2 })
+  Fail(A, { a: 1, b: 'x' })
+})
+Test('Should Intern 135', () => {
+  const A = {
+    $recursiveAnchor: true,
+    properties: {
+      a: { type: 'number' },
+      b: { $recursiveRef: '#/properties/a' }
+    }
+  }
+  Ok(A, { a: 1, b: 2 })
+  Fail(A, { a: 1, b: 'x' })
+})
+// ----------------------------------------------------------------
+// UnresolvableRef
+// ----------------------------------------------------------------
+Test('Should Intern 136', () => {
+  Assert.Throws(() => Schema.Intern({ $ref: 'unresolvable' }))
+})
+Test('Should Intern 137', () => {
+  Assert.Throws(() =>
+    Schema.Intern({
+      $defs: {
+        A: { $ref: 'unresolvable' }
+      },
+      $ref: '#/defs/A'
+    })
+  )
+})
+Test('Should Intern 138', () => {
+  Assert.Throws(() =>
+    Schema.Intern({
+      $dynamicRef: '#/$defs/does-not-exist'
+    })
+  )
+})
+Test('Should Intern 139', () => {
+  Assert.Throws(() =>
+    Schema.Intern({
+      $recursiveRef: '#/$defs/does-not-exist'
+    })
+  )
+})
+// ----------------------------------------------------------------
+// RecursiveRef
+// ----------------------------------------------------------------
+Test('Should Intern 140', () => {
+  const A = {
+    $recursiveAnchor: true,
+    type: 'object',
+    required: ['value'],
+    properties: {
+      value: { type: 'number' },
+      next: { $recursiveRef: '#' }
+    }
+  }
+  Ok(A, { value: 1 })
+  Ok(A, { value: 1, next: { value: 2 } })
+  Ok(A, { value: 1, next: { value: 2, next: { value: 3 } } })
+  Fail(A, { value: 'x' })
+  Fail(A, { value: 1, next: { value: 'x' } })
+})
+Test('Should Intern 141', () => {
+  const A = {
+    type: 'object',
+    properties: {
+      value: { type: 'number' },
+      self: { $recursiveRef: '#' }
+    }
+  }
+  Ok(A, { value: 1, self: { value: 2 } })
+  Fail(A, { value: 1, self: { value: 'x' } })
+})
+// ----------------------------------------------------------------
+// DynamicRef
+// ----------------------------------------------------------------
+Test('Should Intern 142', () => {
+  const A = {
+    $id: 'https://example.com/list.json',
+    $dynamicAnchor: 'itemType',
+    type: 'object',
+    required: ['value'],
+    properties: {
+      value: { type: 'number' },
+      next: { $dynamicRef: '#itemType' }
+    }
+  }
+  Ok(A, { value: 1, next: { value: 2 } })
+  Fail(A, { value: 1, next: { value: 'x' } })
+})
+// ----------------------------------------------------------------
+// DynamicRef | RecursiveRef
+// ----------------------------------------------------------------
+Test('Should Intern 143', () => {
+  const A = {
+    $id: 'https://example.com/schemas/strict-node.json',
+    $recursiveAnchor: true,
+    $dynamicAnchor: 'itemType',
+    $defs: {
+      node: {
+        $id: 'https://example.com/schemas/node.json',
+        $recursiveAnchor: true,
+        $dynamicAnchor: 'itemType',
+        type: 'object',
+        required: ['value'],
+        additionalProperties: false,
+        properties: {
+          value: { type: 'number' },
+          note: { $recursiveRef: '#' },
+          nodes: {
+            type: 'array',
+            items: { $dynamicRef: '#itemType' }
+          }
+        }
+      }
+    },
+    allOf: [{ $ref: 'node.json' }],
+    properties: {
+      value: { type: 'integer', minimum: 0 }
+    }
+  }
+  Ok(A, {
+    value: 3,
+    note: { value: 1 },
+    nodes: [
+      { value: 5 },
+      { value: 0, nodes: [{ value: 2, note: { value: 9 } }] }
+    ]
+  })
+  Fail(A, {
+    value: 4,
+    nodes: [
+      { value: 2, nodes: [{ value: -1 }] }
+    ]
+  })
+})
+// ----------------------------------------------------------------
+// Context
+// ----------------------------------------------------------------
+Test('Should Intern 144', () => {
+  const C = {
+    A: { type: 'string' }
+  }
+  const A = {
+    type: 'object',
+    required: ['value'],
+    properties: {
+      value: { $ref: 'A' }
+    }
+  }
+  ContextOk(C, A, { value: 'A' })
+  ContextFail(C, A, { value: null })
+})
+Test('Should Intern 145', () => {
+  const C = {
+    A: { $ref: 'B' },
+    B: { type: 'string' }
+  }
+  const A = {
+    type: 'object',
+    required: ['value'],
+    properties: {
+      value: { $ref: 'A' }
+    }
+  }
+  ContextOk(C, A, { value: 'A' })
+  ContextFail(C, A, { value: null })
+})
+// ----------------------------------------------------------------
+// Pathological Referencing
+// ----------------------------------------------------------------
+Test('Should Intern 144', () => {
+  const A = {
+    $recursiveAnchor: true,
+    type: 'object',
+    required: ['value'],
+    properties: {
+      value: { type: 'number' },
+      next: { $recursiveRef: '#' }
+    }
+  }
+  Ok(A, { value: 1, next: { value: 2, next: { value: 3 } } })
+  Fail(A, { value: 1, next: { value: 'x' } })
+})
+Test('Should Intern 145', () => {
+  const A = {
+    $dynamicAnchor: 'node',
+    type: 'object',
+    required: ['value'],
+    properties: {
+      value: { type: 'number' },
+      node: { $dynamicRef: '#node' }
+    }
+  }
+  Ok(A, { value: 1, node: { value: 2 } })
+  Fail(A, { value: 1, node: { value: 'bad' } })
+})
+Test('Should Intern 146', () => {
+  const A = {
+    $defs: {
+      T: true,
+      F: false
+    },
+    type: 'object',
+    properties: {
+      a: { $ref: '#/$defs/T' },
+      b: { $ref: '#/$defs/F' }
+    }
+  }
+  Ok(A, { a: 1 }) // b absent, valid
+  Ok(A, {}) // both absent, valid
+  Fail(A, { b: 1 }) // b present, fails
+})
+Test('Should Intern 147', () => {
+  const A = {
+    $defs: {
+      A: { type: 'object', properties: { b: { $ref: '#/$defs/B' } } },
+      B: { type: 'object', properties: { a: { $ref: '#/$defs/A' } } }
+    },
+    $ref: '#/$defs/A'
+  }
+  Ok(A, { b: { a: {} } })
+  Fail(A, { b: { a: 'x' } })
+})
+Test('Should Intern 148', () => {
+  const A = {
+    $recursiveAnchor: true,
+    type: 'object',
+    required: ['value'],
+    properties: {
+      value: { type: 'number' },
+      node: {
+        type: 'object',
+        properties: {
+          label: { type: 'string' },
+          next: { $recursiveRef: '#' }
+        }
+      }
+    }
+  }
+  Ok(A, { value: 1, node: { label: 'x', next: { value: 2 } } })
+  Fail(A, { value: 1, node: { label: 'x', next: { label: 2 } } }) // missing value
+})
+Test('Should Intern 149', () => {
+  const A = {
+    $defs: {
+      ListNode: {
+        $dynamicAnchor: 'listNode',
+        type: 'object',
+        required: ['value'],
+        properties: {
+          value: { type: 'number' },
+          next: { $dynamicRef: '#listNode' }
+        }
+      }
+    },
+    $ref: '#/$defs/ListNode'
+  }
+  Ok(A, { value: 1, next: { value: 2, next: { value: 3 } } })
+  Fail(A, { value: 1, next: { value: 'x' } })
+})
+Test('Should Intern 150', () => {
+  const A = {
+    $defs: {
+      A: { $ref: '#/$defs/B' },
+      B: { $ref: '#/$defs/C' },
+      C: { type: 'string' }
+    },
+    $ref: '#/$defs/A'
+  }
+  Ok(A, 'hello')
+  Fail(A, 123)
+})
+Test('Should Intern 151', () => {
+  const A = {
+    $recursiveAnchor: true,
+    $dynamicAnchor: 'container',
+    type: 'object',
+    properties: {
+      a: { $recursiveRef: '#' },
+      b: { $dynamicRef: '#container' }
+    }
+  }
+  Ok(A, { a: {}, b: {} })
+  Fail(A, { a: 1, b: {} })
+})
+// ----------------------------------------------------------------
+// Context Referencing (using context keys)
+// ----------------------------------------------------------------
+Test('Should Intern 152', () => {
+  const C = {
+    Node: {
+      type: 'object',
+      required: ['value'],
+      properties: {
+        value: { type: 'number' },
+        next: { $ref: 'Node' }
+      }
+    }
+  }
+  const A = { $ref: 'Node' }
+  ContextOk(C, A, { value: 1, next: { value: 2 } })
+  ContextFail(C, A, { value: 1, next: { value: 'x' } })
+})
+Test('Should Intern 153', () => {
+  const C = {
+    ListNode: {
+      $dynamicAnchor: 'node',
+      type: 'object',
+      properties: {
+        value: { type: 'number' },
+        next: { $dynamicRef: '#node' }
+      }
+    }
+  }
+  const A = { $ref: 'ListNode' }
+  ContextOk(C, A, { value: 1, next: { value: 2 } })
+  ContextFail(C, A, { value: 1, next: { value: 'x' } })
+})
+Test('Should Intern 154', () => {
+  const C = {
+    Recursive: {
+      $recursiveAnchor: true,
+      type: 'object',
+      properties: {
+        value: { type: 'number' },
+        next: { $recursiveRef: '#' }
+      }
+    }
+  }
+  const A = { $ref: 'Recursive' }
+  ContextOk(C, A, { value: 1, next: { value: 2 } })
+  ContextFail(C, A, { value: 1, next: { value: 'x' } })
+})
+Test('Should Intern 155', () => {
+  const C = {
+    A: { $ref: 'B' },
+    B: { $ref: 'C' },
+    C: { type: 'integer' }
+  }
+  const A = { $ref: 'A' }
+  ContextOk(C, A, 42)
+  ContextFail(C, A, '42')
+})
+Test('Should Intern 156', () => {
+  const C = {
+    True: true,
+    False: false
+  }
+  const A = {
+    type: 'object',
+    properties: {
+      a: { $ref: 'True' },
+      b: { $ref: 'False' }
+    }
+  }
+  ContextOk(C, A, { a: 1 })
+  ContextFail(C, A, { b: 1 })
+})
+Test('Should Intern 157', () => {
+  const C = {
+    Recursive: {
+      $recursiveAnchor: true,
+      type: 'object',
+      properties: {
+        value: { type: 'number' },
+        node: { $recursiveRef: '#' }
+      }
+    }
+  }
+  const A = {
+    allOf: [
+      { $ref: 'Recursive' },
+      { properties: { extra: { type: 'string' } } }
+    ]
+  }
+  ContextOk(C, A, { value: 1, extra: 'x' })
+  ContextFail(C, A, { value: 'x', extra: 'x' })
+})
+Test('Should Intern 158', () => {
+  const C = {
+    Outer: {
+      $recursiveAnchor: true,
+      type: 'object',
+      properties: {
+        inner: { $recursiveRef: '#' }
+      }
+    }
+  }
+  const A = { $ref: 'Outer' }
+  ContextOk(C, A, { inner: {} })
+  ContextFail(C, A, { inner: 'not-an-object' })
+})
+Test('Should Intern 159', () => {
+  const C = {
+    Leaf: { type: 'string' },
+    Recursive: {
+      $recursiveAnchor: true,
+      type: 'object',
+      properties: {
+        value: { $ref: 'Leaf' },
+        node: { $recursiveRef: '#' }
+      }
+    }
+  }
+  const A = { $ref: 'Recursive' }
+  ContextOk(C, A, { value: 'x', node: { value: 'y' } })
+  ContextFail(C, A, { value: 1, node: {} })
+})
+// ----------------------------------------------------------------
+// Generics
+// ----------------------------------------------------------------
+const GenericList = {
+  '$id': 'https://example.com/generic-list',
+  'type': 'array',
+  'items': { '$dynamicRef': '#T' },
+  '$defs': {
+    'unbound': { '$dynamicAnchor': 'T' } // bookending placeholder
+  }
+}
+const ListOfString = {
+  '$id': 'https://example.com/list-of-string',
+  '$ref': 'https://example.com/generic-list',
+  '$defs': {
+    'item': { '$dynamicAnchor': 'T', 'type': 'string' }
+  }
+}
+const ListOfNumber = {
+  '$id': 'https://example.com/list-of-number',
+  '$ref': 'https://example.com/generic-list',
+  '$defs': {
+    'item': { '$dynamicAnchor': 'T', 'type': 'number' }
+  }
+}
+Test('Should Intern 160', () => {
+  ContextOk(
+    {
+      'https://example.com/generic-list': GenericList
+    },
+    ListOfString,
+    ['A', 'B', 'C']
+  )
+  ContextFail(
+    {
+      'https://example.com/generic-list': GenericList
+    },
+    ListOfString,
+    [1, 2, 3]
+  )
+})
+Test('Should Intern 161', () => {
+  ContextOk(
+    {
+      'https://example.com/generic-list': GenericList
+    },
+    ListOfNumber,
+    [1, 2, 3]
+  )
+  ContextFail(
+    {
+      'https://example.com/generic-list': GenericList
+    },
+    ListOfNumber,
+    ['A', 'B', 'C']
+  )
 })

@@ -1,7 +1,11 @@
-<h1>Script.Syntax</h1>
-<p>TypeBox is designed to be a programmable TypeScript based DSL for the JSON Schema specification. It uses JSON Schema as an intermediate representation (IR) for TypeScript types, and evaluates the IR using the semantics of the TypeScript language.</p>
+<h1>Script.Script</h1>
+<p>The Script function is designed to be a programmable TypeScript DSL frontend for the JSON Schema specification. Internally it uses TypeBox types as an intermediate representation (IR) for TypeScript, where the IR itself is expressed as standards-compliant JSON Schema.</p>
+<pre><code class="language-typescript">// The Script function returns JSON Schema
+
+const A = Type.Script(&#39;string&#39;)                         // const A = { type: &#39;string&#39; }
+</code></pre>
 <h2>Types</h2>
-<p>Script has support for most TypeScript types and syntactic constructs. Each type will map into its corresponding TypeBox IR representation.</p>
+<p>Script has support for most TypeScript types and programmable constructs.</p>
 <pre><code class="language-typescript">// ------------------------------------------------------------------
 // Literal
 // ------------------------------------------------------------------
