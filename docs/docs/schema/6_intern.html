@@ -1,0 +1,168 @@
+<h1>Schema.Intern</h1>
+<p>The Intern(...) function is a JSON Schema optimizer that transforms schematics into full referential schema structures with the same validation semantics as the original. It is similar in concept to <a href="https://en.wikipedia.org/wiki/Common_subexpression_elimination">Common Subexpression Elimination</a> (CSE), where common subexpressions (subschemas in this case) are hoisted and globally referenced. TypeBox applies this concept to JSON Schema, enabling options for large schema compression.</p>
+<blockquote>
+<p>⚠️ The Intern(...) function is considered experimental. The function is tested against TypeBox-aware schematics and supports all JSON Schema keywords; however, full JSON Schema compliance testing is not yet complete. The recommendation is to use this function with Type.* and Script schematics only.</p>
+</blockquote>
+<h3>Intern Transform</h3>
+<p>The Intern(...) function restructures a JSON Schema to use $defs and content-addressed keys for each subschema. The resulting schema deduplicates structurally identical subschemas into shared $defs entries referenced via $ref, producing a compact, referential representation of the original schema. This can significantly reduce redundancy for large schemas.</p>
+<pre><code class="language-typescript">// ------------------------------------------------------------------
+// Referential JavaScript Types Produce Schema Duplication
+// ------------------------------------------------------------------
+const Vector = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+const Basis = Type.Object({           // const Basis = {
+  x: Vector,                          //   type: &quot;object&quot;,
+  y: Vector,                          //   required: [ &quot;x&quot;, &quot;y&quot;, &quot;z&quot; ],
+  z: Vector                           //   properties: {
+})                                    //     x: {
+                                      //       type: &quot;object&quot;,
+                                      //       required: [ &quot;x&quot;, &quot;y&quot;, &quot;z&quot; ],
+                                      //       properties: {
+                                      //         x: { type: &quot;number&quot; },
+                                      //         y: { type: &quot;number&quot; },
+                                      //         z: { type: &quot;number&quot; }
+                                      //       }
+                                      //     },
+                                      //     y: {
+                                      //       type: &quot;object&quot;,
+                                      //       required: [ &quot;x&quot;, &quot;y&quot;, &quot;z&quot; ],
+                                      //       properties: {
+                                      //         x: { type: &quot;number&quot; },
+                                      //         y: { type: &quot;number&quot; },
+                                      //         z: { type: &quot;number&quot; }
+                                      //       }
+                                      //     },
+                                      //     z: {
+                                      //       type: &quot;object&quot;,
+                                      //       required: [ &quot;x&quot;, &quot;y&quot;, &quot;z&quot; ],
+                                      //       properties: {
+                                      //         x: { type: &quot;number&quot; },
+                                      //         y: { type: &quot;number&quot; },
+                                      //         z: { type: &quot;number&quot; }
+                                      //       }
+                                      //     }
+                                      //   }
+                                      // }
+
+// ------------------------------------------------------------------
+// The Intern function Eliminates Schema Redundancy
+// ------------------------------------------------------------------
+const Result = Schema.Intern(Basis)   // const Result = {
+                                      //   &quot;$ref&quot;: &quot;#/$defs/x-cb2f2e06bb2d475a&quot;,
+                                      //   &quot;$defs&quot;: {
+                                      //     &quot;x-b3d1b3fb56d0fb6e&quot;: { type: &quot;number&quot; },
+                                      //     &quot;x-f0586253b656ad7e&quot;: {
+                                      //       type: &quot;object&quot;,
+                                      //       required: [ &quot;x&quot;, &quot;y&quot;, &quot;z&quot; ],
+                                      //       properties: {
+                                      //         x: { &quot;$ref&quot;: &quot;#/$defs/x-b3d1b3fb56d0fb6e&quot; },
+                                      //         y: { &quot;$ref&quot;: &quot;#/$defs/x-b3d1b3fb56d0fb6e&quot; },
+                                      //         z: { &quot;$ref&quot;: &quot;#/$defs/x-b3d1b3fb56d0fb6e&quot; }
+                                      //       }
+                                      //     },
+                                      //     &quot;x-cb2f2e06bb2d475a&quot;: {
+                                      //       type: &quot;object&quot;,
+                                      //       required: [ &quot;x&quot;, &quot;y&quot;, &quot;z&quot; ],
+                                      //       properties: {
+                                      //         x: { &quot;$ref&quot;: &quot;#/$defs/x-f0586253b656ad7e&quot; },
+                                      //         y: { &quot;$ref&quot;: &quot;#/$defs/x-f0586253b656ad7e&quot; },
+                                      //         z: { &quot;$ref&quot;: &quot;#/$defs/x-f0586253b656ad7e&quot; }
+                                      //       }
+                                      //     }
+                                      //   }
+                                      // }
+</code></pre>
+<h3>Experimental Bytecode Inlining</h3>
+<p>The Intern(...) function was written to explore V8&#39;s optimizing compiler tier (Maglev), which inlines functions based on bytecode length. Interned schematics tend to produce smaller functions that are more likely to fall within fast optimization thresholds (typically a bytecode length around 27 to 30 depending on the runtime), and the reduced redundancy means less code for the engine to JIT overall (so faster JIT). The function can thus be thought of as an optional optimizing transform for TypeBox&#39;s compiler.</p>
+<p>You can check the <a href="https://github.com/v8/v8/blob/692983bf16608a60b3be9876e5cce921fbbf3753/src/flags/flag-definitions.h#L618-L637">Maglev</a> inlining thresholds with the following:</p>
+<pre><code class="language-bash">$ node --v8-options | grep max-inlined-bytecode-size-small
+#  --max-inlined-bytecode-size-small (maximum size of bytecode considered for small function inlining)
+#        type: int  default: --max-inlined-bytecode-size-small=27
+</code></pre>
+<p>The following example shows the transform and subsequent code generation with consideration to Maglev.</p>
+<pre><code class="language-typescript">// ------------------------------------------------------------------
+// Schema A
+//
+// When passing a non-referential schema to Schema.Compile(...), the 
+// result will be a single function with a large logical expression. 
+// Because a single expression may be long and complex, inlining 
+// optimizers may skip optimizations based on the engine&#39;s observed 
+// bytecode length.
+//
+// ------------------------------------------------------------------
+
+const A = Type.Object({      // const A = {
+  x: Type.String(),          //   type: &quot;object&quot;,
+  y: Type.Number(),          //   required: [ &quot;x&quot;, &quot;y&quot;, &quot;z&quot; ],
+  z: Type.Boolean()          //   properties: {
+})                           //     x: { type: &quot;string&quot; },
+                             //     y: { type: &quot;number&quot; },
+                             //     z: { type: &quot;boolean&quot; }
+                             //   }
+                             // }
+
+// Expression may be considered too large for optimization.
+
+Schema.Build(A).Functions()  // const check_0 = ((value) =&gt; ((typeof value === &quot;object&quot; 
+                             //   &amp;&amp; value !== null &amp;&amp; !(Array.isArray(value))) 
+                             //   &amp;&amp; (((&quot;x&quot; in value &amp;&amp; &quot;y&quot; in value) &amp;&amp; &quot;z&quot; in value) 
+                             //   &amp;&amp; ((typeof value.x === &quot;string&quot; &amp;&amp; Number.isFinite(value.y)) 
+                             //   &amp;&amp; typeof value.z === &quot;boolean&quot;))))
+</code></pre>
+<p>The following shows the generated emit after an Intern(...) transformation.</p>
+<pre><code class="language-typescript">// ------------------------------------------------------------------
+// Schema B
+//
+// The following schema is A&#39;s Intern(...) transformation
+// ------------------------------------------------------------------
+
+const B = Schema.Intern(A)   // const B = {
+                             //   &quot;$ref&quot;: &quot;#/$defs/x-32ee5a8c5a17e144&quot;,
+                             //   &quot;$defs&quot;: {
+                             //     &quot;x-003a03cdd3301d5a&quot;: { type: &quot;string&quot; },
+                             //     &quot;x-b3d1b3fb56d0fb6e&quot;: { type: &quot;number&quot; },
+                             //     &quot;x-7995c3fcb3fc994d&quot;: { type: &quot;boolean&quot; },
+                             //     &quot;x-32ee5a8c5a17e144&quot;: {
+                             //       type: &quot;object&quot;,
+                             //       required: [ &quot;x&quot;, &quot;y&quot;, &quot;z&quot; ],
+                             //       properties: {
+                             //         x: { &quot;$ref&quot;: &quot;#/$defs/x-003a03cdd3301d5a&quot; },
+                             //         y: { &quot;$ref&quot;: &quot;#/$defs/x-b3d1b3fb56d0fb6e&quot; },
+                             //         z: { &quot;$ref&quot;: &quot;#/$defs/x-7995c3fcb3fc994d&quot; }
+                             //       }
+                             //     }
+                             //   }
+                             // }
+
+// ------------------------------------------------------------------
+// Optimization
+//
+// The core idea behind Intern(...) is to reduce the bytecode length 
+// of expressions such that engine optimizers will attempt to inline 
+// them. To make this more likely, Intern(...) will cause the original 
+// (A) check_0 function to expand into 5 distinct functions, one for 
+// each hashed definition. 
+// 
+// For check_1, the length of the object expression has been reduced, 
+// making it more likely an optimizer will attempt to inline. The 
+// string, number, and boolean checks have been moved to check_2, 
+// check_3, and check_4 respectively, where an engine may attempt to 
+// inline them back into check_1.
+//
+// ------------------------------------------------------------------
+
+Schema.Build(B).Functions()    // const check_0 = ((value) =&gt; check_1(value))
+                               // const check_1 = ((value) =&gt; ((typeof value === &quot;object&quot; 
+                               //   &amp;&amp; value !== null 
+                               //   &amp;&amp; !(Array.isArray(value))) 
+                               //   &amp;&amp; (((&quot;x&quot; in value &amp;&amp; &quot;y&quot; in value) &amp;&amp; &quot;z&quot; in value) 
+                               //   &amp;&amp; ((check_2(value.x) &amp;&amp; check_3(value.y)) 
+                               //   &amp;&amp; check_4(value.z)))))
+                               //
+                               // const check_2 = ((value) =&gt; typeof value === &quot;string&quot;)
+                               // const check_3 = ((value) =&gt; Number.isFinite(value))
+                               // const check_4 = ((value) =&gt; typeof value === &quot;boolean&quot;)
+</code></pre>

@@ -26,18 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Arguments } from '../../system/arguments/index.ts'
 import { Hashing, Memory } from '../../system/index.ts'
+
+import * as Schema from '../types/index.ts'
+import * as Stack from '../engine/_stack.ts'
+import { type XStatic } from '../static/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { Resolve } from '../resolve/index.ts'
-import { type XStatic } from '../static/index.ts'
-import * as S from '../types/index.ts'
-import * as Engine from '../engine/index.ts'
 
 // ----------------------------------------------------------------
-// UnsupportedKeyword
+// (Internal) RefContext
 // ----------------------------------------------------------------
-function UnsupportedKeyword(keyword: string): never {
-  throw Error(`UnsupportedKeyword '${keyword}'`)
+interface XRefContext {
+  stack: Stack.XStack
+  resolving: Map<Schema.XSchema, { key: string; used: boolean }>
 }
 // ----------------------------------------------------------------
 // UnresolvableRef
@@ -48,253 +51,289 @@ function UnresolvableRef(ref: string): never {
 // ----------------------------------------------------------------
 // HashKey
 // ----------------------------------------------------------------
-function HashKey(schema: S.XSchema): string {
+function HashKey(schema: Schema.XSchema): string {
   return `x-${Hashing.Hash(schema)}`
-}
-// ----------------------------------------------------------------
-// RefContext
-// ----------------------------------------------------------------
-interface RefContext {
-  context: Record<string, S.XSchema>
-  schema: S.XSchemaObject
-  resolving: Map<S.XSchema, { key: string; used: boolean }>
 }
 // ----------------------------------------------------------------
 // AdditionalItems
 // ----------------------------------------------------------------
-function FromAdditionalItems(context: RefContext, schema: S.XAdditionalItems): S.XSchema {
+function FromAdditionalItems(context: XRefContext, schema: Schema.XAdditionalItems): Schema.XSchema {
   return FromSchema(context, schema.additionalItems)
 }
 // ----------------------------------------------------------------
 // AdditionalProperties
 // ----------------------------------------------------------------
-function FromAdditionalProperties(context: RefContext, schema: S.XAdditionalProperties): S.XSchema {
+function FromAdditionalProperties(context: XRefContext, schema: Schema.XAdditionalProperties): Schema.XSchema {
   return FromSchema(context, schema.additionalProperties)
 }
 // ----------------------------------------------------------------
 // AllOf
 // ----------------------------------------------------------------
-function FromAllOf(context: RefContext, schema: S.XAllOf): S.XSchema[] {
+function FromAllOf(context: XRefContext, schema: Schema.XAllOf): Schema.XSchema[] {
   return schema.allOf.map((inner) => FromSchema(context, inner))
 }
 // ----------------------------------------------------------------
 // AnyOf
 // ----------------------------------------------------------------
-function FromAnyOf(context: RefContext, schema: S.XAnyOf): S.XSchema[] {
+function FromAnyOf(context: XRefContext, schema: Schema.XAnyOf): Schema.XSchema[] {
   return schema.anyOf.map((inner) => FromSchema(context, inner))
 }
 // ----------------------------------------------------------------
 // Contains
 // ----------------------------------------------------------------
-function FromContains(context: RefContext, schema: S.XContains): S.XSchema {
+function FromContains(context: XRefContext, schema: Schema.XContains): Schema.XSchema {
   return FromSchema(context, schema.contains)
 }
 // ----------------------------------------------------------------
 // DependentSchemas
 // ----------------------------------------------------------------
-function FromDependentSchemas(context: RefContext, schema: S.XDependentSchemas): Record<string, S.XSchema> {
+function FromDependentSchemas(context: XRefContext, schema: Schema.XDependentSchemas): Record<string, Schema.XSchema> {
   return Guard.Keys(schema.dependentSchemas).reduce((result, key) => ({ ...result, [key]: FromSchema(context, schema.dependentSchemas[key]) }), {})
 }
 // ----------------------------------------------------------------
 // Else
 // ----------------------------------------------------------------
-function FromElse(context: RefContext, schema: S.XElse): S.XSchema {
+function FromElse(context: XRefContext, schema: Schema.XElse): Schema.XSchema {
   return FromSchema(context, schema.else)
 }
 // ----------------------------------------------------------------
 // If
 // ----------------------------------------------------------------
-function FromIf(context: RefContext, schema: S.XIf): S.XSchema {
+function FromIf(context: XRefContext, schema: Schema.XIf): Schema.XSchema {
   return FromSchema(context, schema.if)
 }
 // ----------------------------------------------------------------
 // Items
 // ----------------------------------------------------------------
-function FromItems(context: RefContext, schema: S.XItems): S.XSchema | S.XSchema[] {
-  return S.IsItemsSized(schema) ? FromItemsSized(context, schema) : FromItemsUnsized(context, schema)
+function FromItems(context: XRefContext, schema: Schema.XItems): Schema.XSchema | Schema.XSchema[] {
+  return Schema.IsItemsSized(schema) ? FromItemsSized(context, schema) : FromItemsUnsized(context, schema)
 }
 // ----------------------------------------------------------------
 // ItemsSized
 // ----------------------------------------------------------------
-function FromItemsSized(context: RefContext, schema: S.XItemsSized): S.XSchema[] {
+function FromItemsSized(context: XRefContext, schema: Schema.XItemsSized): Schema.XSchema[] {
   return schema.items.map((inner) => FromSchema(context, inner))
 }
 // ----------------------------------------------------------------
 // ItemsUnsized
 // ----------------------------------------------------------------
-function FromItemsUnsized(context: RefContext, schema: S.XItemsUnsized): S.XSchema {
+function FromItemsUnsized(context: XRefContext, schema: Schema.XItemsUnsized): Schema.XSchema {
   return FromSchema(context, schema.items)
 }
 // ----------------------------------------------------------------
 // Not
 // ----------------------------------------------------------------
-function FromNot(context: RefContext, schema: S.XNot): S.XSchema {
+function FromNot(context: XRefContext, schema: Schema.XNot): Schema.XSchema {
   return FromSchema(context, schema.not)
 }
 // ----------------------------------------------------------------
 // OneOf
 // ----------------------------------------------------------------
-function FromOneOf(context: RefContext, schema: S.XOneOf): S.XSchema[] {
+function FromOneOf(context: XRefContext, schema: Schema.XOneOf): Schema.XSchema[] {
   return schema.oneOf.map((inner) => FromSchema(context, inner))
 }
 // ----------------------------------------------------------------
 // PatternProperties
 // ----------------------------------------------------------------
-function FromPatternProperties(context: RefContext, schema: S.XPatternProperties): Record<string, S.XSchema> {
+function FromPatternProperties(context: XRefContext, schema: Schema.XPatternProperties): Record<string, Schema.XSchema> {
   return Guard.Keys(schema.patternProperties).reduce((result, key) => ({ ...result, [key]: FromSchema(context, schema.patternProperties[key]) }), {})
 }
 // ----------------------------------------------------------------
 // PrefixItems
 // ----------------------------------------------------------------
-function FromPrefixItems(context: RefContext, schema: S.XPrefixItems): S.XSchema[] {
+function FromPrefixItems(context: XRefContext, schema: Schema.XPrefixItems): Schema.XSchema[] {
   return schema.prefixItems.map((inner) => FromSchema(context, inner))
 }
 // ----------------------------------------------------------------
 // Properties
 // ----------------------------------------------------------------
-function FromProperties(context: RefContext, schema: S.XProperties): Record<string, S.XSchema> {
+function FromProperties(context: XRefContext, schema: Schema.XProperties): Record<string, Schema.XSchema> {
   return Guard.Keys(schema.properties).reduce((result, key) => ({ ...result, [key]: FromSchema(context, schema.properties[key]) }), {})
 }
 // ----------------------------------------------------------------
 // PropertyNames
 // ----------------------------------------------------------------
-function FromPropertyNames(context: RefContext, schema: S.XPropertyNames): S.XSchema {
+function FromPropertyNames(context: XRefContext, schema: Schema.XPropertyNames): Schema.XSchema {
   return FromSchema(context, schema.propertyNames)
 }
 // ----------------------------------------------------------------
 // Ref
 // ----------------------------------------------------------------
-function ResolveRef(context: Record<string, S.XSchema>, schema: S.XSchemaObject, ref: string): S.XSchema {
-  return Resolve.Ref(Engine.Stack(context, schema), { $ref: ref }).schema ?? UnresolvableRef(ref)
+function ResolveRef(stack: Stack.XStack, ref: string): { schema: Schema.XSchema; stack: Stack.XStack } {
+  const result = Resolve.Ref(stack, { $ref: ref })
+  return { schema: result.schema ?? UnresolvableRef(ref), stack: result.stack }
 }
-function FromRef(context: RefContext, schema: S.XRef): S.XSchema {
-  // Resolve target
-  const target = ResolveRef(context.context, context.schema, schema.$ref)
-  // Check if target is resolving, if not, resolve
+// ----------------------------------------------------------------
+// DynamicRef
+// ----------------------------------------------------------------
+function ResolveDynamicRef(stack: Stack.XStack, schema: Schema.XDynamicRef): Schema.XSchema {
+  return Resolve.DynamicRef(stack, schema) ?? UnresolvableRef(schema.$dynamicRef)
+}
+// ----------------------------------------------------------------
+// RecursiveRef
+// ----------------------------------------------------------------
+function ResolveRecursiveRef(stack: Stack.XStack, schema: Schema.XRecursiveRef): Schema.XSchema {
+  return Resolve.RecursiveRef(stack, schema) ?? UnresolvableRef(schema.$recursiveRef)
+}
+// ----------------------------------------------------------------
+// FromResolvedRef (shared logic for Ref, DynamicRef, RecursiveRef)
+// ----------------------------------------------------------------
+function FromResolvedRef(context: XRefContext, target: Schema.XSchema, nextStack: Stack.XStack): Schema.XSchema {
+  const nextContext = { ...context, stack: nextStack }
   const resolving = context.resolving.get(target)
-  if (Guard.IsUndefined(resolving)) return FromSchema(context, target)
+  if (Guard.IsUndefined(resolving)) return FromSchema(nextContext, target)
   // Target is mid-intern, so this is a cycle (point at its reserved placeholder)
   resolving.used = true
   return { $ref: `#/$defs/${resolving.key}` }
 }
 // ----------------------------------------------------------------
+// FromRef
+// ----------------------------------------------------------------
+function FromRef(context: XRefContext, schema: Schema.XRef): Schema.XSchema {
+  // Resolve target off the current traversal stack, carrying forward any resource crossing
+  const { schema: target, stack } = ResolveRef(context.stack, schema.$ref)
+  return FromResolvedRef(context, target, stack)
+}
+// ----------------------------------------------------------------
+// FromDynamicRef
+// ----------------------------------------------------------------
+function FromDynamicRef(context: XRefContext, schema: Schema.XDynamicRef): Schema.XSchema {
+  // Resolve target off the current traversal stack (dynamic scope depends on anchors seen so far)
+  const target = ResolveDynamicRef(context.stack, schema)
+  return FromResolvedRef(context, target, { ...context.stack, pendingResource: true })
+}
+// ----------------------------------------------------------------
+// FromRecursiveRef
+// ----------------------------------------------------------------
+function FromRecursiveRef(context: XRefContext, schema: Schema.XRecursiveRef): Schema.XSchema {
+  // Resolve target off the current traversal stack (recursive scope depends on the path taken so far)
+  const target = ResolveRecursiveRef(context.stack, schema)
+  return FromResolvedRef(context, target, { ...context.stack, pendingResource: true })
+}
+// ----------------------------------------------------------------
 // Then
 // ----------------------------------------------------------------
-function FromThen(context: RefContext, schema: S.XThen): S.XSchema {
+function FromThen(context: XRefContext, schema: Schema.XThen): Schema.XSchema {
   return FromSchema(context, schema.then)
 }
 // ----------------------------------------------------------------
 // UnevaluatedItems
 // ----------------------------------------------------------------
-function FromUnevaluatedItems(context: RefContext, schema: S.XUnevaluatedItems): S.XSchema {
+function FromUnevaluatedItems(context: XRefContext, schema: Schema.XUnevaluatedItems): Schema.XSchema {
   return FromSchema(context, schema.unevaluatedItems)
 }
 // ----------------------------------------------------------------
 // UnevaluatedProperties
 // ----------------------------------------------------------------
-function FromUnevaluatedProperties(context: RefContext, schema: S.XUnevaluatedProperties): S.XSchema {
+function FromUnevaluatedProperties(context: XRefContext, schema: Schema.XUnevaluatedProperties): Schema.XSchema {
   return FromSchema(context, schema.unevaluatedProperties)
 }
 // ----------------------------------------------------------------
 // SchemaObject
 // ----------------------------------------------------------------
-function FromSchemaObject(context: RefContext, schema: S.XSchemaObject): S.XSchema {
-  // Reference schemas cannot contain other keywords
-  if (S.IsRef(schema)) return FromRef(context, schema)
+function FromSchemaObject(context: XRefContext, schema: Schema.XSchemaObject): Schema.XSchema {
+  // Reference-style schemas resolve to another node and cannot contain other keywords
+  if (Schema.IsRef(schema)) return FromRef(context, schema)
+  if (Schema.IsDynamicRef(schema)) return FromDynamicRef(context, schema)
+  if (Schema.IsRecursiveRef(schema)) return FromRecursiveRef(context, schema)
   // Check if the schema has already been resolved
   const existing = resolved.get(schema)
   if (!Guard.IsUndefined(existing)) return existing
-  // These keywords are unsupported
-  if (S.IsDynamicRef(schema)) UnsupportedKeyword('$dynamicRef')
-  if (S.IsRecursiveRef(schema)) UnsupportedKeyword('$recursiveRef')
   // Reserve a placeholder key in case a nested ref cycles back to this schema
   const reservation = { key: `x-ref-${context.resolving.size}`, used: false }
   context.resolving.set(schema, reservation)
   // Intern each subschema
   const remapped = {
-    ...(S.IsRefine(schema) ? { ['~refine']: schema['~refine'] } : {}),
-    ...(S.IsAdditionalItems(schema) ? { additionalItems: FromAdditionalItems(context, schema) } : {}),
-    ...(S.IsAdditionalProperties(schema) ? { additionalProperties: FromAdditionalProperties(context, schema) } : {}),
-    ...(S.IsAllOf(schema) ? { allOf: FromAllOf(context, schema) } : {}),
-    ...(S.IsAnyOf(schema) ? { anyOf: FromAnyOf(context, schema) } : {}),
-    ...(S.IsContains(schema) ? { contains: FromContains(context, schema) } : {}),
-    ...(S.IsDependentSchemas(schema) ? { dependentSchemas: FromDependentSchemas(context, schema) } : {}),
-    ...(S.IsElse(schema) ? { else: FromElse(context, schema) } : {}),
-    ...(S.IsIf(schema) ? { if: FromIf(context, schema) } : {}),
-    ...(S.IsItems(schema) ? { items: FromItems(context, schema) } : {}),
-    ...(S.IsNot(schema) ? { not: FromNot(context, schema) } : {}),
-    ...(S.IsOneOf(schema) ? { oneOf: FromOneOf(context, schema) } : {}),
-    ...(S.IsPatternProperties(schema) ? { patternProperties: FromPatternProperties(context, schema) } : {}),
-    ...(S.IsPrefixItems(schema) ? { prefixItems: FromPrefixItems(context, schema) } : {}),
-    ...(S.IsProperties(schema) ? { properties: FromProperties(context, schema) } : {}),
-    ...(S.IsPropertyNames(schema) ? { propertyNames: FromPropertyNames(context, schema) } : {}),
-    ...(S.IsThen(schema) ? { then: FromThen(context, schema) } : {}),
-    ...(S.IsUnevaluatedItems(schema) ? { unevaluatedItems: FromUnevaluatedItems(context, schema) } : {}),
-    ...(S.IsUnevaluatedProperties(schema) ? { unevaluatedProperties: FromUnevaluatedProperties(context, schema) } : {})
+    ...(Schema.IsRefine(schema) ? { ['~refine']: schema['~refine'] } : {}),
+    ...(Schema.IsAdditionalItems(schema) ? { additionalItems: FromAdditionalItems(context, schema) } : {}),
+    ...(Schema.IsAdditionalProperties(schema) ? { additionalProperties: FromAdditionalProperties(context, schema) } : {}),
+    ...(Schema.IsAllOf(schema) ? { allOf: FromAllOf(context, schema) } : {}),
+    ...(Schema.IsAnyOf(schema) ? { anyOf: FromAnyOf(context, schema) } : {}),
+    ...(Schema.IsContains(schema) ? { contains: FromContains(context, schema) } : {}),
+    ...(Schema.IsDependentSchemas(schema) ? { dependentSchemas: FromDependentSchemas(context, schema) } : {}),
+    ...(Schema.IsElse(schema) ? { else: FromElse(context, schema) } : {}),
+    ...(Schema.IsIf(schema) ? { if: FromIf(context, schema) } : {}),
+    ...(Schema.IsItems(schema) ? { items: FromItems(context, schema) } : {}),
+    ...(Schema.IsNot(schema) ? { not: FromNot(context, schema) } : {}),
+    ...(Schema.IsOneOf(schema) ? { oneOf: FromOneOf(context, schema) } : {}),
+    ...(Schema.IsPatternProperties(schema) ? { patternProperties: FromPatternProperties(context, schema) } : {}),
+    ...(Schema.IsPrefixItems(schema) ? { prefixItems: FromPrefixItems(context, schema) } : {}),
+    ...(Schema.IsProperties(schema) ? { properties: FromProperties(context, schema) } : {}),
+    ...(Schema.IsPropertyNames(schema) ? { propertyNames: FromPropertyNames(context, schema) } : {}),
+    ...(Schema.IsThen(schema) ? { then: FromThen(context, schema) } : {}),
+    ...(Schema.IsUnevaluatedItems(schema) ? { unevaluatedItems: FromUnevaluatedItems(context, schema) } : {}),
+    ...(Schema.IsUnevaluatedProperties(schema) ? { unevaluatedProperties: FromUnevaluatedProperties(context, schema) } : {})
   }
   context.resolving.delete(schema)
-  // Finalize and register the result
-  const interned = Memory.Discard(Memory.Assign(schema, remapped), ['$id'])
+  // Discard resolution keywords and finalize the interned schema
+  const interned = Memory.Discard(Memory.Assign(schema, remapped), ['$id', '$defs', '$anchor', '$dynamicAnchor', '$recursionAnchor'])
   const key = reservation.used ? reservation.key : HashKey(interned)
   registry.set(key, interned)
   // Result
-  const result: S.XSchema = { $ref: `#/$defs/${key}` }
+  const result: Schema.XSchema = { $ref: `#/$defs/${key}` }
   resolved.set(schema, result)
   return result
 }
 // ----------------------------------------------------------------
 // SchemaBoolean
 // ----------------------------------------------------------------
-function FromSchemaBoolean(_context: RefContext, schema: S.XSchemaBoolean): S.XSchema {
+function FromSchemaBoolean(_context: XRefContext, schema: Schema.XSchemaBoolean): Schema.XSchema {
   // Finalize and register the result
   const key = HashKey(schema)
   registry.set(key, schema)
-
   // Result
-  const result: S.XSchema = { $ref: `#/$defs/${key}` }
+  const result: Schema.XSchema = { $ref: `#/$defs/${key}` }
   resolved.set(schema, result)
   return result
 }
 // ----------------------------------------------------------------
 // Schema
 // ----------------------------------------------------------------
-function FromSchema(context: RefContext, schema: S.XSchema): S.XSchema {
-  return S.IsSchemaBoolean(schema) ? FromSchemaBoolean(context, schema) : FromSchemaObject(context, schema)
+function FromSchema(context: XRefContext, schema: Schema.XSchema): Schema.XSchema {
+  const next = { ...context, stack: Stack.NextStack(context.stack, schema) }
+  return Schema.IsSchemaBoolean(schema) ? FromSchemaBoolean(next, schema) : FromSchemaObject(next, schema)
 }
 // ----------------------------------------------------------------
 // BooleanEntry
 // ----------------------------------------------------------------
-function BooleanEntry(schema: S.XSchemaBoolean): S.XSchemaObject {
+function BooleanEntry(schema: Schema.XSchemaBoolean): Schema.XSchemaObject {
   const key = HashKey(schema)
   return { $ref: `#/$defs/${key}`, $defs: { [key]: schema } }
 }
 // ----------------------------------------------------------------
 // Module-level accumulator state
 // ----------------------------------------------------------------
-const registry = new Map<string, S.XSchema>()
-const resolved = new Map<S.XSchema, S.XSchema>()
+const registry = new Map<string, Schema.XSchema>()
+const resolved = new Map<Schema.XSchema, Schema.XSchema>()
 // ----------------------------------------------------------------
 // XIntern
 // ----------------------------------------------------------------
 export interface XIntern<Type extends unknown = unknown> {
   '~unsafe': Type
   $ref: string
-  $defs: Record<string, S.XSchemaObject>
+  $defs: Record<string, Schema.XSchemaObject>
 }
-/**
- * [Experimental] Performs a Common Subexpression Elimination (CSE) transform on the given
- * schema. This function restructures the schema such that each distinct sub-schema is stored
- * exactly once in a $defs object and keyed by content hash. This function can be used to
- * both compress and optimize schemas prior to compilation.
- */
-export function Intern<const Schema extends S.XSchema>(schema: Schema): XIntern<XStatic<Schema>> {
+// ------------------------------------------------------------------
+// Intern
+// ------------------------------------------------------------------
+/** (Experimental) This function restructures the schema such that each distinct sub-schema is stored exactly once in a $defs object and keyed by content hash. */
+export function Intern<const Schema extends Schema.XSchema>(schema: Schema): XIntern<XStatic<Schema>>
+/** (Experimental) This function restructures the schema such that each distinct sub-schema is stored exactly once in a $defs object and keyed by content hash. */
+export function Intern<const Schema extends Schema.XSchema>(context: Record<PropertyKey, Schema.XSchema>, schema: Schema): XIntern<XStatic<Schema>>
+/** (Experimental) This function restructures the schema such that each distinct sub-schema is stored exactly once in a $defs object and keyed by content hash. */
+export function Intern(...args: unknown[]): unknown {
+  const [context, schema] = Arguments.Match<[Record<PropertyKey, Schema.XSchema>, Schema.XSchema]>(args, {
+    2: (context, schema) => [context, schema],
+    1: (schema) => [{}, schema]
+  })
   registry.clear()
   resolved.clear()
-  if (S.IsSchemaBoolean(schema)) return BooleanEntry(schema) as never
-  const context = S.IsDefs(schema) ? schema.$defs : {}
-  const entry = S.IsRef(schema) ? ResolveRef(context, schema, schema.$ref) : schema
-  if (S.IsSchemaBoolean(entry)) return BooleanEntry(entry) as never
-  const ref_context: RefContext = { schema, context, resolving: new Map() }
+  if (Schema.IsSchemaBoolean(schema)) return BooleanEntry(schema) as never
+  const defs = Schema.IsDefs(schema) ? schema.$defs : {}
+  const rootStack = Stack.Stack({ ...context, ...defs }, schema)
+  const { schema: entry, stack } = Schema.IsRef(schema) ? ResolveRef(Stack.NextStack(rootStack, schema), schema.$ref) : { schema, stack: rootStack }
+  if (Schema.IsSchemaBoolean(entry)) return BooleanEntry(entry) as never
+  const ref_context: XRefContext = { stack, resolving: new Map() }
   const result = FromSchema(ref_context, entry) as { $ref: string }
   return { $ref: result.$ref, $defs: Object.fromEntries(registry) } as never
 }

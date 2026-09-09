@@ -1,9 +1,8 @@
-<h1>Schema.Coverage</h1>
-<p>TypeBox has broad support for all JSON Schema drafts and is heavily tested against the <a href="https://github.com/json-schema-org/JSON-Schema-Test-Suite">Official JSON Schema Test Suite</a>. TypeBox targets modern versions of the specification, but supports legacy drafts as well: legacy semantics are honored unless they conflict with a modern specification, in which case the modern behavior takes precedence.</p>
+<h1>Schema.Compat</h1>
+<p>TypeBox supports all versions of JSON Schema and is heavily tested against the official <a href="https://github.com/json-schema-org/JSON-Schema-Test-Suite">Official JSON Schema Test Suite</a>. It prioritizes compatibility with modern specifications while also maintaining broad support for legacy versions provided their semantics are not in conflict with modern specifications.</p>
 <blockquote>
-<p>⚠️ TypeBox will accept schematics from any JSON Schema draft. If an application needs to enforce a specific draft, use <code>Schema.Meta</code> to validate schematics against that draft.</p>
+<p>⚠️ TypeBox accepts schematics from any JSON Schema version, which means keywords from different versions can be mixed and matched freely. If an application needs to restrict schematics to a specific version, use Schema.Meta namespace to validate them against that version.</p>
 </blockquote>
-<p>The table below shows test coverage per draft. Failing tests in legacy drafts are expected where legacy semantics conflict with modern drafts.</p>
 <h2>Required Keywords</h2>
 <table>
 <thead>

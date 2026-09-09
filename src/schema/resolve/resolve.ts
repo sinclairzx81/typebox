@@ -62,11 +62,9 @@ interface XResolvedResource {
 // ------------------------------------------------------------------
 // Helpers
 //
-// Shared utilities: effective base URI of a schema, normalizing a
-// base to an absolute URL, stripping a URL's fragment to get its
-// canonical href, finding a target schema's base URI, picking the
-// root a $ref resolves against, and detecting a JSON pointer
-// fragment versus a plain anchor name.
+// Utilities to compute schema base URIs, normalize absolute URLs,
+// strip URL fragments for canonical hrefs, find target base URIs,
+// resolve $ref root schemas, and identify JSON pointers vs anchors.
 // ------------------------------------------------------------------
 function RelativeBase(schema: unknown, base: URL): URL {
   return Schema.IsSchemaObject(schema) && Schema.IsId(schema) ? Stack.NextUri(schema.$id, base.href) : base
@@ -349,12 +347,11 @@ function FindScopedDynamicAnchor(stack: Stack.XStack, name: string): Schema.XDyn
 function DynamicRefWhenFound(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef, fragmentTarget: Schema.XSchema): Schema.XSchema | undefined {
   if (!Schema.IsSchemaObject(fragmentTarget) || !Schema.IsDynamicAnchor(fragmentTarget)) return fragmentTarget
   const fragment = DynamicRefFragment(stack, dynamicRef)
-  // todo: review why we need to check if the fragment is a pointer before finding the scoped dynamic anchor
   return IsPointerFragment(fragment) ? fragmentTarget : FindScopedDynamicAnchor(stack, fragmentTarget.$dynamicAnchor)
 }
 function DynamicRefWhenNotFound(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
   const fragment = DynamicRefFragment(stack, dynamicRef)
-  // todo: we never observe this condition, we should review.
+  // (review): We never observe this condition, but should be able to reach here in coverage.
   // if (IsPointerFragment(fragment) || !fragment.startsWith('#')) return undefined
   return FindScopedDynamicAnchor(stack, decodeURIComponent(fragment.slice(1)))
 }

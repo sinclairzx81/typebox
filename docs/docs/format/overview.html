@@ -1,11 +1,10 @@
 <h1>Format</h1>
-<p>String Format Validation</p>
+<p>Standards-Based RFC String Validation</p>
 <h2>Overview</h2>
-<p>The Format module contains functions to validate various string formats referenced in the <a href="https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.7.3">Defined Formats 7.3</a> section of Json Schema specification. </p>
-<p>The Format module is provided via optional import.</p>
-<pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
-</code></pre>
+<p>The Format module contains functions to validate string formats defined in Section 7.3 (<a href="https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.7.3">Defined Formats</a>) of the JSON Schema specification. These formats are integrated into TypeBox&#39;s JSON Schema validation infrastructure, but can also be used independently.</p>
 <h2>Example</h2>
-<p>The following validates an email address.</p>
-<pre><code class="language-typescript">const isEmail = Format.IsEmail(&#39;user@domain.com&#39;)
+<p>The Format module is available via a submodule import.</p>
+<pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
+
+const A = Format.IsEmail(&#39;user@domain.com&#39;)     // true
 </code></pre>

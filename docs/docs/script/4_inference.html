@@ -1,5 +1,5 @@
 <h1>Script.Inference</h1>
-<p>TypeBox Script is a symmetric runtime and type-level evaluator for TypeScript syntax. Runtime evaluation of types allows for moderately large declaration files to be parsed; however, type-level evaluation is subject to the instantiation limitations of the TypeScript compiler. This section details type inference limitations and scaling behaviours for Script.</p>
+<p>TypeBox Script is a dual-track (symmetric) runtime and type-level evaluator for TypeScript syntax. The runtime track can evaluate moderately large TypeScript definitions; however, the type-level track is subject to the instantiation limitations of the TypeScript compiler. This section details inference scaling and limitations for the type-level track based on default TypeScript language service settings.</p>
 <h2>Wide vs Deep</h2>
 <p>Script is designed to support wide data structures. These structures use TypeScript tail call optimizations to prevent +1 depth per sequence token or element.</p>
 <pre><code class="language-typescript">const T = Type.Script(`[   // depth + 1

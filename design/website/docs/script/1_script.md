@@ -1,11 +1,16 @@
-# Script.Syntax
+# Script.Script
 
-TypeBox is designed to be a programmable TypeScript based DSL for the JSON Schema specification. It uses JSON Schema as an intermediate representation (IR) for TypeScript types, and evaluates the IR using the semantics of the TypeScript language.
+The Script function is designed to be a programmable TypeScript DSL frontend for the JSON Schema specification. Internally it uses TypeBox types as an intermediate representation (IR) for TypeScript, where the IR itself is expressed as standards-compliant JSON Schema.
 
+```typescript
+// The Script function returns JSON Schema
+
+const A = Type.Script('string')                         // const A = { type: 'string' }
+```
 
 ## Types
 
-Script has support for most TypeScript types and syntactic constructs. Each type will map into its corresponding TypeBox IR representation.
+Script has support for most TypeScript types and programmable constructs.
 
 ```typescript
 // ------------------------------------------------------------------
