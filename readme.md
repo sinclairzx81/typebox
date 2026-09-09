@@ -166,9 +166,11 @@ import Schema from 'typebox/schema'
 
 ### Compile
 
-The compiler accepts both TypeBox types and plain JSON Schema objects. The Compile function will return a new Validator instance which can be used to check and parse values. The example below compiles a Script definition into a validator.
+The compiler accepts TypeBox types as well as plain JSON Schema objects, and returns a Validator instance which can be used to check values. The following compiles a Vector type.
 
 ```typescript
+import Schema from 'typebox/schema'
+
 // Compile
 
 const Vector = Schema.Compile(Type.Script(`{
