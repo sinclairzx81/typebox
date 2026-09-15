@@ -61,6 +61,11 @@
         "valid": false
       },
       {
+        "description": "a json-pointer part that does not start with a slash is invalid",
+        "data": "1foo",
+        "valid": false
+      },
+      {
         "description": "negative prefix",
         "data": "-1/foo/bar",
         "valid": false
