@@ -31,99 +31,81 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
-// Asserts
+// Throw
 // ------------------------------------------------------------------
-function AssertNotRoot(indices: string[]): void {
-  if (indices.length === 0) throw Error('Cannot set root')
+function Throw(message: string): never {
+  throw Error(message)
 }
-function AssertCanSet(value: unknown): asserts value is Record<string, unknown> {
-  if (!Guard.IsObject(value)) throw Error('Cannot set value')
+function ThrowUnsafePropertyKey(): never {
+  Throw('Pointer contains unsafe property key')
 }
-function AssertIndex(index: string): void {
-  if (Guard.IsUnsafePropertyKey(index)) throw Error('Pointer contains unsafe property key')
-}
-function AssertIndices(indices: string[]): void {
-  for (const index of indices) AssertIndex(index)
+function ThrowCannotSetRoot(): never {
+  Throw('Cannot set value')
 }
 // ------------------------------------------------------------------
 // Indices
 // ------------------------------------------------------------------
-function IsNumericIndex(index: string): boolean {
-  return /^(0|[1-9]\d*)$/.test(index)
-}
-function TakeIndexRight(indices: string[]): [string[], string] {
-  return [
-    indices.slice(0, indices.length - 1),
-    indices.slice(indices.length - 1)[0]
-  ]
-}
-function HasIndex(index: string, value: unknown): value is Record<string, unknown> {
-  return Guard.IsObject(value) && Guard.HasPropertyKey(value, index)
-}
-function GetIndex(index: string, value: unknown): unknown {
-  return Guard.IsObject(value) && !Guard.IsUnsafePropertyKey(index) ? value[index] : undefined
-}
-function GetIndices(indices: string[], value: unknown): unknown {
-  return indices.reduce((value, index) => GetIndex(index, value), value)
-}
-// ------------------------------------------------------------------
-// Indices
-// ------------------------------------------------------------------
-/** Returns an array of path indices for the given pointer */
 export function Indices(pointer: string): string[] {
-  if (Guard.IsEqual(pointer.length, 0)) return []
-  const indices = pointer.split("/").map(index => index.replace(/~1/g, "/").replace(/~0/g, "~"))
-  return (indices.length > 0 && indices[0] === '') ? indices.slice(1) : indices
+  const indices = pointer.split('/').map(index => index.replace(/~1/g, '/').replace(/~0/g, '~'))
+  return indices[0] === '' ? indices.slice(1) : indices
 }
 // ------------------------------------------------------------------
 // Has
 // ------------------------------------------------------------------
-/** Returns true if a value exists at the current pointer */
-export function Has(value: unknown, pointer: string): unknown {
+export function Has(value: unknown, pointer: string): boolean {
   let current = value
-  return Indices(pointer).every(index => {
-    if (!HasIndex(index, current)) return false
+  for (const index of Indices(pointer)) {
+    if (!Guard.IsObject(current) || !Guard.HasPropertyKey(current, index)) return false
     current = current[index]
-    return true
-  })
+  }
+  return true
 }
 // ------------------------------------------------------------------
 // Get
 // ------------------------------------------------------------------
-/** Gets a value at the pointer, or undefined if not exists */
 export function Get(value: unknown, pointer: string): unknown {
-  const indices = Indices(pointer)
-  return GetIndices(indices, value)
+  let current = value
+  for (const index of Indices(pointer)) {
+    if (!Guard.IsObject(current) || Guard.IsUnsafePropertyKey(index)) return undefined
+    current = current[index]
+  }
+  return current
+}
+// ------------------------------------------------------------------
+// Get
+// ------------------------------------------------------------------
+function Parent(value: unknown, indices: string[], last: string): Record<string, unknown> {
+  let current = value
+  for (const index of indices) {
+    if (Guard.IsUnsafePropertyKey(index)) ThrowUnsafePropertyKey()
+    current = Guard.IsObject(current) ? current[index] : undefined
+  }
+  if (Guard.IsUnsafePropertyKey(last)) ThrowUnsafePropertyKey()
+  if (!Guard.IsObject(current)) ThrowCannotSetRoot()
+  return current
 }
 // ------------------------------------------------------------------
 // Set
 // ------------------------------------------------------------------
-/** Sets a value at the given pointer. May throw if the target value is not indexable */
 export function Set(value: unknown, pointer: string, next: unknown): unknown {
   const indices = Indices(pointer)
-  AssertNotRoot(indices)
-  AssertIndices(indices)
-  const [head, index] = TakeIndexRight(indices)
-  const parent = GetIndices(head, value)
-  AssertCanSet(parent)
-  parent[index] = next
+  const last = indices.pop()
+  if (Guard.IsUndefined(last)) ThrowCannotSetRoot()
+  Parent(value, indices, last)[last] = next
   return value
 }
 // ------------------------------------------------------------------
 // Delete
 // ------------------------------------------------------------------
-/** Deletes the value at the given pointer. May throw if the target value is not indexable */
 export function Delete(value: unknown, pointer: string): unknown {
   const indices = Indices(pointer)
-  AssertNotRoot(indices)
-  AssertIndices(indices)
-  const [head, index] = TakeIndexRight(indices)
-  const parent = GetIndices(head, value)
-  AssertCanSet(parent)
-  if (Guard.IsArray(parent) && IsNumericIndex(index)) {
-    parent.splice(+index, 1)
+  const last = indices.pop()
+  if (Guard.IsUndefined(last)) ThrowCannotSetRoot()
+  const parent = Parent(value, indices, last)
+  if (Guard.IsArray(parent) && /^(0|[1-9]\d*)$/.test(last)) {
+    parent.splice(Number(last), 1)
   } else {
-    delete parent[index]
+    delete parent[last]
   }
   return value
 }

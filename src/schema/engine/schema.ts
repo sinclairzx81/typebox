@@ -203,10 +203,10 @@ export function BuildSchema(stack: Stack.XStack, context: BuildContext, schema: 
     if (Schema.IsAdditionalItems(schema)) constraints.push(BuildAdditionalItems(current, context, schema, value))
     if (Schema.IsContains(schema)) constraints.push(BuildContains(current, context, schema, value))
     if (Schema.IsItems(schema)) constraints.push(BuildItems(current, context, schema, value))
-    if (Schema.IsMaxContains(schema)) constraints.push(BuildMaxContains(current, context, schema, value))
-    if (Schema.IsMaxItems(schema)) constraints.push(BuildMaxItems(current, context, schema, value))
     if (Schema.IsMinContains(schema)) constraints.push(BuildMinContains(current, context, schema, value))
+    if (Schema.IsMaxContains(schema)) constraints.push(BuildMaxContains(current, context, schema, value))
     if (Schema.IsMinItems(schema)) constraints.push(BuildMinItems(current, context, schema, value))
+    if (Schema.IsMaxItems(schema)) constraints.push(BuildMaxItems(current, context, schema, value))
     if (Schema.IsPrefixItems(schema)) constraints.push(BuildPrefixItems(current, context, schema, value))
     if (Schema.IsUniqueItems(schema)) constraints.push(BuildUniqueItems(current, context, schema, value))
     const reduced = E.ReduceAnd(constraints)
@@ -215,8 +215,8 @@ export function BuildSchema(stack: Stack.XStack, context: BuildContext, schema: 
   }
   if (HasStringKeywords(schema)) {
     const constraints = []
-    if (Schema.IsMaxLength(schema)) constraints.push(BuildMaxLength(current, context, schema, value))
     if (Schema.IsMinLength(schema)) constraints.push(BuildMinLength(current, context, schema, value))
+    if (Schema.IsMaxLength(schema)) constraints.push(BuildMaxLength(current, context, schema, value))
     if (Schema.IsFormat(schema)) constraints.push(BuildFormat(current, context, schema, value))
     if (Schema.IsPattern(schema)) constraints.push(BuildPattern(current, context, schema, value))
     const reduced = E.ReduceAnd(constraints)
@@ -225,10 +225,10 @@ export function BuildSchema(stack: Stack.XStack, context: BuildContext, schema: 
   }
   if (HasNumberKeywords(schema)) {
     const constraints = []
-    if (Schema.IsExclusiveMaximum(schema)) constraints.push(BuildExclusiveMaximum(current, context, schema, value))
     if (Schema.IsExclusiveMinimum(schema)) constraints.push(BuildExclusiveMinimum(current, context, schema, value))
-    if (Schema.IsMaximum(schema)) constraints.push(BuildMaximum(current, context, schema, value))
+    if (Schema.IsExclusiveMaximum(schema)) constraints.push(BuildExclusiveMaximum(current, context, schema, value))
     if (Schema.IsMinimum(schema)) constraints.push(BuildMinimum(current, context, schema, value))
+    if (Schema.IsMaximum(schema)) constraints.push(BuildMaximum(current, context, schema, value))
     if (Schema.IsMultipleOf(schema)) constraints.push(BuildMultipleOf(current, context, schema, value))
     const reduced = E.ReduceAnd(constraints)
     const guarded = E.Or(E.Not(E.Or(E.IsNumber(value), E.IsBigInt(value))), reduced)
@@ -276,24 +276,24 @@ export function CheckSchema(stack: Stack.XStack, context: CheckContext, schema: 
       (!Schema.IsAdditionalItems(schema) || CheckAdditionalItems(current, context, schema, value)) &&
       (!Schema.IsContains(schema) || CheckContains(current, context, schema, value)) &&
       (!Schema.IsItems(schema) || CheckItems(current, context, schema, value)) &&
-      (!Schema.IsMaxContains(schema) || CheckMaxContains(current, context, schema, value)) &&
-      (!Schema.IsMaxItems(schema) || CheckMaxItems(current, context, schema, value)) &&
       (!Schema.IsMinContains(schema) || CheckMinContains(current, context, schema, value)) &&
+      (!Schema.IsMaxContains(schema) || CheckMaxContains(current, context, schema, value)) &&
       (!Schema.IsMinItems(schema) || CheckMinItems(current, context, schema, value)) &&
+      (!Schema.IsMaxItems(schema) || CheckMaxItems(current, context, schema, value)) &&
       (!Schema.IsPrefixItems(schema) || CheckPrefixItems(current, context, schema, value)) &&
       (!Schema.IsUniqueItems(schema) || CheckUniqueItems(current, context, schema, value))
     )) &&
     (!G.IsString(value) || (
-      (!Schema.IsMaxLength(schema) || CheckMaxLength(current, context, schema, value)) &&
       (!Schema.IsMinLength(schema) || CheckMinLength(current, context, schema, value)) &&
+      (!Schema.IsMaxLength(schema) || CheckMaxLength(current, context, schema, value)) &&
       (!Schema.IsFormat(schema) || CheckFormat(current, context, schema, value)) &&
       (!Schema.IsPattern(schema) || CheckPattern(current, context, schema, value))
     )) &&
     (!(G.IsNumber(value) || G.IsBigInt(value)) || (
-      (!Schema.IsExclusiveMaximum(schema) || CheckExclusiveMaximum(current, context, schema, value)) &&
       (!Schema.IsExclusiveMinimum(schema) || CheckExclusiveMinimum(current, context, schema, value)) &&
-      (!Schema.IsMaximum(schema) || CheckMaximum(current, context, schema, value)) &&
+      (!Schema.IsExclusiveMaximum(schema) || CheckExclusiveMaximum(current, context, schema, value)) &&
       (!Schema.IsMinimum(schema) || CheckMinimum(current, context, schema, value)) &&
+      (!Schema.IsMaximum(schema) || CheckMaximum(current, context, schema, value)) &&
       (!Schema.IsMultipleOf(schema) || CheckMultipleOf(current, context, schema, value))
     )) &&
     (!Schema.IsRef(schema) || CheckRef(current, context, schema, value)) &&
@@ -344,24 +344,24 @@ export function ErrorSchema(stack: Stack.XStack, context: ErrorContext, schemaPa
         +(!Schema.IsAdditionalItems(schema) || ErrorAdditionalItems(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsContains(schema) || ErrorContains(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsItems(schema) || ErrorItems(current, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMaxContains(schema) || ErrorMaxContains(current, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMaxItems(schema) || ErrorMaxItems(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsMinContains(schema) || ErrorMinContains(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMaxContains(schema) || ErrorMaxContains(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsMinItems(schema) || ErrorMinItems(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMaxItems(schema) || ErrorMaxItems(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsPrefixItems(schema) || ErrorPrefixItems(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsUniqueItems(schema) || ErrorUniqueItems(current, context, schemaPath, instancePath, schema, value))
       )) &
       +(!G.IsString(value) || !!(
-        +(!Schema.IsMaxLength(schema) || ErrorMaxLength(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsMinLength(schema) || ErrorMinLength(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMaxLength(schema) || ErrorMaxLength(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsFormat(schema) || ErrorFormat(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsPattern(schema) || ErrorPattern(current, context, schemaPath, instancePath, schema, value))
       )) &
       +(!(G.IsNumber(value) || G.IsBigInt(value)) || !!(
-        +(!Schema.IsExclusiveMaximum(schema) || ErrorExclusiveMaximum(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsExclusiveMinimum(schema) || ErrorExclusiveMinimum(current, context, schemaPath, instancePath, schema, value)) &
-        +(!Schema.IsMaximum(schema) || ErrorMaximum(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsExclusiveMaximum(schema) || ErrorExclusiveMaximum(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsMinimum(schema) || ErrorMinimum(current, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsMaximum(schema) || ErrorMaximum(current, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsMultipleOf(schema) || ErrorMultipleOf(current, context, schemaPath, instancePath, schema, value))
       )) &
       +(!Schema.IsRef(schema) || ErrorRef(current, context, schemaPath, instancePath, schema, value)) &

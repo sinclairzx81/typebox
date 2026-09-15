@@ -1,19 +1,21 @@
-# Settings
+# System.Settings
 
-The Settings namespace manages type system configurations.
+The Settings namespace manages global TypeBox configurations.
 
 ## Example
 
-The following makes compositor properties enumerable.
+The following shows general usage
 
 ```typescript
-import { Settings } from 'typebox/system'
+import System from 'typebox/system'
 
-Settings.Set({ enumerableKind: true })              // Debug types         
+// Apply freeze to schematics on create
+System.Settings.Set({ immutableTypes: true })
 
-console.log(Type.String())                          // const T = { '~kind': 'String', type: 'string' }
-                                                    //              ^
-                                                    //              enumerable
+Type.String().format = 'email' // Error:  Cannot add property format, object is not extensible
+
+// Reset to defaults
+System.Settings.Reset()
 ```
 
 The following settings are available.
@@ -38,6 +40,18 @@ export interface TSettings {
    * @default 8
    */
   maxErrors: number
+
+  /**
+   * Specifies the maximum number of errors to gather for failed Parse operations. TypeBox will 
+   * automatically run an error-gathering pass on failed Parses to attach diagnostics to the 
+   * thrown exception. This setting controls the number of errors gathered in that pass. Higher
+   * values will reduce throughput on failure cases, so a maximum of 4 is recommended if more 
+   * errors are needed. The default setting of 1 will terminate on the first error, while a 
+   * setting of 0 will skip error gathering entirely.
+   *
+   * @default 1
+   */
+  maxParseErrors: number
 
   /**
    * Specifies the maximum number of instantiations allowed within a top-level generic instantiation

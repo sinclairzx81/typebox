@@ -1,3 +1,5 @@
+import Guard from 'typebox/guard'
+import System from 'typebox/system'
 import Schema from 'typebox/schema'
 import { Assert } from 'test'
 
@@ -21,4 +23,40 @@ Test('Should Parse 3', () => {
 })
 Test('Should Parse 4', () => {
   Assert.Throws(() => Schema.Parse({ A: { type: 'string' } }, { $ref: 'A' }, 1))
+})
+// ------------------------------------------------------------------
+// MaxParseErrors
+// ------------------------------------------------------------------
+Test('Should Parse 5', () => {
+  try {
+    Schema.Parse({
+      type: 'object',
+      required: ['x', 'y'],
+      properties: {
+        x: { type: 'number' },
+        y: { type: 'number' }
+      }
+    }, { x: null, y: null })
+  } catch (error: any) {
+    Assert.IsTrue(Guard.IsArray(error.errors))
+    Assert.IsEqual(error.errors.length, 1)
+  }
+})
+Test('Should Parse 6', () => {
+  System.Settings.Set({ maxParseErrors: 2 })
+  try {
+    Schema.Parse({
+      type: 'object',
+      required: ['x', 'y'],
+      properties: {
+        x: { type: 'number' },
+        y: { type: 'number' }
+      }
+    }, { x: null, y: null })
+  } catch (error: any) {
+    Assert.IsTrue(Guard.IsArray(error.errors))
+    Assert.IsEqual(error.errors.length, 2)
+  } finally {
+    System.Settings.Reset()
+  }
 })

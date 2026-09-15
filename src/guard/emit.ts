@@ -127,10 +127,10 @@ export function IsGreaterEqualThan(left: string, right: string): string {
 // String
 // --------------------------------------------------------------------------
 export function IsMinLength(value: string, length: string): string {
-  return `Guard.IsMinLength(${value}, ${length})`
+  return `(${value}.length >= ${(+length) << 1} || (${value}.length >= ${length} && Guard.CodePointCount(${value}) >= ${length}))`
 }
 export function IsMaxLength(value: string, length: string): string {
-  return `Guard.IsMaxLength(${value}, ${length})`
+  return `(${value}.length <= ${length} || (${value}.length <= ${(+length) << 1} && Guard.CodePointCount(${value}) <= ${length}))`
 }
 // --------------------------------------------------------------------------
 // Array

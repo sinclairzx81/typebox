@@ -1,4 +1,4 @@
-# Memory
+# System.Memory
 
 The Memory namespace is used to allocate schematics with enumerable and non-enumerable properties as well as track of allocations made by the type system. 
 
@@ -7,6 +7,11 @@ The Memory namespace is used to allocate schematics with enumerable and non-enum
 The Memory namespace includes a Metrics property that tracks allocations created within the type system. You can use this property to inspect memory usage, debug, or gain insights into the allocations required during instantiation.
 
 ```typescript
+import System from 'typebox/system'
+
+// --------------------------------------------------------
+// Computed Type
+// --------------------------------------------------------
 const Reverse = Type.Script(`<T, Result extends unknown[] = []> = (
   T extends [infer L, ...infer R] 
     ? Reverse<R, [L, ...Result]>
@@ -23,12 +28,10 @@ const Result = Type.Script({ Reverse }, `Reverse<[
                                               // ]>
 
 // --------------------------------------------------------
-// Debug
+// Inspect
 // --------------------------------------------------------
 
-import { Memory } from 'typebox/system'
-
-console.log(Memory.Metrics)                   // { 
+console.log(System.Memory.Metrics)            // { 
                                               //   assign: 42, 
                                               //   create: 459, 
                                               //   clone: 108, 

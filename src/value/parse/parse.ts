@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Settings } from '../../system/system.ts'
-import { Arguments } from '../../system/arguments/index.ts'
+import { EnableParseErrors, DisableParseErrors } from '../../system/settings/internal.ts'
+import { Arguments, Settings } from '../../system/index.ts'
 import { type TLocalizedValidationError } from '../../error/errors.ts'
 import { type TProperties, type TSchema, type StaticParse } from '../../type/index.ts'
 
@@ -51,7 +51,10 @@ export class ParseError extends AssertError {
   }
 }
 function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
-  if (!Check(context, type, value)) throw new ParseError(value, Errors(context, type, value))
+  EnableParseErrors()
+  const errors = Errors(context, type, value)
+  DisableParseErrors()
+  if (!Check(context, type, value)) throw new ParseError(value, errors)
   return value
 }
 // ------------------------------------------------------------------
@@ -77,5 +80,8 @@ export function Parse(...args: unknown[]): never {
   const checked = Check(context, type, value)
   if(checked) return value as never
   if(Settings.Get().correctiveParse) return Parser(context, type, value) as never
-  throw new ParseError(value, Errors(context, type, value))
+  EnableParseErrors()
+  const errors = Errors(context, type, value)
+  DisableParseErrors()
+  throw new ParseError(value, errors)
 }

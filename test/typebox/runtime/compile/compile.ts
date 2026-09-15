@@ -1,3 +1,4 @@
+import Guard from 'typebox/guard'
 import System from 'typebox/system'
 import Compile from 'typebox/compile'
 import { Type } from 'typebox'
@@ -234,4 +235,40 @@ Test('Should Parse Corrective 5 (Assert)', () => {
   const input = undefined
   Assert.Throws(() => T.Parse(input))
   System.Settings.Reset()
+})
+// ------------------------------------------------------------------
+// MaxParseErrors
+// ------------------------------------------------------------------
+Test('Should Compile 9', () => {
+  try {
+    Compile({
+      type: 'object',
+      required: ['x', 'y'],
+      properties: {
+        x: { type: 'number' },
+        y: { type: 'number' }
+      }
+    }).Parse({ x: null, y: null })
+  } catch (error: any) {
+    Assert.IsTrue(Guard.IsArray(error.cause.errors))
+    Assert.IsEqual(error.cause.errors.length, 1)
+  }
+})
+Test('Should Compile 10', () => {
+  System.Settings.Set({ maxParseErrors: 2 })
+  try {
+    Compile({
+      type: 'object',
+      required: ['x', 'y'],
+      properties: {
+        x: { type: 'number' },
+        y: { type: 'number' }
+      }
+    }).Parse({ x: null, y: null })
+  } catch (error: any) {
+    Assert.IsTrue(Guard.IsArray(error.cause.errors))
+    Assert.IsEqual(error.cause.errors.length, 2)
+  } finally {
+    System.Settings.Reset()
+  }
 })

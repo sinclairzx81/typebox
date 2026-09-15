@@ -1,14 +1,16 @@
-<h1>Settings</h1>
-<p>The Settings namespace manages type system configurations.</p>
+<h1>System.Settings</h1>
+<p>The Settings namespace manages global TypeBox configurations.</p>
 <h2>Example</h2>
-<p>The following makes compositor properties enumerable.</p>
-<pre><code class="language-typescript">import { Settings } from &#39;typebox/system&#39;
+<p>The following shows general usage</p>
+<pre><code class="language-typescript">import System from &#39;typebox/system&#39;
 
-Settings.Set({ enumerableKind: true })              // Debug types         
+// Apply freeze to schematics on create
+System.Settings.Set({ immutableTypes: true })
 
-console.log(Type.String())                          // const T = { &#39;~kind&#39;: &#39;String&#39;, type: &#39;string&#39; }
-                                                    //              ^
-                                                    //              enumerable
+Type.String().format = &#39;email&#39; // Error:  Cannot add property format, object is not extensible
+
+// Reset to defaults
+System.Settings.Reset()
 </code></pre>
 <p>The following settings are available.</p>
 <pre><code class="language-typescript">export interface TSettings {
@@ -30,6 +32,18 @@ console.log(Type.String())                          // const T = { &#39;~kind&#3
    * @default 8
    */
   maxErrors: number
+
+  /**
+   * Specifies the maximum number of errors to gather for failed Parse operations. TypeBox will 
+   * automatically run an error-gathering pass on failed Parses to attach diagnostics to the 
+   * thrown exception. This setting controls the number of errors gathered in that pass. Higher
+   * values will reduce throughput on failure cases, so a maximum of 4 is recommended if more 
+   * errors are needed. The default setting of 1 will terminate on the first error, while a 
+   * setting of 0 will skip error gathering entirely.
+   *
+   * @default 1
+   */
+  maxParseErrors: number
 
   /**
    * Specifies the maximum number of instantiations allowed within a top-level generic instantiation

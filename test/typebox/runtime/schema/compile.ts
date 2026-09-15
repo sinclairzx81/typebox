@@ -1,3 +1,4 @@
+import Guard from 'typebox/guard'
 import System from 'typebox/system'
 import Schema from 'typebox/schema'
 import { Assert } from 'test'
@@ -65,4 +66,40 @@ Test('Should Compile 7', () => {
 Test('Should Compile 8', () => {
   const validator = Schema.Compile({ A: { type: 'string' } }, { $ref: 'A' })
   Assert.Throws(() => validator.Parse(1))
+})
+// ------------------------------------------------------------------
+// MaxParseErrors
+// ------------------------------------------------------------------
+Test('Should Compile 9', () => {
+  try {
+    Schema.Compile({
+      type: 'object',
+      required: ['x', 'y'],
+      properties: {
+        x: { type: 'number' },
+        y: { type: 'number' }
+      }
+    }).Parse({ x: null, y: null })
+  } catch (error: any) {
+    Assert.IsTrue(Guard.IsArray(error.errors))
+    Assert.IsEqual(error.errors.length, 1)
+  }
+})
+Test('Should Compile 10', () => {
+  System.Settings.Set({ maxParseErrors: 2 })
+  try {
+    Schema.Compile({
+      type: 'object',
+      required: ['x', 'y'],
+      properties: {
+        x: { type: 'number' },
+        y: { type: 'number' }
+      }
+    }).Parse({ x: null, y: null })
+  } catch (error: any) {
+    Assert.IsTrue(Guard.IsArray(error.errors))
+    Assert.IsEqual(error.errors.length, 2)
+  } finally {
+    System.Settings.Reset()
+  }
 })

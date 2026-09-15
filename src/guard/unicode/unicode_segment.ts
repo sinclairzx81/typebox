@@ -125,19 +125,6 @@ function IsGraphemeCodePoint(value: number): boolean {
   )
 }
 // --------------------------------------------------------------------------
-// GraphemeCount
-// --------------------------------------------------------------------------
-/** Returns the number of grapheme clusters in a string */
-export function GraphemeCount(value: string): number {
-  let count = 0
-  let index = 0
-  while (index < value.length) {
-    index = NextGraphemeClusterIndex(value, index)
-    count++
-  }
-  return count
-}
-// --------------------------------------------------------------------------
 // IsMinLengthSegmented
 // --------------------------------------------------------------------------
 /** Checks if a string has at least a minimum number of grapheme clusters */
@@ -165,7 +152,20 @@ function IsMaxLengthSegmented(value: string, maxLength: number): boolean {
   return true
 }
 // --------------------------------------------------------------------------
-// IsMinLengthFast
+// GraphemeCount
+// --------------------------------------------------------------------------
+/** Returns the number of grapheme clusters in a string */
+export function GraphemeCount(value: string): number {
+  let count = 0
+  let index = 0
+  while (index < value.length) {
+    index = NextGraphemeClusterIndex(value, index)
+    count++
+  }
+  return count
+}
+// --------------------------------------------------------------------------
+// IsMinLength
 // --------------------------------------------------------------------------
 /** Fast check for minimum grapheme length, falls back to full check if needed */
 export function IsMinLength(value: string, minLength: number): boolean {
@@ -180,7 +180,7 @@ export function IsMinLength(value: string, minLength: number): boolean {
   }
 }
 // --------------------------------------------------------------------------
-// IsMaxLengthFast
+// IsMaxLength
 // --------------------------------------------------------------------------
 /** Fast check for maximum grapheme length, falls back to full check if needed */
 export function IsMaxLength(value: string, maxLength: number): boolean {
