@@ -26,4 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+export * as Automata from './automata.ts'
 export * as Turing from './turing.ts'

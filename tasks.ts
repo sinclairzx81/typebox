@@ -1,9 +1,9 @@
 // deno-fmt-ignore-file
 
+import { Turing, Automata } from './task/engine/index.ts'
 import { Syntax } from './task/syntax/index.ts'
 import { Website } from './task/website/index.ts'
 import { Bench } from './task/bench/index.ts'
-import { Turing } from './task/turing/index.ts'
 import { Range } from './task/range/index.ts'
 import { Metrics } from './task/metrics/index.ts'
 import { Spec } from './task/spec/index.ts'
@@ -108,6 +108,10 @@ Task.run('website', () => Website('docs'))
 // Turing
 // ------------------------------------------------------------------
 Task.run('turing', () => Turing.Debug())
+// ------------------------------------------------------------------
+// Automata
+// ------------------------------------------------------------------
+Task.run('automata', () => Automata.Debug())
 // ------------------------------------------------------------------
 // Report
 // ------------------------------------------------------------------

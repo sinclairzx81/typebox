@@ -19,6 +19,7 @@
     "test": "deno run -A tasks.ts test",             // Test Project
     "challenge": "deno run -A tasks.ts challenge",   // Type Challenges
     "turing": "deno run -A tasks.ts turing",         // Turing Complete Test
+    "automata": "deno run -A tasks.ts automata",     // Cellular Automata Test
     "website": "deno run -A tasks.ts website"        // Website Doc Server
   },
   "imports": {

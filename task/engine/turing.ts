@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import System from 'typebox/system'
 import Type from 'typebox'
 
 // ┌────────────────────────────────────────────────────────────────────────────┐
@@ -49,13 +50,13 @@ import Type from 'typebox'
 // │                                                                            │
 // └────────────────────────────────────────────────────────────────────────────┘
 
+System.Settings.Set({ maxInstantiationCount: 16384 }) // 16K
+
 // { output: "Hello, World!" }
 //
-const SourceCode = (
-  `>++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<+
+const SourceCode = `>++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<+
   +.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-
   ]<+.`
-)
 // ----------------------------------------------------------------------------
 // Interpretter
 // ----------------------------------------------------------------------------
@@ -247,19 +248,22 @@ export function MemoryUsage() {
 // Compile
 // --------------------------------------------------------------------------
 function Compile(input: string): Type.TTuple<Type.TLiteral[]> {
-  const literals = (input).replace(/[^\+\-\[\]<>.,]/g, '').split('').map(value => Type.Literal(value))
+  const literals = input.replace(/[^\+\-\[\]<>.,]/g, '').split('').map((value) => Type.Literal(value))
   return Type.Tuple(literals)
 }
 // --------------------------------------------------------------------------
 // Run
 // --------------------------------------------------------------------------
 export function Run(): void {
-  const program = Type.Script({ ...Interpretter, Code: Compile(SourceCode) }, `ProgramRun<Program<
+  const program = Type.Script(
+    { ...Interpretter, Code: Compile(SourceCode) },
+    `ProgramRun<Program<
     Memory<[], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]>, 
     List<[]>, 
     List<[]>, 
     Memory<[], Code>
-  >>` as never) as any
+  >>` as never
+  ) as any
   const output = program.properties.output.properties.items.items.map((item: any) => String.fromCharCode(item.const)).join('')
   console.log({ output })
 }
@@ -267,16 +271,17 @@ export function Run(): void {
 // --------------------------------------------------------------------------
 // Debug
 // --------------------------------------------------------------------------
-import { Memory } from 'typebox/system'
-
 export function Debug(): void {
   let step = 0
-  let program = Type.Script({ ...Interpretter, Code: Compile(SourceCode) }, `Program<
+  let program = Type.Script(
+    { ...Interpretter, Code: Compile(SourceCode) },
+    `Program<
     Memory<[], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]>, 
     List<[]>, 
     List<[]>, 
     Memory<[], Code>
-  >` as never) as any
+  >` as never
+  ) as any
   while (true) {
     console.clear()
     const input = program.properties.input.properties.items.items.map((type: Type.TLiteral) => type.const).join(' ')
@@ -288,9 +293,9 @@ export function Debug(): void {
     const next = program.properties.instruction.properties.next.items.map((type: Type.TLiteral) => type.const).join(' ')
     const prev = program.properties.instruction.properties.prev.items.map((type: Type.TLiteral) => type.const).join(' ')
     const gc = MemoryUsage()
-    const tb = Memory.Metrics
+    const tb = System.Memory.Metrics
     console.log('Program', { gc, tb, step, input, output, memory, current, next, prev })
-    if(program.properties.instruction.properties.next.items.length === 0) break
+    if (program.properties.instruction.properties.next.items.length === 0) break
     program = Type.Script({ ...Interpretter, State: program }, `ProgramStep<State>`)
     step += 1
   }
