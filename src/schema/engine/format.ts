@@ -30,15 +30,22 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
+import * as Externals from './_externals.ts'
 import { Format } from '../../format/index.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
-// Build
+// Build (Remote)
+// ------------------------------------------------------------------
+// export function BuildFormat(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XFormat, value: string): string {
+//   return E.Call(E.Member('Format', 'Test'), [E.Constant(schema.format), value])
+// }
+// ------------------------------------------------------------------
+// Build (Inline)
 // ------------------------------------------------------------------
 export function BuildFormat(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XFormat, value: string): string {
-  return E.Call(E.Member('Format', 'Test'), [E.Constant(schema.format), value])
+  return Format.Has(schema.format) ? E.Call(Externals.CreateVariable(Format.Get(schema.format)), [value]) : E.Constant(true)
 }
 // ------------------------------------------------------------------
 // Check

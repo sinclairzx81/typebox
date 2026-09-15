@@ -47,9 +47,8 @@ function Separator() {
 function ImportSection(build: BuildResult): string[] {
   const context = build.UseUnevaluated() ? [`import { CheckContext } from "typebox/schema"`] : []
   const hashing = `import { Hashing } from "typebox/system"`
-  const format = `import { Format } from "typebox/format"`
   const guard = `import { Guard } from "typebox/guard"`
-  return [...context, hashing, format, guard]
+  return [...context, hashing, guard]
 }
 // ------------------------------------------------------------------
 // ExternalSection

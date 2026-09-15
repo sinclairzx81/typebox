@@ -26,16 +26,25 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// ------------------------------------------------------------------
-// Guards
-// ------------------------------------------------------------------
-export * as EmitGuard from './emit.ts'
-export * as GlobalsGuard from './globals.ts'
-export * as NativeGuard from './native.ts'
+import { Get, type TSettings } from './settings.ts'
 
 // ------------------------------------------------------------------
-// Default
+// TempMaxErrors
 // ------------------------------------------------------------------
-import * as Guard from './guard.ts'
-export * as Guard from './guard.ts'
-export default Guard
+let TempMaxErrors = 0
+
+// ------------------------------------------------------------------
+// [Internal] EnableParseErrors
+// ------------------------------------------------------------------
+export function EnableParseErrors(): void {
+  const settings = Get() as TSettings
+  TempMaxErrors = settings.maxErrors
+  settings.maxErrors = settings.maxParseErrors
+}
+// ------------------------------------------------------------------
+// [Internal] DisableParseErrors
+// ------------------------------------------------------------------
+export function DisableParseErrors(): void {
+  const settings = Get() as TSettings
+  settings.maxErrors = TempMaxErrors
+}

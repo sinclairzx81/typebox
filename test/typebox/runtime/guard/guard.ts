@@ -346,3 +346,15 @@ Test('Should ShiftLeft 3', () => {
   } = Guard.ShiftLeft([42], (left, right) => ({ left, right }), () => 'empty')
   Assert.IsEqual(result, { left: 42, right: [] })
 })
+// ------------------------------------------------------------------
+// CodePoint
+// ------------------------------------------------------------------
+Test('Should CodePointCount 1', () => {
+  Assert.IsEqual(Guard.CodePointCount('type-📦'), 6)
+})
+// ------------------------------------------------------------------
+// GraphemeCount (Deprecated - Remove in Next)
+// ------------------------------------------------------------------
+Test('Should GraphemeCount 1', () => {
+  Assert.IsEqual(Guard.GraphemeCount('type-📦'), 6)
+})

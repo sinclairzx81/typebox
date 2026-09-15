@@ -37,9 +37,18 @@ import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
+function BuildRefineMultiple(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XRefine, value: string): string {
+  const external = Externals.CreateVariable(schema['~refine'])
+  return E.Every(external, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'check'), [value]))
+}
+function BuildRefineSingle(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XRefine, value: string): string {
+  const external = Externals.CreateVariable(schema['~refine'][0])
+  return E.Call(E.Member(external, 'check'), [value])
+}
 export function BuildRefine(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XRefine, value: string): string {
-  const refinements = Externals.CreateVariable(schema['~refine'].map((refinement) => refinement))
-  return E.Every(refinements, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'check'), [value]))
+  return G.IsEqual(schema['~refine'].length, 1) 
+    ? BuildRefineSingle(_stack, _context, schema, value)
+    : BuildRefineMultiple(_stack, _context, schema, value)
 }
 // ------------------------------------------------------------------
 // Check
@@ -52,8 +61,7 @@ export function CheckRefine(_stack: Stack.XStack, _context: CheckContext, schema
 // ------------------------------------------------------------------
 export function ErrorRefine(_stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRefine, value: unknown): boolean {
   return G.EveryAll(schema['~refine'], 0, (refinement, index) => {
-    return refinement.check(value) || context.AddError('~refine', schemaPath, instancePath, {
-      index, message: refinement.error(value)
-    })
+    return refinement.check(value) || 
+      context.AddError('~refine', schemaPath, instancePath, { index, message: refinement.error(value) })
   })
 }

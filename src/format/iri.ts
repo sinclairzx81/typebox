@@ -28,12 +28,12 @@ THE SOFTWARE.
 
 // deno-lint-ignore-file no-control-regex
 
-const IpvFutureMatchMaxLength = 2048
-const IpvFutureMatch = /\[[vV][0-9a-fA-F]+\.[^\]]+\]/ // Guarded By IpvFutureMatchMaxLength
-const InvalidIriChars = /[\x00-\x20<>\^`{|}\\]/
-const InvalidPercentEncoding = /%(?![0-9a-fA-F]{2})/
-
 // ------------------------------------------------------------------
+//
+// Removed by the following PR
+//
+// https://github.com/json-schema-org/JSON-Schema-Test-Suite/pull/1176
+//
 // NarrowIpvFuture
 //
 // Substitutes an IPvFuture address with a standard IPv6 loopback
@@ -43,12 +43,20 @@ const InvalidPercentEncoding = /%(?![0-9a-fA-F]{2})/
 // be expensive on large strings, this operation is strictly
 // limited to inputs under a defined length threshold.
 //
-// (review-optimization)
+// ------------------------------------------------------------------
+//
+// const IpvFutureMatchMaxLength = 2048
+// const IpvFutureMatch = /\[[vV][0-9a-fA-F]+\.[^\]]+\]/ // Guarded By IpvFutureMatchMaxLength
+//
+// function NarrowIpvFuture(value: string): string {
+//   return value.length < IpvFutureMatchMaxLength ? value.replace(IpvFutureMatch, '[::1]') : value
+// }
 //
 // ------------------------------------------------------------------
-function NarrowIpvFuture(value: string): string {
-  return value.length < IpvFutureMatchMaxLength ? value.replace(IpvFutureMatch, '[::1]') : value
-}
+
+const InvalidIriChars = /[\x00-\x20<>\^`{|}\\]/
+const InvalidPercentEncoding = /%(?![0-9a-fA-F]{2})/
+
 /**
  * Returns true if the value is a valid Internationalized Resource Identifier.
  * @specification https://datatracker.ietf.org/doc/html/rfc3987
@@ -59,5 +67,5 @@ export function IsIri(value: string): boolean {
   // 2. Reject malformed percent-encoding triplets.
   if (InvalidPercentEncoding.test(value)) return false
   // 3. Delegate to the native URL parser, patching the IPvFuture edge case beforehand.
-  return URL.canParse(NarrowIpvFuture(value))
+  return URL.canParse(value)
 }

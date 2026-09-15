@@ -28,7 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as String from './string.ts'
+import * as UnicodeSegmentGuard from './unicode/unicode_segment.ts'
+import * as UnicodeGuard from './unicode/unicode.ts'
 
 // --------------------------------------------------------------------------
 // Guards
@@ -146,17 +147,21 @@ export function IsValueLike(value: unknown): value is bigint | boolean | null | 
 // --------------------------------------------------------------------------
 // String
 // --------------------------------------------------------------------------
-/** Returns the number of grapheme clusters in the string */
+/** Returns the total number of visual grapheme clusters in the string. */
 export function GraphemeCount(value: string): number {
-  return String.GraphemeCount(value)
+  return UnicodeSegmentGuard.GraphemeCount(value)
 }
-/** Returns true if the string has at most the given number of graphemes */
-export function IsMaxLength(value: string, length: number): boolean {
-  return String.IsMaxLength(value, length)
+/** Returns the total number of Unicode code points in the string. */
+export function CodePointCount(value: string): number {
+  return UnicodeGuard.CodePointCount(value)
 }
-/** Returns true if the string has at least the given number of graphemes */
-export function IsMinLength(value: string, length: number): boolean {
-  return String.IsMinLength(value, length)
+/** Returns true if the string length in Unicode code points does not exceed maxLength */
+export function IsMaxLength(value: string, maxLength: number): boolean {
+  return UnicodeGuard.IsMaxLength(value, maxLength)
+}
+/** Returns true if the string length in Unicode code points is at least minLength */
+export function IsMinLength(value: string, minLength: number): boolean {
+  return UnicodeGuard.IsMinLength(value, minLength)
 }
 // --------------------------------------------------------------------------
 // Array

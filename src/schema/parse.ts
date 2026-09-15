@@ -29,6 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-lint-ignore-file
 
+import { EnableParseErrors, DisableParseErrors } from '../system/settings/internal.ts'
 import { Arguments } from '../system/arguments/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
 import { type Static } from '../type/types/static.ts'
@@ -50,7 +51,9 @@ export class ParseError {
 // ThrowParseError
 // ------------------------------------------------------------------
 export function ThrowParseError(context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, value: unknown): never {
+  EnableParseErrors()
   const result = Errors(context, schema, value)
+  DisableParseErrors()
   throw new ParseError(schema, value, result[1])
 }
 // ------------------------------------------------------------------

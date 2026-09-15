@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { EnableParseErrors, DisableParseErrors } from '../system/settings/internal.ts'
 import { Settings } from '../system/settings/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
 import { type StaticDecode, type StaticEncode, type TProperties, type TSchema } from '../type/index.ts'
@@ -87,7 +88,10 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
     const checked = this.Check(value)
     if(checked) return value as never
     if(Settings.Get().correctiveParse) return Parser(this.Context(), this.Type(), value) as never
-    throw new ParseError(value, this.Errors(value))
+    EnableParseErrors()
+    const errors = this.Errors(value)
+    DisableParseErrors()
+    throw new ParseError(value, errors)
   }
   /** Returns an array of validation errors for the given value. */
   public Errors(value: unknown): TLocalizedValidationError[] {

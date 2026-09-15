@@ -53,6 +53,18 @@ export interface TSettings {
   maxErrors: number
 
   /**
+   * Specifies the maximum number of errors to gather for failed Parse operations. TypeBox will
+   * automatically run an error-gathering pass on failed Parses to attach diagnostics to the
+   * thrown exception. This setting controls the number of errors gathered in that pass. Higher
+   * values will reduce throughput on failure cases, so a maximum of 4 is recommended if more
+   * errors are needed. The default setting of 1 will terminate on the first error, while a
+   * setting of 0 will skip error gathering entirely.
+   *
+   * @default 1
+   */
+  maxParseErrors: number
+
+  /**
    * Specifies the maximum number of instantiations allowed within a top-level generic instantiation
    * context. This setting can be used to bound generic calls to a fixed count, which can be useful if
    * evaluating string-encoded types originating from untrusted sources. Setting this value to 0 will
@@ -113,11 +125,14 @@ export interface TSettings {
    */
   unionPrioritySort: boolean
 }
-
+// -------------------------------------------------------------------
+// State
+// -------------------------------------------------------------------
 // Internal mutable state
 const settings: TSettings = {
   immutableTypes: false,
   maxErrors: 8,
+  maxParseErrors: 1,
   maxInstantiationCount: 128,
   useAcceleration: true,
   exactOptionalPropertyTypes: false,
@@ -125,11 +140,14 @@ const settings: TSettings = {
   correctiveParse: false,
   unionPrioritySort: true
 }
-
+// -------------------------------------------------------------------
+// Reset
+// -------------------------------------------------------------------
 /** Resets system settings to defaults */
 export function Reset(): void {
   settings.immutableTypes = false
   settings.maxErrors = 8
+  settings.maxParseErrors = 1
   settings.maxInstantiationCount = 128
   settings.useAcceleration = true
   settings.exactOptionalPropertyTypes = false
@@ -137,7 +155,9 @@ export function Reset(): void {
   settings.correctiveParse = false
   settings.unionPrioritySort = true
 }
-
+// -------------------------------------------------------------------
+// Set
+// -------------------------------------------------------------------
 /** Sets system settings */
 export function Set(options: Partial<TSettings>): void {
   for (const key of Guard.Keys(options)) {
@@ -147,7 +167,9 @@ export function Set(options: Partial<TSettings>): void {
     }
   }
 }
-
+// -------------------------------------------------------------------
+// Get
+// -------------------------------------------------------------------
 /** Gets current system settings */
 export function Get(): Readonly<TSettings> {
   return settings

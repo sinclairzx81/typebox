@@ -33,10 +33,8 @@ import { Arguments } from '../system/arguments/index.ts'
 import { Environment } from '../system/environment/index.ts'
 import { Hashing } from '../system/hashing/index.ts'
 import { Guard } from '../guard/index.ts'
-import { Format } from '../format/index.ts'
 
 import * as Engine from './engine/index.ts'
-import * as Resolve from './resolve/index.ts'
 import * as Schema from './types/index.ts'
 
 // ------------------------------------------------------------------
@@ -53,8 +51,8 @@ function CreateCode(build: BuildResult): string {
 // CreateEvaluatedCheck
 // ------------------------------------------------------------------
 function CreateEvaluatedCheck(build: BuildResult, code: string): CheckFunction {
-  const factory = Environment.Evaluate('CheckContext', 'Guard', 'Format', 'Hashing', build.External().identifier, code)
-  return factory(Engine.CheckContext, Guard, Format, Hashing, build.External().variables)
+  const factory = Environment.Evaluate('CheckContext', 'Guard', 'Hashing', build.External().identifier, code)
+  return factory(Engine.CheckContext, Guard, Hashing, build.External().variables)
 }
 // ------------------------------------------------------------------
 // CreateDynamicCheck
@@ -107,7 +105,7 @@ export class BuildResult {
     private readonly functions: string[],
     private readonly entry: string,
     private readonly useUnevaluated: boolean
-  ) { }
+  ) {}
   /** Returns the Context used for this build */
   public Context(): Record<PropertyKey, Schema.XSchema> {
     return this.context

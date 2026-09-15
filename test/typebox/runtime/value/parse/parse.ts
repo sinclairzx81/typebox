@@ -1,4 +1,5 @@
 import { Assert } from 'test'
+import Guard from 'typebox/guard'
 import System from 'typebox/system'
 import Value from 'typebox/value'
 import Type from 'typebox'
@@ -99,4 +100,38 @@ Test('Should Parse Corrective 5 (Assert)', () => {
   const input = undefined
   Assert.Throws(() => Value.Parse(T, input))
   System.Settings.Reset()
+})
+// ------------------------------------------------------------------
+// MaxParseErrors
+// ------------------------------------------------------------------
+Test('Should MaxParseErrors 1', () => {
+  try {
+    Value.Parse(
+      Type.Object({
+        x: Type.Number(),
+        y: Type.Number()
+      }),
+      { x: null, y: null }
+    )
+  } catch (error: any) {
+    Assert.IsTrue(Guard.IsArray(error.cause.errors))
+    Assert.IsEqual(error.cause.errors.length, 1)
+  }
+})
+Test('Should MaxParseErrors 2', () => {
+  System.Settings.Set({ maxParseErrors: 2 })
+  try {
+    Value.Parse(
+      Type.Object({
+        x: Type.Number(),
+        y: Type.Number()
+      }),
+      { x: null, y: null }
+    )
+  } catch (error: any) {
+    Assert.IsTrue(Guard.IsArray(error.cause.errors))
+    Assert.IsEqual(error.cause.errors.length, 2)
+  } finally {
+    System.Settings.Reset()
+  }
 })
