@@ -214,18 +214,42 @@ function ExtendsTupleToTuple<Inferred extends TProperties, Left extends TSchema[
   return Elements(inferred, reversed, ApplyReverse(left, reversed), ApplyReverse(instantiatedRight, reversed)) as never
 }
 // ----------------------------------------------------------------------------
-// ExtendsTupleToArray
+// ExtendsTupleToArray | Asymmetric | Tail Recursion Elimination
 // ----------------------------------------------------------------------------
+type TExtendsTupleToArrayReduce<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema> = (
+  Left extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
+    ? TExtendsLeft<Inferred, Head, Right> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
+      ? TExtendsTupleToArrayReduce<Inferred, Tail, Right>
+      : Result.TExtendsFalse
+    : Result.TExtendsTrue<Inferred>
+)
+// function ExtendsTupleToArrayReduce<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema>
+//   (inferred: Inferred, left: [...Left], right: Right):
+//     TExtendsTupleToArrayReduce<Inferred, Left, Right> {
+//   return (
+//     Guard.ShiftLeft(left, (head, tail) =>
+//       Result.Match(ExtendsLeft(inferred, head, right), inferred =>
+//         ExtendsTupleToArrayReduce(inferred, tail, right), // Stack Overflow Here (Large Left)
+//         () => Result.ExtendsFalse()),
+//       () => Result.ExtendsTrue(inferred))
+//   ) as never
+// }
+function ExtendsTupleToArrayReduce<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema>
+  (inferred: Inferred, left: [...Left], right: Right):
+    TExtendsTupleToArrayReduce<Inferred, Left, Right> {
+  for (const head of left) {
+    const result = ExtendsLeft(inferred, head, right)
+    if (!Result.IsExtendsTrueLike(result)) return result as never
+    inferred = result.inferred as never // (review-assign-to-argument)
+  }
+  return Result.ExtendsTrue(inferred) as never
+}
 type TExtendsTupleToArray<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema,
   Inferrable extends TInferable | undefined = TTryInferable<Right>
 > = (
   Inferrable extends TInferable
     ? TInferUnionResult<Inferred, Inferrable['name'], Left, Inferrable['type']>
-  : Left extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
-    ? TExtendsLeft<Inferred, Head, Right> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
-      ? TExtendsTupleToArray<Inferred, Tail, Right>
-      : Result.TExtendsFalse
-    : Result.TExtendsTrue<Inferred>
+    : TExtendsTupleToArrayReduce<Inferred, Left, Right>
 )
 function ExtendsTupleToArray<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema>
   (inferred: Inferred, left: [...Left], right: Right): 
@@ -234,11 +258,7 @@ function ExtendsTupleToArray<Inferred extends TProperties, Left extends TSchema[
   return (
     IsInferable(inferrable)
       ? InferUnionResult(inferred, inferrable['name'], left, inferrable['type'])
-      : Guard.ShiftLeft(left, (head, tail) => 
-        Result.Match(ExtendsLeft(inferred, head, right), inferred => 
-          ExtendsTupleToArray(inferred, tail, right),
-          () => Result.ExtendsFalse()),
-        () => Result.ExtendsTrue(inferred))
+      : ExtendsTupleToArrayReduce(inferred, left, right)
   ) as never
 }
 // ----------------------------------------------------------------------------
