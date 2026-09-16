@@ -1,6 +1,6 @@
 # Mcp: ProtocolType
 
-This example demonstrates how to compile and infer the Mcp Protocol specification directly from JSON Schema. The example uses no code generation, all inference is derived via TypeBox's JSON Schema compiler infrastructure.
+This example shows immediate inference and compilation of the official Mcp Protocol JSON Schema specification without an offline code generation step. The example is for reference purposes only and is used to demonstrate advanced JSON Schema inference cases for very large schematics.
 
 ## Usage
 
