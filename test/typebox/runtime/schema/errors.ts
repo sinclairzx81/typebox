@@ -118,3 +118,82 @@ Test('Should Errors 12', () => {
   Assert.IsEqual(errors.length, 0)
   System.Settings.Reset()
 })
+// ------------------------------------------------------------------
+// SchemaPath is EvaluationPath
+// ------------------------------------------------------------------
+Test('Should Errors 13', () => {
+  // $ref
+  const R = Schema.Errors({
+    $ref: '#/$defs/A',
+    $defs: {
+      A: { $ref: '#/$defs/B' },
+      B: { $ref: '#/$defs/C' },
+      C: {
+        type: 'object',
+        required: ['x', 'y'],
+        properties: {
+          x: { type: 'number' },
+          y: { type: 'number' } // inlined as '#/properties/y' from root
+        }
+      }
+    }
+  }, { x: 1, y: null })[1]
+  Assert.IsEqual(R[0].schemaPath, '#/properties/y')
+})
+Test('Should Errors 14', () => {
+  // $recursiveRef
+  const R = Schema.Errors({
+    $recursiveRef: '#/$defs/A',
+    $defs: {
+      A: { $recursiveRef: '#/$defs/B' },
+      B: { $recursiveRef: '#/$defs/C' },
+      C: {
+        type: 'object',
+        required: ['x', 'y'],
+        properties: {
+          x: { type: 'number' },
+          y: { type: 'number' } // inlined as '#/properties/y' from root
+        }
+      }
+    }
+  }, { x: 1, y: null })[1]
+  Assert.IsEqual(R[0].schemaPath, '#/properties/y')
+})
+Test('Should Errors 15', () => {
+  // $dynamicRef
+  const R = Schema.Errors({
+    $dynamicRef: '#/$defs/A',
+    $defs: {
+      A: { $dynamicRef: '#/$defs/B' },
+      B: { $dynamicRef: '#/$defs/C' },
+      C: {
+        type: 'object',
+        required: ['x', 'y'],
+        properties: {
+          x: { type: 'number' },
+          y: { type: 'number' } // inlined as '#/properties/y' from root
+        }
+      }
+    }
+  }, { x: 1, y: null })[1]
+  Assert.IsEqual(R[0].schemaPath, '#/properties/y')
+})
+Test('Should Errors 16', () => {
+  // $ref > $recursiveRef > $dynamicRef
+  const R = Schema.Errors({
+    $ref: '#/$defs/A',
+    $defs: {
+      A: { $recursiveRef: '#/$defs/B' },
+      B: { $dynamicRef: '#/$defs/C' },
+      C: {
+        type: 'object',
+        required: ['x', 'y'],
+        properties: {
+          x: { type: 'number' },
+          y: { type: 'number' } // inlined as '#/properties/y' from root
+        }
+      }
+    }
+  }, { x: 1, y: null })[1]
+  Assert.IsEqual(R[0].schemaPath, '#/properties/y')
+})
