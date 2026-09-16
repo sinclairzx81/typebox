@@ -54,8 +54,8 @@ export function CheckRecursiveRef(stack: Stack.XStack, context: CheckContext, sc
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRecursiveRef(stack: Stack.XStack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XRecursiveRef, value: unknown): boolean {
+export function ErrorRecursiveRef(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRecursiveRef, value: unknown): boolean {
   const target = Resolve.RecursiveRef(stack, schema) ?? false
   const nextStack = target ? { ...stack, pendingResource: true } : stack
-  return (Schema.IsSchema(target) && ErrorSchema(nextStack, context, '#', instancePath, target, value))
+  return (Schema.IsSchema(target) && ErrorSchema(nextStack, context, schemaPath, instancePath, target, value))
 }

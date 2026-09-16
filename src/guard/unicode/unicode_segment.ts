@@ -130,8 +130,7 @@ function IsGraphemeCodePoint(value: number): boolean {
 /** Checks if a string has at least a minimum number of grapheme clusters */
 function IsMinLengthSegmented(value: string, minLength: number): boolean {
   // if (minLength === 0) return true // 0-length (unreachable)
-  let count = 0
-  let index = 0
+  let count = 0, index = 0
   while (index < value.length) {
     index = NextGraphemeClusterIndex(value, index)
     if ((++count) >= minLength) return true
@@ -143,8 +142,7 @@ function IsMinLengthSegmented(value: string, minLength: number): boolean {
 // --------------------------------------------------------------------------
 /** Checks if a string has at most a maximum number of grapheme clusters */
 function IsMaxLengthSegmented(value: string, maxLength: number): boolean {
-  let count = 0
-  let index = 0
+  let count = 0, index = 0
   while (index < value.length) {
     index = NextGraphemeClusterIndex(value, index)
     if ((++count) > maxLength) return false
@@ -156,8 +154,7 @@ function IsMaxLengthSegmented(value: string, maxLength: number): boolean {
 // --------------------------------------------------------------------------
 /** Returns the number of grapheme clusters in a string */
 export function GraphemeCount(value: string): number {
-  let count = 0
-  let index = 0
+  let count = 0, index = 0
   while (index < value.length) {
     index = NextGraphemeClusterIndex(value, index)
     count++

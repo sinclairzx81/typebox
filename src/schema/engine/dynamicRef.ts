@@ -54,8 +54,8 @@ export function CheckDynamicRef(stack: Stack.XStack, context: CheckContext, sche
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorDynamicRef(stack: Stack.XStack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XDynamicRef, value: unknown): boolean {
+export function ErrorDynamicRef(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDynamicRef, value: unknown): boolean {
   const target = Resolve.DynamicRef(stack, schema) ?? false
   const nextStack = target ? { ...stack, pendingResource: true } : stack
-  return (Schema.IsSchema(target) && ErrorSchema(nextStack, context, '#', instancePath, target, value))
+  return (Schema.IsSchema(target) && ErrorSchema(nextStack, context, schemaPath, instancePath, target, value))
 }

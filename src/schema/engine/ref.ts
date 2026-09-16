@@ -73,11 +73,11 @@ export function CheckRef(stack: Stack.XStack, context: CheckContext, schema: Sch
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRef(stack: Stack.XStack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XRef, value: unknown): boolean {
+export function ErrorRef(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRef, value: unknown): boolean {
   const result = Resolve.Ref(stack, schema)
   const target = result.schema ?? false
   const nextContext = new ErrorContext()
-  const valid = (Schema.IsSchema(target) && ErrorSchema(result.stack, nextContext, '#', instancePath, target, value))
+  const valid = (Schema.IsSchema(target) && ErrorSchema(result.stack, nextContext, schemaPath, instancePath, target, value))
   if (valid) context.Merge([nextContext])
   if (!valid) context.AddErrors(nextContext.GetErrors())
   return valid
