@@ -1,3 +1,4 @@
+import Codegen from 'typebox/codegen'
 import Compile from 'typebox/compile'
 import System from 'typebox/system'
 import Guard from 'typebox/guard'

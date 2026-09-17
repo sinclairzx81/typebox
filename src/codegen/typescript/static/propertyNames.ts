@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,43 +26,40 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
-// deno-fmt-ignore-file
+import * as Schema from '../../../schema/index.ts'
+import { StaticSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
-// FromTypeNames
+// REVIEW: SHOULD USE TYPE.* NUMERIC and STRING PATTERNS
 // ------------------------------------------------------------------
-type XFromTypeNames<TypeNames extends string[], Result extends unknown = never> = (
-  TypeNames extends readonly [infer Left extends string, ...infer Right extends string[]]
-    ? XFromTypeNames<Right, Result | XFromTypeName<Left>>
-    : Result
-)
+const StringLiteralPattern = /^".*"$/
+const NumericLiteralPattern = /^-?\d+(\.\d+)?$/
+function IsStringLiteral(value: string): boolean {
+  return StringLiteralPattern.test(value)
+}
+function IsNumericLiteral(value: string): boolean {
+  return NumericLiteralPattern.test(value)
+}
 // ------------------------------------------------------------------
-// FromTypeName
+// Utility: PropertyKey-compatibility check
 // ------------------------------------------------------------------
-type XFromTypeName<TypeName extends string> = (
-  // jsonschema
-  TypeName extends 'object' ? object :
-  TypeName extends 'array' ? {} :
-  TypeName extends 'boolean' ? boolean :
-  TypeName extends 'integer' ? number :
-  TypeName extends 'number' ? number :
-  TypeName extends 'null' ? null :
-  TypeName extends 'string' ? string :
-  // xschema
-  TypeName extends 'bigint' ? bigint :
-  TypeName extends 'constructor' ? {} :
-  TypeName extends 'function' ? {} :
-  TypeName extends 'symbol' ? symbol :
-  TypeName extends 'undefined' ? undefined : 
-  TypeName extends 'void' ? void :  
-  unknown
-)
+function IsPropertyKeyMember(member: string): boolean {
+  const trimmed = member.trim()
+  return (
+    trimmed === 'string' ||
+    trimmed === 'number' ||
+    trimmed === 'symbol' ||
+    IsStringLiteral(trimmed) ||
+    IsNumericLiteral(trimmed)
+  )
+}
+function IsPropertyKeyLike(staticKey: string): boolean {
+  return staticKey.split('|').every((member) => IsPropertyKeyMember(member))
+}
 // ------------------------------------------------------------------
-// XStaticType
+// XStaticPropertyNames
 // ------------------------------------------------------------------
-export type XStaticType<TypeName extends string[] | string> = (
-  TypeName extends string[] ? XFromTypeNames<TypeName> :
-  TypeName extends string ? XFromTypeName<TypeName> :
-  unknown
-)
+export function StaticPropertyNames(stack: string[], root: Schema.XSchema, schema: Schema.XSchema): string {
+  const staticKey = StaticSchema([...stack], root, schema)
+  return IsPropertyKeyLike(staticKey) ? `{ [Key in ${staticKey}]?: unknown }` : '{}'
+}

@@ -102,15 +102,6 @@ Assert.IsExtendsMutual<
   void
 >(true)
 // ------------------------------------------------------------------
-// XSchema-Structural-Object: AsyncIterator
-// ------------------------------------------------------------------
-Assert.IsExtendsMutual<
-  XStatic<{
-    type: 'asyncIterator'
-  }>,
-  {}
->(true)
-// ------------------------------------------------------------------
 // XSchema-Structural-Object: Constructor
 // ------------------------------------------------------------------
 Assert.IsExtendsMutual<
@@ -125,15 +116,6 @@ Assert.IsExtendsMutual<
 Assert.IsExtendsMutual<
   XStatic<{
     type: 'function'
-  }>,
-  {}
->(true)
-// ------------------------------------------------------------------
-// XSchema-Structural-Object: Iterator
-// ------------------------------------------------------------------
-Assert.IsExtendsMutual<
-  XStatic<{
-    type: 'iterator'
   }>,
   {}
 >(true)

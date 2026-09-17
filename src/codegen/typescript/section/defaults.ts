@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,34 +26,17 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
+import { BuildResult } from '../../../schema/index.ts'
+import { Writer } from '../../writer.ts'
+import { Banner } from './banner.ts'
 
-import { Guard } from '../../guard/index.ts'
-import type { XSchemaObject } from './schema.ts'
-
 // ------------------------------------------------------------------
-// Type
+// DefaultsSection
 // ------------------------------------------------------------------
-export interface XRefinement {
-  check: (value: unknown) => boolean
-  error: (value: unknown) => string
-}
-export interface XRefine<Refinements extends XRefinement[] = XRefinement[]> {
-  '~refine': Refinements
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** 
- * Returns true if the schema contains an '~refine` keyword
- * @specification None
- */
-export function IsRefine(value: XSchemaObject): value is XRefine {
-  return Guard.HasPropertyKey(value, '~refine')
-    && Guard.IsArray(value["~refine"])
-    && Guard.Every(value['~refine'], 0, value => Guard.IsObject(value)
-      && Guard.HasPropertyKey(value, 'check')
-      && Guard.HasPropertyKey(value, 'error')
-      && Guard.IsFunction(value.check)
-      && Guard.IsFunction(value.error))
+export function DefaultsSection(_build: BuildResult): string {
+  const writer = new Writer()
+  writer.WriteLine(Banner('Default'))
+  writer.WriteLine('const Module = { Schema, Context, Check, Parse, Errors }')
+  writer.WriteLine(`export default Module`)
+  return writer.ToString()
 }

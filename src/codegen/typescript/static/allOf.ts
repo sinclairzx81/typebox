@@ -28,32 +28,10 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../guard/index.ts'
-import type { XSchemaObject } from './schema.ts'
+import * as Schema from '../../../schema/index.ts'
+import { StaticSchema } from './schema.ts'
 
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-export interface XRefinement {
-  check: (value: unknown) => boolean
-  error: (value: unknown) => string
-}
-export interface XRefine<Refinements extends XRefinement[] = XRefinement[]> {
-  '~refine': Refinements
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** 
- * Returns true if the schema contains an '~refine` keyword
- * @specification None
- */
-export function IsRefine(value: XSchemaObject): value is XRefine {
-  return Guard.HasPropertyKey(value, '~refine')
-    && Guard.IsArray(value["~refine"])
-    && Guard.Every(value['~refine'], 0, value => Guard.IsObject(value)
-      && Guard.HasPropertyKey(value, 'check')
-      && Guard.HasPropertyKey(value, 'error')
-      && Guard.IsFunction(value.check)
-      && Guard.IsFunction(value.error))
+export function StaticAllOf(stack: string[], root: Schema.XSchema, schemas: Schema.XSchema[]): string {
+  if(schemas.length === 0) return 'unknown'
+  return schemas.map(schema => StaticSchema([...stack], root, schema)).join(' & ')
 }
