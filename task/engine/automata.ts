@@ -37,7 +37,7 @@ import Type from 'typebox'
 // ------------------------------------------------------------------
 //
 // This test computes a 1D cellular automata on a tuple of
-// length 50. It is used to test type evaluation performance on a
+// length 64. It is used to test type evaluation performance on a
 // known fixed-size item buffer. The test is also used to
 // investigate better tail-call optimizations for larger tuple
 // sequences. Rule 90 outputs a Sierpinski triangle, shown below.
@@ -98,10 +98,12 @@ const Module = Type.Script(`
   )
 ` as never) as never as Type.TModule<{}>
 // ------------------------------------------------------------------
-// Debug (Length: 48)
+// Debug
 // ------------------------------------------------------------------
-export function Debug(iteration: number = 23): void {
-  let State: Type.TSchema = Type.Script(`[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]`)
+export function Debug(iteration: number = 64): void {
+  const half = iteration
+  const zeros = Array(half).fill(0).join(', ')
+  let State: Type.TSchema = Type.Script(`[${zeros}, 1, ${zeros}]`)
   console.log(Render(State))
   for (let i = 0; i < iteration; i++) {
     State = Type.Script({ ...Module, State }, 'Step<State>')

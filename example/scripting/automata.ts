@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,32 +30,45 @@ import Type from 'typebox'
 
 // ------------------------------------------------------------------
 //
-// Rule30 implemented with TypeBox Script
+// TypeBox: Rule 90 Automata Performance Test
 //
-// https://en.wikipedia.org/wiki/Rule_30
+// Reference: https://en.wikipedia.org/wiki/Rule_90
 //
-//                       █                       
-//                      ███                      
-//                     ██  █                     
-//                    ██ ████                    
-//                   ██  █   █                   
-//                  ██ ████ ███                  
-//                 ██  █    █  █                 
-//                ██ ████  ██████                
-//               ██  █   ███     █               
-//              ██ ████ ██  █   ███              
-//             ██  █    █ ████ ██  █             
-//            ██ ████  ██ █    █ ████            
-//           ██  █   ███  ██  ██ █   █           
-//          ██ ████ ██  ███ ███  ██ ███          
-//         ██  █    █ ███   █  ███  █  █         
-//        ██ ████  ██ █  █ █████  ███████        
-//       ██  █   ███  ████ █    ███      █       
-//      ██ ████ ██  ███    ██  ██  █    ███      
-//     ██  █    █ ███  █  ██ ███ ████  ██  █     
-//    ██ ████  ██ █  ██████  █   █   ███ ████    
-//   ██  █   ███  ████     ████ ███ ██   █   █   
-//  ██ ████ ██  ███   █   ██    █   █ █ ███ ███  
+// ------------------------------------------------------------------
+//
+// This test computes a 1D cellular automata on a tuple of
+// length 64. It is used to test type evaluation performance on a
+// known fixed-size item buffer. The test is also used to
+// investigate better tail-call optimizations for larger tuple
+// sequences. Rule 90 outputs a Sierpinski triangle, shown below.
+//
+// ------------------------------------------------------------------
+//
+//                           █
+//                          █ █
+//                         █   █
+//                        █ █ █ █
+//                       █       █
+//                      █ █     █ █
+//                     █   █   █   █
+//                    █ █ █ █ █ █ █ █
+//                   █               █
+//                  █ █             █ █
+//                 █   █           █   █
+//                █ █ █ █         █ █ █ █
+//               █       █       █       █
+//              █ █     █ █     █ █     █ █
+//             █   █   █   █   █   █   █   █
+//            █ █ █ █ █ █ █ █ █ █ █ █ █ █ █ █
+//           █                               █
+//          █ █                             █ █
+//         █   █                           █   █
+//        █ █ █ █                         █ █ █ █
+//       █       █                       █       █
+//      █ █     █ █                     █ █     █ █
+//     █   █   █   █                   █   █   █   █
+//    █ █ █ █ █ █ █ █                 █ █ █ █ █ █ █ █
+//
 //
 // ------------------------------------------------------------------
 
@@ -66,30 +79,31 @@ function Render(schema: Type.TSchema): string {
   return (schema as any).items.map((item: any) => (item.const === 1 ? '█' : ' ')).join('')
 }
 // ------------------------------------------------------------------
-// Rule30
+// Rule 90
 // ------------------------------------------------------------------
 const Module = Type.Script(`
-  type Rule30<A extends number, B extends number, C extends number> =
+  type Rule90<A extends number, B extends number, C extends number> =
     [A, B, C] extends [1, 1, 1] ? 0 :
-    [A, B, C] extends [1, 1, 0] ? 0 :
+    [A, B, C] extends [1, 1, 0] ? 1 :
     [A, B, C] extends [1, 0, 1] ? 0 :
     [A, B, C] extends [1, 0, 0] ? 1 :
     [A, B, C] extends [0, 1, 1] ? 1 :
-    [A, B, C] extends [0, 1, 0] ? 1 :
+    [A, B, C] extends [0, 1, 0] ? 0 :
     [A, B, C] extends [0, 0, 1] ? 1 :
     0
   type Step<Input extends number[], T extends number[] = [0, ...Input, 0], Result extends number[] = []> = (
     T extends [infer A, infer B, infer C, ...infer Rest]
-      ? Step<Input, [B, C, ...Rest], [...Result, Rule30<A, B, C>]>
+      ? Step<Input, [B, C, ...Rest], [...Result, Rule90<A, B, C>]>
       : Result
   )
 ` as never) as never as Type.TModule<{}>
-
 // ------------------------------------------------------------------
-// Machine (Length: 48)
+// Debug
 // ------------------------------------------------------------------
-export function Run(iteration: number = 128): void {
-  let State: Type.TSchema = Type.Script(`[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]`)
+export function Debug(iteration: number = 64): void {
+  const half = iteration
+  const zeros = Array(half).fill(0).join(', ')
+  let State: Type.TSchema = Type.Script(`[${zeros}, 1, ${zeros}]`)
   console.log(Render(State))
   for (let i = 0; i < iteration; i++) {
     State = Type.Script({ ...Module, State }, 'Step<State>')
