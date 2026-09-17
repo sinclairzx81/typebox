@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,34 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
-import { Guard } from '../../guard/index.ts'
-import type { XSchemaObject } from './schema.ts'
-
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-export interface XRefinement {
-  check: (value: unknown) => boolean
-  error: (value: unknown) => string
-}
-export interface XRefine<Refinements extends XRefinement[] = XRefinement[]> {
-  '~refine': Refinements
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** 
- * Returns true if the schema contains an '~refine` keyword
- * @specification None
- */
-export function IsRefine(value: XSchemaObject): value is XRefine {
-  return Guard.HasPropertyKey(value, '~refine')
-    && Guard.IsArray(value["~refine"])
-    && Guard.Every(value['~refine'], 0, value => Guard.IsObject(value)
-      && Guard.HasPropertyKey(value, 'check')
-      && Guard.HasPropertyKey(value, 'error')
-      && Guard.IsFunction(value.check)
-      && Guard.IsFunction(value.error))
-}
+export { Static } from './static.ts'

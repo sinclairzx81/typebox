@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,43 +26,22 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
-// deno-fmt-ignore-file
+import { BuildResult } from '../../schema/index.ts'
+import { Banner } from './banner.ts'
+import { Writer } from '../writer.ts'
 
 // ------------------------------------------------------------------
-// FromTypeNames
+// AnnotateParameter
 // ------------------------------------------------------------------
-type XFromTypeNames<TypeNames extends string[], Result extends unknown = never> = (
-  TypeNames extends readonly [infer Left extends string, ...infer Right extends string[]]
-    ? XFromTypeNames<Right, Result | XFromTypeName<Left>>
-    : Result
-)
+function AnnotateFunction(func: string): string {
+  return func.replace(/= \(\(value\) =>/, '= ((value: any) =>')
+}
 // ------------------------------------------------------------------
-// FromTypeName
+// ChecksSection
 // ------------------------------------------------------------------
-type XFromTypeName<TypeName extends string> = (
-  // jsonschema
-  TypeName extends 'object' ? object :
-  TypeName extends 'array' ? {} :
-  TypeName extends 'boolean' ? boolean :
-  TypeName extends 'integer' ? number :
-  TypeName extends 'number' ? number :
-  TypeName extends 'null' ? null :
-  TypeName extends 'string' ? string :
-  // xschema
-  TypeName extends 'bigint' ? bigint :
-  TypeName extends 'constructor' ? {} :
-  TypeName extends 'function' ? {} :
-  TypeName extends 'symbol' ? symbol :
-  TypeName extends 'undefined' ? undefined : 
-  TypeName extends 'void' ? void :  
-  unknown
-)
-// ------------------------------------------------------------------
-// XStaticType
-// ------------------------------------------------------------------
-export type XStaticType<TypeName extends string[] | string> = (
-  TypeName extends string[] ? XFromTypeNames<TypeName> :
-  TypeName extends string ? XFromTypeName<TypeName> :
-  unknown
-)
+export function ChecksSection(build: BuildResult): string {
+  const writer = new Writer()
+  writer.WriteLine(Banner('Check'))
+  build.Functions().forEach((func) => writer.WriteLine(AnnotateFunction(func)))
+  return writer.ToString()
+}

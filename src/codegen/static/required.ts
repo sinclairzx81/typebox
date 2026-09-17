@@ -26,43 +26,23 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
+import * as Schema from '../../schema/index.ts'
+
 // ------------------------------------------------------------------
-// FromTypeNames
+// Record<Keys[number], unknown>
 // ------------------------------------------------------------------
-type XFromTypeNames<TypeNames extends string[], Result extends unknown = never> = (
-  TypeNames extends readonly [infer Left extends string, ...infer Right extends string[]]
-    ? XFromTypeNames<Right, Result | XFromTypeName<Left>>
-    : Result
-)
+function Record(keys: string[]): string {
+  return keys.length === 0 ? '{}' : `{ ${keys.map(key => `${JSON.stringify(key)}: unknown`).join(', ')} }`
+}
 // ------------------------------------------------------------------
-// FromTypeName
+// StaticRequired
 // ------------------------------------------------------------------
-type XFromTypeName<TypeName extends string> = (
-  // jsonschema
-  TypeName extends 'object' ? object :
-  TypeName extends 'array' ? {} :
-  TypeName extends 'boolean' ? boolean :
-  TypeName extends 'integer' ? number :
-  TypeName extends 'number' ? number :
-  TypeName extends 'null' ? null :
-  TypeName extends 'string' ? string :
-  // xschema
-  TypeName extends 'bigint' ? bigint :
-  TypeName extends 'constructor' ? {} :
-  TypeName extends 'function' ? {} :
-  TypeName extends 'symbol' ? symbol :
-  TypeName extends 'undefined' ? undefined : 
-  TypeName extends 'void' ? void :  
-  unknown
-)
-// ------------------------------------------------------------------
-// XStaticType
-// ------------------------------------------------------------------
-export type XStaticType<TypeName extends string[] | string> = (
-  TypeName extends string[] ? XFromTypeNames<TypeName> :
-  TypeName extends string ? XFromTypeName<TypeName> :
-  unknown
-)
+export function StaticRequired(_stack: string[], _root: Schema.XSchema, schema: Schema.XSchemaObject, keys: string[]): string {
+  // If the 'properties' keyword is present, we return {} and trust the 'Properties' inference
+  // path to resolve the 'required' keyword. If 'properties' is absent, we generate an object
+  // where each key is assigned an 'unknown' type, as 'required' without 'properties'
+  // still implies that the keys should exist on the object.
+  return Schema.IsProperties(schema) ? '{}' : Record(keys)
+}
