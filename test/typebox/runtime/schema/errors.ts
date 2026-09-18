@@ -203,7 +203,6 @@ Test('Should Errors 16', () => {
 // Ref: https://github.com/sinclairzx81/typebox/issues/1694
 // ------------------------------------------------------------------
 Test('Should Errors 17', () => {
-  // provided reproduction
   const R = Schema.Errors({
     'type': 'object',
     'required': ['a', 'a/b', 'a~1b'],
