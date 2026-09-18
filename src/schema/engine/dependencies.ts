@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
+import * as Pathing from './_pathing.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
@@ -69,7 +70,7 @@ export function CheckDependencies(stack: Stack.XStack, context: CheckContext, sc
 export function ErrorDependencies(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDependencies, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
   const isEvery = G.EveryAll(G.Entries(schema.dependencies), 0, ([key, schema]) => {
-    const nextSchemaPath = `${schemaPath}/dependencies/${key}`
+    const nextSchemaPath = `${schemaPath}/dependencies/${Pathing.EncodeFragment(key)}`
     return !G.HasPropertyKey(value, key) || (
       G.IsArray(schema)
         ? schema.every((dependency) => G.HasPropertyKey(value, dependency) ||

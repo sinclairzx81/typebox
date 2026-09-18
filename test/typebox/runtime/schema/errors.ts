@@ -197,3 +197,70 @@ Test('Should Errors 16', () => {
   }, { x: 1, y: null })[1]
   Assert.IsEqual(R[0].schemaPath, '#/properties/y')
 })
+// ------------------------------------------------------------------
+// JSON Pointer Fragment Encoding
+//
+// Ref: https://github.com/sinclairzx81/typebox/issues/1694
+// ------------------------------------------------------------------
+Test('Should Errors 17', () => {
+  // provided reproduction
+  const R = Schema.Errors({
+    'type': 'object',
+    'required': ['a', 'a/b', 'a~1b'],
+    'properties': {
+      'a': {
+        'type': 'object',
+        'required': ['b'],
+        'properties': {
+          'b': { 'type': 'number' }
+        }
+      },
+      'a/b': { 'type': 'number' },
+      'a~1b': { 'type': 'number' }
+    }
+  }, { 'a/b': 'literal slash', a: { b: 'nested' }, 'a~1b': 'literal tilde' })[1]
+  Assert.IsEqual(R.map((error) => error.instancePath), ['/a/b', '/a~1b', '/a~01b'])
+})
+Test('Should Errors 18', () => {
+  const R = Schema.Errors({
+    'type': 'object',
+    'properties': {},
+    'additionalProperties': { 'type': 'number' }
+  }, { 'a/b': 'x', 'a~b': 'y' })[1]
+  Assert.IsEqual(R.map((error) => error.instancePath), ['/a~1b', '/a~0b', ''])
+})
+Test('Should Errors 19', () => {
+  const R = Schema.Errors({
+    'type': 'object',
+    'patternProperties': {
+      '^a/b$': { 'type': 'number' }
+    }
+  }, { 'a/b': 'x' })[1]
+  Assert.IsEqual(R[0].instancePath, '/a~1b')
+  Assert.IsEqual(R[0].schemaPath, '#/patternProperties/^a~1b$')
+})
+Test('Should Errors 20', () => {
+  const R = Schema.Errors({
+    'type': 'object',
+    'propertyNames': { 'pattern': '^[a-z]+$' }
+  }, { 'a/b': 1, 'a~b': 2 })[1]
+  Assert.IsEqual(R.map((error) => error.instancePath), ['/a~1b', '/a~0b', ''])
+})
+Test('Should Errors 21', () => {
+  const R = Schema.Errors({
+    'type': 'object',
+    'dependencies': {
+      'a/b': { 'required': ['c'] }
+    }
+  }, { 'a/b': 1 })[1]
+  Assert.IsEqual(R[0].schemaPath, '#/dependencies/a~1b')
+})
+Test('Should Errors 22', () => {
+  const R = Schema.Errors({
+    'type': 'object',
+    'dependentSchemas': {
+      'a/b': { 'required': ['c'] }
+    }
+  }, { 'a/b': 1 })[1]
+  Assert.IsEqual(R[0].schemaPath, '#/dependentSchemas/a~1b')
+})
