@@ -31,6 +31,7 @@ THE SOFTWARE.
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
 import * as Externals from './_externals.ts'
+import * as Pathing from './_pathing.ts'
 import { Unique } from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { UnicodeRegExp } from './_regexp.ts'
@@ -136,7 +137,7 @@ export function ErrorAdditionalProperties(stack: Stack.XStack, context: ErrorCon
   const additionalProperties: string[] = []
   const isAdditionalProperties = G.EveryAll(G.Keys(value), 0, (key, _index) => {
     const nextSchemaPath = `${schemaPath}/additionalProperties`
-    const nextInstancePath = `${instancePath}/${key}`
+    const nextInstancePath = `${instancePath}/${Pathing.EncodeFragment(key)}`
     const isAdditionalProperty = regexp.test(key) ||
       (ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema.additionalProperties, value[key]) && context.AddKey(key))
 

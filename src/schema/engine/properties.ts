@@ -27,8 +27,10 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
+
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
+import * as Pathing from './_pathing.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 import { InexactOptionalCheck, InexactOptionalBuild, IsExactOptional } from './_exact_optional.ts'
@@ -95,8 +97,8 @@ export function CheckProperties(stack: Stack.XStack, context: CheckContext, sche
 export function ErrorProperties(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XProperties, value: Record<PropertyKey, unknown>): boolean {
   const required = Schema.IsRequired(schema) ? schema.required : []
   const isProperties = G.EveryAll(G.Entries(schema.properties), 0, ([key, schema]) => {
-    const nextSchemaPath = `${schemaPath}/properties/${key}`
-    const nextInstancePath = `${instancePath}/${key}`
+    const nextSchemaPath = `${schemaPath}/properties/${Pathing.EncodeFragment(key)}`
+    const nextInstancePath = `${instancePath}/${Pathing.EncodeFragment(key)}`
     // Defer error generation for IsExactOptional
     const isProperty = () => (
       !G.HasPropertyKey(value, key) || (ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema, value[key]) && context.AddKey(key))

@@ -31,6 +31,7 @@ THE SOFTWARE.
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
 import * as Externals from './_externals.ts'
+import * as Pathing from './_pathing.ts'
 import { Unique } from './_unique.ts'
 import { UnicodeRegExp } from './_regexp.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
@@ -67,10 +68,10 @@ export function CheckPatternProperties(stack: Stack.XStack, context: CheckContex
 // ------------------------------------------------------------------
 export function ErrorPatternProperties(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.EveryAll(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
-    const nextSchemaPath = `${schemaPath}/patternProperties/${pattern}`
+    const nextSchemaPath = `${schemaPath}/patternProperties/${Pathing.EncodeFragment(pattern)}`
     const regexp = UnicodeRegExp(pattern)
     return G.EveryAll(G.Entries(value), 0, ([key, value]) => {
-      const nextInstancePath = `${instancePath}/${key}`
+      const nextInstancePath = `${instancePath}/${Pathing.EncodeFragment(key)}`
       const notKey = !regexp.test(key)
       return notKey || ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema, value) && context.AddKey(key)
     })
