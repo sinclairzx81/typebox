@@ -95,6 +95,21 @@
         "description": "a trailing newline after a valid IRI Reference is invalid",
         "data": "/âππ\n",
         "valid": false
+      },
+      {
+        "description": "invalid percent-encoding with non-hex digits",
+        "data": "/%6G",
+        "valid": false
+      },
+      {
+        "description": "incomplete percent-encoding triplet",
+        "data": "/%A",
+        "valid": false
+      },
+      {
+        "description": "lone percent sign is invalid",
+        "data": "/%",
+        "valid": false
       }
     ]
   }

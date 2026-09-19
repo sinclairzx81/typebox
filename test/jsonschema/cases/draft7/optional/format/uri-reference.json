@@ -117,6 +117,18 @@
         "valid": false
       },
       {
+        "description": "incomplete percent-encoding triplet",
+        "comment": "RFC 3986, Section 2.1: pct-encoded = \"%\" HEXDIG HEXDIG.",
+        "data": "/%A",
+        "valid": false
+      },
+      {
+        "description": "lone percent sign is invalid",
+        "comment": "RFC 3986, Section 2.1: pct-encoded = \"%\" HEXDIG HEXDIG.",
+        "data": "/%",
+        "valid": false
+      },
+      {
         "description": "a double quote in a path",
         "comment": "RFC 3986, Appendix A: pchar = unreserved / pct-encoded / sub-delims / \":\" / \"@\", and the double quote is in none of them.",
         "data": "/a\"b",

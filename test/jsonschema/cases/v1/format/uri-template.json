@@ -112,6 +112,11 @@
         "valid": true
       },
       {
+        "description": "a private-use character in a literal is valid",
+        "data": "ab",
+        "valid": true
+      },
+      {
         "description": "reserved expansion operator",
         "data": "{+var}",
         "valid": true
