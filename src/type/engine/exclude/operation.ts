@@ -57,11 +57,11 @@ type TExcludeUnion<Left extends TSchema[], Right extends TSchema, Result extends
     ? TExcludeUnion<Tail, Right, [...Result, ...TExcludeType<Head, Right>]>
     : Result
 )
-function ExcludeUnion<Left extends TSchema[], Right extends TSchema>(left: [...Left], right: Right, result: TSchema[] = []): TExcludeUnion<Left, Right> {
+const ExcludeUnion = Guard.Recursive(<Left extends TSchema[], Right extends TSchema>(left: [...Left], right: Right, result: TSchema[] = []): TExcludeUnion<Left, Right> => {
   return Guard.ShiftLeft(left, (head, tail) => 
-    ExcludeUnion(tail, right, [...result, ...ExcludeType(head, right)]),
+    Guard.TailCall(ExcludeUnion, tail, right, [...result, ...ExcludeType(head, right)]),
     () => result) as never
-}
+})
 // ------------------------------------------------------------------
 // Operation
 // ------------------------------------------------------------------

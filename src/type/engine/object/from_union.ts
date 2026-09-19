@@ -61,13 +61,13 @@ type TReduceVariants<Types extends TSchema[], Result extends TProperties> = (
   ? TReduceVariants<Right, TCollapseUnionProperties<Result, TFromType<Left>>>
   : Result
 )
-function ReduceVariants<Types extends TSchema[], Result extends TProperties>
+const ReduceVariants = Guard.Recursive(<Types extends TSchema[], Result extends TProperties>
   (types: [...Types], result: Result):
-  TReduceVariants<Types, Result> {
+  TReduceVariants<Types, Result> => {
   return Guard.ShiftLeft(types, (left, right) =>
-    ReduceVariants(right, CollapseUnionProperties(result, FromType(left))),
+    Guard.TailCall(ReduceVariants, right, CollapseUnionProperties(result, FromType(left))),
     () => result) as never
-}
+})
 // ------------------------------------------------------------------
 // FromUnion
 //

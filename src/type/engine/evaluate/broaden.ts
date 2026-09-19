@@ -57,19 +57,19 @@ type TBroadenFilter<Type extends TSchema, Types extends TSchema[], Result extend
         : TBroadenFilter<Type, Right, Result, All> // Left in Type, drop it
     : [...Result, Type] // Type broadest in set
 )
-function BroadenFilter<Type extends TSchema, Types extends TSchema[]>
-  (type: Type, types: [...Types], result: TSchema[] = [], all: TSchema[] = types): TBroadenFilter<Type, Types> {
+const BroadenFilter = Guard.Recursive(<Type extends TSchema, Types extends TSchema[]>
+  (type: Type, types: [...Types], result: TSchema[] = [], all: TSchema[] = types): TBroadenFilter<Type, Types> => {
   return Guard.ShiftLeft(types, (left, right) => {
     const compare = Compare(type, left)
     return (
       (Guard.IsEqual(compare, CompareResultLeftInside) || Guard.IsEqual(compare, CompareResultEqual))
         ? all // Left in set. Return original All set.
         : Guard.IsEqual(compare, CompareResultDisjoint)
-          ? BroadenFilter(type, right, [...result, left], all) // Left is disjoint, keep it
-          : BroadenFilter(type, right, result, all) // Left in Type, drop it
+          ? Guard.TailCall(BroadenFilter, type, right, [...result, left], all) // Left is disjoint, keep it
+          : Guard.TailCall(BroadenFilter, type, right, result, all) // Left in Type, drop it
     )
   }, () => [...result, type]) as never // Type broadest in set
-}
+})
 // ------------------------------------------------------------------
 // BroadenType
 //

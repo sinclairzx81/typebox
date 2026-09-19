@@ -246,3 +246,34 @@ export function IsDeepEqual(left: unknown, right: unknown): boolean {
     IsEqual(left, right)
   )
 }
+// ------------------------------------------------------------------
+// Recursive
+// ------------------------------------------------------------------
+export type TCallback = (...args: never[]) => unknown
+const callbacks = new WeakMap<TCallback, TCallback>()
+const tailcalls = new WeakSet<TTailCall>()
+
+export function Recursive<Callback extends TCallback>(callback: Callback): Callback {
+  const recursive = (...args: Parameters<Callback>) => {
+    let result = callback(...args) as unknown
+    while (IsTailCall(result)) result = result.callback(...(result.arguments as never[]))
+    return result
+  }
+  callbacks.set(recursive, callback)
+  return recursive as never
+}
+// ------------------------------------------------------------------
+// TTailCall
+// ------------------------------------------------------------------
+export interface TTailCall {
+  callback: TCallback
+  arguments: unknown[]
+}
+export function TailCall<Callback extends TCallback>(callback: Callback, ...args: Parameters<Callback>): ReturnType<Callback> {
+  const tailcall = { callback: callbacks.get(callback) ?? callback, arguments: args }
+  tailcalls.add(tailcall)
+  return tailcall as never
+}
+function IsTailCall(value: unknown): value is TTailCall {
+  return IsObject(value) && tailcalls.has(value as never)
+}

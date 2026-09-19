@@ -62,13 +62,13 @@ type TInsert<Type extends TSchema, Types extends TSchema[], Result extends TSche
       : [...Result, Type, ...Types]
     : [...Result, Type]
 )
-function Insert<Type extends TSchema, Types extends TSchema[]>(type: Type, types: [...Types], result: TSchema[] = []): TInsert<Type, Types> {
+const Insert = Guard.Recursive(<Type extends TSchema, Types extends TSchema[]>(type: Type, types: [...Types], result: TSchema[] = []): TInsert<Type, Types> => {
   return Guard.ShiftLeft(types, (left, right) =>
     Guard.IsEqual(Comparer(type, left), 1)
-      ? Insert(type, right, [...result, left])
+      ? Guard.TailCall(Insert, type, right, [...result, left])
       : [...result, type, ...types],
     () => [...result, type]) as never
-}
+})
 // ------------------------------------------------------------------
 // Sort
 // ------------------------------------------------------------------
@@ -77,11 +77,11 @@ type TSort<Types extends TSchema[], Result extends TSchema[] = []> = (
     ? TSort<Right, TInsert<Left, Result>>
     : Result
 )
-function Sort<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TSort<Types> {
+const Sort = Guard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TSort<Types> => {
   return Guard.ShiftLeft(types, (left, right) =>
-    Sort(right, Insert(left, result)),
+    Guard.TailCall(Sort, right, Insert(left, result)),
     () => result) as never
-}
+})
 // ------------------------------------------------------------------
 // Priority
 // ------------------------------------------------------------------

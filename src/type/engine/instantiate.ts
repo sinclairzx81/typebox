@@ -121,17 +121,17 @@ export function State<CallStack extends string[], Visited extends string[]>(call
 export type TCanInstantiate<Types extends TSchema[]> =
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? Left extends TRef
-  ? false
-  : TCanInstantiate<Right>
+    ? false
+    : TCanInstantiate<Right>
   : true
-export function CanInstantiate<Types extends TSchema[]>(types: [...Types]): TCanInstantiate<Types> {
+export const CanInstantiate = Guard.Recursive(<Types extends TSchema[]>(types: [...Types]): TCanInstantiate<Types> => {
   return Guard.ShiftLeft(types, (left, right) =>
     IsRef(left)
       ? false
-      : CanInstantiate(right),
+      : Guard.TailCall(CanInstantiate, right),
     () => true
   ) as never
-}
+})
 // ------------------------------------------------------------------
 // InstantiateProperties
 // ------------------------------------------------------------------

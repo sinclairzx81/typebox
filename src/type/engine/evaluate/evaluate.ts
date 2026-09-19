@@ -69,11 +69,11 @@ export type TEvaluateEnum<Values extends TEnumValue[], Result extends TSchema[] 
     ? TEvaluateEnum<Right, [...Result, TLiteral<Left>]>
     : TEvaluateUnion<Result>
 )
-export function EvaluateEnum<Values extends TEnumValue[]>(values: [...Values], result: TSchema[] = []): TEvaluateEnum<Values> {
+export const EvaluateEnum = Guard.Recursive(<Values extends TEnumValue[]>(values: [...Values], result: TSchema[] = []): TEvaluateEnum<Values> => {
   return Guard.ShiftLeft(values, (left, right) => 
-    EvaluateEnum(right, [...result, Literal(left)]), 
+    Guard.TailCall(EvaluateEnum, right, [...result, Literal(left)]), 
     () => EvaluateUnion(result)) as never
-}
+})
 // ------------------------------------------------------------------
 // EvaluateIntersect
 // ------------------------------------------------------------------

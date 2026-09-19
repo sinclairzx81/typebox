@@ -79,13 +79,13 @@ type TDistributeType<Type extends TSchema, Distribution extends TSchema[], Resul
       ? [Type]
       : Result
 )
-function DistributeType<Type extends TSchema, Distribution extends TSchema[]>(type: Type, types: [...Distribution], result: TSchema[] = []): TDistributeType<Type, Distribution> {
+const DistributeType = Guard.Recursive(<Type extends TSchema, Distribution extends TSchema[]>(type: Type, types: [...Distribution], result: TSchema[] = []): TDistributeType<Type, Distribution> => {
   return Guard.ShiftLeft(types, (left, right) => 
-    DistributeType(type, right, [...result, DistributeOperation(left, type)]),
+    Guard.TailCall(DistributeType, type, right, [...result, DistributeOperation(left, type)]),
     () => Guard.IsEqual(result.length, 0)
       ? [type]
       : result) as never
-}
+})
 // -----------------------------------------------------------------------------------------
 // DistributeUnion
 // -----------------------------------------------------------------------------------------
@@ -94,11 +94,11 @@ type TDistributeUnion<Types extends TSchema[], Distribution extends TSchema[], R
    ? TDistributeUnion<Right, Distribution, [...Result, ...TDistribute<[Left], Distribution>]>
    : Result
 )
-function DistributeUnion<Types extends TSchema[], Distribution extends TSchema[]>(types: [...Types], distribution: [...Distribution], result: TSchema[] = []): TDistributeUnion<Types, Distribution> {
+const DistributeUnion = Guard.Recursive(<Types extends TSchema[], Distribution extends TSchema[]>(types: [...Types], distribution: [...Distribution], result: TSchema[] = []): TDistributeUnion<Types, Distribution> => {
   return Guard.ShiftLeft(types, (left, right) => 
-    DistributeUnion(right, distribution, [...result, ...Distribute([left], distribution)]),
+    Guard.TailCall(DistributeUnion, right, distribution, [...result, ...Distribute([left], distribution)]),
     () => result) as never
-}
+})
 // -----------------------------------------------------------------------------------------
 // Distribute
 // -----------------------------------------------------------------------------------------
@@ -109,10 +109,10 @@ export type TDistribute<Types extends TSchema[], Result extends TSchema[] = []> 
       : TDistribute<Right, TDistributeType<Left, Result>>
     : Result
 )
-export function Distribute<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TDistribute<Types> {
+export const Distribute = Guard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TDistribute<Types> => {
   return Guard.ShiftLeft(types, (left, right) => 
     IsUnion(left)
-      ? Distribute(right, DistributeUnion(left.anyOf, result))
-      : Distribute(right, DistributeType(left, result)),
+      ? Guard.TailCall(Distribute, right, DistributeUnion(left.anyOf, result))
+      : Guard.TailCall(Distribute, right, DistributeType(left, result)),
     () => result) as never
-}
+})

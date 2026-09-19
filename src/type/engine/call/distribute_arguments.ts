@@ -119,15 +119,15 @@ type TZipDistributionArray<Arguments extends TSchema[], DistributionArray extend
       : Result
     : Result
 )
-function ZipDistributionArray<Arguments extends TSchema[], DistributionArray extends boolean[]>
+const ZipDistributionArray = Guard.Recursive(<Arguments extends TSchema[], DistributionArray extends boolean[]>
   (arguments_: [...Arguments], distributionArray: [...DistributionArray], result: [boolean, TSchema][] = []):
-  TZipDistributionArray<Arguments, DistributionArray> {
+  TZipDistributionArray<Arguments, DistributionArray> => {
   return Guard.ShiftLeft(arguments_, (argumentLeft, argumentRight) => 
     Guard.ShiftLeft(distributionArray, (booleanLeft, booleanRight) => 
-      ZipDistributionArray(argumentRight as never, booleanRight as never, [...result, [booleanLeft, argumentLeft]]),
+      Guard.TailCall(ZipDistributionArray, argumentRight as never, booleanRight as never, [...result, [booleanLeft, argumentLeft]]),
       () => result),
     () => result) as never
-}
+})
 // ------------------------------------------------------------------
 // CanonicalArgument
 // ------------------------------------------------------------------

@@ -145,21 +145,13 @@ type TryInferResults<Rest extends TSchema[], Right extends TSchema, Result exten
       : undefined
     : Result
 )
-// function TryInferResults<Rest extends TSchema[], Right extends TSchema>(rest: [...Rest], right: Right, result: TSchema[] = []): TryInferResults<Rest, Right> {
-//   return Guard.ShiftLeft(rest, (head, tail) =>
-//     Result.Match(ExtendsLeft({}, head, right),
-//       () => TryInferResults(tail, right, [...result, head]), // Stack Overflow Here (Large Rest)
-//       () => undefined),
-//     () => result) as never
-// }
-function TryInferResults<Rest extends TSchema[], Right extends TSchema>(rest: [...Rest], right: Right): TryInferResults<Rest, Right> {
-  const result: TSchema[] = []
-  for (const head of rest) {
-    if (!Result.IsExtendsTrueLike(ExtendsLeft({}, head, right))) return undefined as never
-    result.push(head)
-  }
-  return result as never
-}
+const TryInferResults = Guard.Recursive(<Rest extends TSchema[], Right extends TSchema>(rest: [...Rest], right: Right, result: TSchema[] = []): TryInferResults<Rest, Right> => {
+  return Guard.ShiftLeft(rest, (head, tail) =>
+    Result.Match(ExtendsLeft({}, head, right),
+      () => Guard.TailCall(TryInferResults, tail, right, (result.push(head), result)),
+      () => undefined),
+    () => result) as never
+})
 // ----------------------------------------------------------------------------
 // InferAsTuple
 // ----------------------------------------------------------------------------

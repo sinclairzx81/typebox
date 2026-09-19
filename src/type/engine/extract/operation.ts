@@ -57,11 +57,11 @@ type TExtractUnion<Left extends TSchema[], Right extends TSchema, Result extends
     ? TExtractUnion<Tail, Right, [...Result, ...TExtractType<Head, Right>]>
     : Result
 )
-function ExtractUnion<Left extends TSchema[], Right extends TSchema>(left: [...Left], right: Right, result: TSchema[] = []): TExtractUnion<Left, Right> {
+const ExtractUnion = Guard.Recursive(<Left extends TSchema[], Right extends TSchema>(left: [...Left], right: Right, result: TSchema[] = []): TExtractUnion<Left, Right> => {
   return Guard.ShiftLeft(left, (head, tail) => 
-    ExtractUnion(tail, right, [...result, ...ExtractType(head, right)]),
+    Guard.TailCall(ExtractUnion, tail, right, [...result, ...ExtractType(head, right)]),
     () => result) as never
-}
+})
 // ------------------------------------------------------------------
 // Operation
 // ------------------------------------------------------------------

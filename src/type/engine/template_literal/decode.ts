@@ -49,11 +49,11 @@ type TFromLiteralPush<Variants extends string[], Value extends TLiteralValue, Re
   ? TFromLiteralPush<Right, Value, [...Result, `${Left}${Value}`]>
   : Result
 
-function FromLiteralPush<Variants extends string[], Value extends TLiteralValue>(variants: [...Variants], value: Value, result: string[] = []): TFromLiteralPush<Variants, Value> {
+const FromLiteralPush = Guard.Recursive(<Variants extends string[], Value extends TLiteralValue>(variants: [...Variants], value: Value, result: string[] = []): TFromLiteralPush<Variants, Value> => {
   return Guard.ShiftLeft(variants, (left, right) =>
-    FromLiteralPush(right, value, [...result, `${left}${value}`]),
+    Guard.TailCall(FromLiteralPush, right, value, [...result, `${left}${value}`]),
     () => result) as never
-}
+})
 type TFromLiteral<Variants extends string[], Value extends TLiteralValue> =
   Variants extends [] ? [`${Value}`] : TFromLiteralPush<Variants, Value>
 
@@ -67,12 +67,12 @@ type TFromUnion<Variants extends string[], Types extends TSchema[], Result exten
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? TFromUnion<Variants, Right, [...Result, ...TFromType<Variants, Left>]>
   : Result
-function FromUnion<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types], result: string[] = []): TFromUnion<Variants, Types> {
+const FromUnion = Guard.Recursive(<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types], result: string[] = []): TFromUnion<Variants, Types> => {
   return Guard.ShiftLeft(types, (left, right) =>
-    FromUnion(variants, right, [...result, ...FromType(variants, left)]),
+    Guard.TailCall(FromUnion, variants, right, [...result, ...FromType(variants, left)]),
     () => result
   ) as never
-}
+})
 // ------------------------------------------------------------------
 // FromType
 // ------------------------------------------------------------------
@@ -109,11 +109,11 @@ type TDecodeFromSpan<Variants extends string[], Types extends TSchema[]> =
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? TDecodeFromSpan<TFromType<Variants, Left>, Right>
   : Variants
-function DecodeFromSpan<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types]): TDecodeFromSpan<Variants, Types> {
+const DecodeFromSpan = Guard.Recursive(<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types]): TDecodeFromSpan<Variants, Types> => {
   return Guard.ShiftLeft(types, (left, right) =>
-    DecodeFromSpan(FromType(variants, left) as string[], right),
+    Guard.TailCall(DecodeFromSpan, FromType(variants, left) as string[], right),
     () => variants) as never
-}
+})
 // ------------------------------------------------------------------
 // VariantsToLiterals
 // ------------------------------------------------------------------

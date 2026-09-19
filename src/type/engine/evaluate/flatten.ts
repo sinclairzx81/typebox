@@ -59,8 +59,8 @@ export type TFlatten<Types extends TSchema[], Result extends TSchema[] = []> = (
     ? TFlatten<Right, [...Result, ...TFlattenType<Left>]>
     : Result
 )
-export function Flatten<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TFlatten<Types> {
+export const Flatten = Guard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TFlatten<Types> => {
   return Guard.ShiftLeft(types, (left, right) => 
-    Flatten(right, [...result, ...FlattenType(left)]),
+    Guard.TailCall(Flatten, right, [...result, ...FlattenType(left)]),
     () => result) as never
-}
+})

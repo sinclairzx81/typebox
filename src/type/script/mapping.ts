@@ -111,11 +111,11 @@ type TDelimitedDecode<Input extends [unknown, unknown][], Result extends unknown
     ? TDelimitedDecode<Right, [...Result, Left[1]]>
     : Result
 )
-function DelimitedDecode(input: unknown[], result: unknown[] = []): unknown[] {
+const DelimitedDecode = Guard.Recursive((input: unknown[], result: unknown[] = []): unknown[] => {
   return Guard.ShiftLeft(input, (left, right) => 
-    DelimitedDecode(right, [...result, (left as [unknown, unknown])[1]]),
+    Guard.TailCall(DelimitedDecode, right, [...result, (left as [unknown, unknown])[1]]),
     () => result)
-}
+})
 type TDelimited<Input extends [unknown, unknown, unknown] | []> = (  
   Input extends [infer Left extends unknown, infer Right extends [unknown, unknown][], infer _ extends unknown[]]
     ? [Left, ...TDelimitedDecode<Right>]
