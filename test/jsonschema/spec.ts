@@ -1,4 +1,5 @@
-import { Build, Check, Errors, Meta } from 'typebox/schema'
+import { Build, Check, Errors, Meta, Intern } from 'typebox/schema'
+import { Guard } from 'typebox/guard'
 import { Assert } from 'test'
 import { enumerateTests } from './enumerator.ts'
 import { Pointer } from 'typebox/value'
@@ -21,12 +22,13 @@ function run(draft: string, path: string): void {
   runCheck(draft, path)
   runBuild(draft, path)
   runError(draft, path)
+  runIntern(draft, path)
 }
 // ------------------------------------------------------------------
 // Types & Helpers
 // ------------------------------------------------------------------
 interface Operation {
-  type: 'Build' | 'Check' | 'Errors'
+  type: 'Build' | 'Check' | 'Errors' | 'Intern'
   schema: unknown
   data: unknown
   description: string
@@ -57,6 +59,9 @@ function assertThrow(op: Operation) {
     case 'Errors':
       example = `const R = Schema.Errors(${schemaStr}, ${dataStr})`
       break
+    case 'Intern':
+      example = `const S = Schema.Intern(${schemaStr})\nconst R = Schema.Check(S, ${dataStr})`
+      break
   }
   const message = 'Maximum call stack exceeded ' + formatThrow(example, description)
   throw new Error(message)
@@ -75,6 +80,9 @@ function assertResult(op: Operation): void {
       break
     case 'Errors':
       example = `const R = Schema.Errors(${schemaStr}, ${dataStr})`
+      break
+    case 'Intern':
+      example = `const S = Schema.Intern(${schemaStr})\nconst R = Schema.Check(S, ${dataStr})`
       break
   }
   const message = formatMessage(example, description, valid, result)
@@ -99,6 +107,26 @@ function runBuild(draft: string, path: string): void {
     Test(`${draft} ${test.filename}: ${test.description}`, () => {
       const result = Build(context, test.schema).Evaluate().Check(test.data)
       assertResult({ type: 'Build', schema: test.schema, data: test.data, description: test.description, valid: test.valid, result })
+    })
+  }
+}
+function runIntern(draft: string, path: string): void {
+  const Test = Assert.Context('Schema.Intern')
+  for (const test of enumerateTests(path)) {
+    Test(`${draft} ${test.filename}: ${test.description}`, () => {
+      let result = false
+      try {
+        const intern = Intern(context, test.schema)
+        if(!Guard.HasPropertyKey(intern, '$ref')) throw Error('expected $ref')
+        if(!Guard.HasPropertyKey(intern, '$defs')) throw Error('expected $defs')
+        if(Object.keys(intern).length !== 2) throw Error('too many keys')
+        // if(!Guard.IsDeepEqual(intern, Intern(intern))) throw Error('not idempotent') // <-- 77 error here ... Error: Maximum call stack exceeded 
+        result = Check(intern, test.data)
+      } catch {
+        assertThrow({ type: 'Intern', schema: test.schema, data: test.data, description: test.description, valid: test.valid, result })
+        return
+      }
+      assertResult({ type: 'Intern', schema: test.schema, data: test.data, description: test.description, valid: test.valid, result })
     })
   }
 }

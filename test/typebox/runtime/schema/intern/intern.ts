@@ -1,7 +1,7 @@
 import { Assert } from 'test'
 import Schema, { Intern } from 'typebox/schema'
 
-const Test = Assert.Context('Schema.Intern')
+const Test = Assert.Context('Schema.Intern.Coverage')
 
 // ------------------------------------------------------------------
 // Idempotent Check
@@ -682,20 +682,20 @@ Test('Should Intern 106', () => {
 // Ref / $defs (non-cyclic)
 // ----------------------------------------------------------------
 Test('Should Intern 107', () => {
-  const A = { $defs: { Str: { type: 'string' } }, $ref: '#/$defs/Str' }
+  const A = { $defs: { A: { type: 'string' } }, $ref: '#/$defs/A' }
   Ok(A, 'hello')
   Fail(A, 1)
 })
 Test('Should Intern 108', () => {
-  const A = { $defs: { Positive: { type: 'number', minimum: 0 } }, $ref: '#/$defs/Positive' }
+  const A = { $defs: { A: { type: 'number', minimum: 0 } }, $ref: '#/$defs/A' }
   Ok(A, 5)
   Fail(A, -5)
 })
 Test('Should Intern 109', () => {
   const A = {
-    $defs: { Str: { type: 'string', minLength: 1 } },
+    $defs: { A: { type: 'string', minLength: 1 } },
     type: 'object',
-    properties: { a: { $ref: '#/$defs/Str' }, b: { $ref: '#/$defs/Str' } },
+    properties: { a: { $ref: '#/$defs/A' }, b: { $ref: '#/$defs/A' } },
     required: ['a', 'b']
   }
   Ok(A, { a: 'x', b: 'y' })
@@ -707,13 +707,13 @@ Test('Should Intern 109', () => {
 Test('Should Intern 110', () => {
   const A = {
     $defs: {
-      Node: {
+      A: {
         type: 'object',
-        properties: { value: { type: 'number' }, next: { anyOf: [{ $ref: '#/$defs/Node' }, { type: 'null' }] } },
+        properties: { value: { type: 'number' }, next: { anyOf: [{ $ref: '#/$defs/A' }, { type: 'null' }] } },
         required: ['value', 'next']
       }
     },
-    $ref: '#/$defs/Node'
+    $ref: '#/$defs/A'
   }
   Ok(A, { value: 1, next: { value: 2, next: null } })
   Fail(A, { value: 1, next: { value: 'x', next: null } })
@@ -741,27 +741,15 @@ Test('Should Intern 113', () => {
   Fail(A, null)
 })
 // ----------------------------------------------------------------
-// Ref Resolution Errors
+// UnresolvedRef is False
 // ----------------------------------------------------------------
 Test('Should Intern 114', () => {
-  const A = { $defs: { Str: { type: 'string' } }, $ref: '#/$defs/Missing' }
-  let thrown = false
-  try {
-    Intern(A)
-  } catch {
-    thrown = true
-  }
-  Assert.IsTrue(thrown)
+  const A = { $defs: { A: { type: 'string' } }, $ref: '#/$defs/Missing' }
+  Assert.IsEqual(Intern(A), Intern(false))
 })
 Test('Should Intern 115', () => {
   const A = { $ref: '#/$defs/AlsoMissing' }
-  let thrown = false
-  try {
-    Intern(A)
-  } catch {
-    thrown = true
-  }
-  Assert.IsTrue(thrown)
+  Assert.IsEqual(Intern(A), Intern(false))
 })
 // ----------------------------------------------------------------
 // Cyclic Ref (true interior cycle - neither side is the document root)
@@ -769,11 +757,11 @@ Test('Should Intern 115', () => {
 Test('Should Intern 116', () => {
   const A = {
     type: 'object',
-    properties: { start: { $ref: '#/$defs/NodeA' } },
+    properties: { start: { $ref: '#/$defs/A' } },
     required: ['start'],
     $defs: {
-      NodeA: { type: 'object', properties: { value: { type: 'number' }, b: { $ref: '#/$defs/NodeB' } }, required: ['value'] },
-      NodeB: { type: 'object', properties: { value: { type: 'string' }, a: { $ref: '#/$defs/NodeA' } }, required: ['value'] }
+      A: { type: 'object', properties: { value: { type: 'number' }, b: { $ref: '#/$defs/B' } }, required: ['value'] },
+      B: { type: 'object', properties: { value: { type: 'string' }, a: { $ref: '#/$defs/A' } }, required: ['value'] }
     }
   }
   Ok(A, { start: { value: 1, b: { value: 'x', a: { value: 2 } } } })
@@ -782,11 +770,11 @@ Test('Should Intern 116', () => {
 Test('Should Intern 117', () => {
   const A = {
     type: 'object',
-    properties: { start: { $ref: '#/$defs/NodeA' } },
+    properties: { start: { $ref: '#/$defs/A' } },
     required: ['start'],
     $defs: {
-      NodeA: { type: 'object', properties: { value: { type: 'number' }, b: { $ref: '#/$defs/NodeB' } }, required: ['value'] },
-      NodeB: { type: 'object', properties: { value: { type: 'string' }, a: { $ref: '#/$defs/NodeA' } }, required: ['value'] }
+      A: { type: 'object', properties: { value: { type: 'number' }, b: { $ref: '#/$defs/B' } }, required: ['value'] },
+      B: { type: 'object', properties: { value: { type: 'string' }, a: { $ref: '#/$defs/A' } }, required: ['value'] }
     }
   }
   Ok(A, { start: { value: 1 } })
@@ -795,10 +783,10 @@ Test('Should Intern 117', () => {
 Test('Should Intern 118', () => {
   const A = {
     type: 'object',
-    properties: { x: { $ref: '#/$defs/NodeA' }, y: { $ref: '#/$defs/NodeA' } },
+    properties: { x: { $ref: '#/$defs/A' }, y: { $ref: '#/$defs/A' } },
     $defs: {
-      NodeA: { type: 'object', properties: { b: { $ref: '#/$defs/NodeB' } } },
-      NodeB: { type: 'object', properties: { a: { $ref: '#/$defs/NodeA' } } }
+      A: { type: 'object', properties: { b: { $ref: '#/$defs/B' } } },
+      B: { type: 'object', properties: { a: { $ref: '#/$defs/A' } } }
     }
   }
   Ok(A, { x: { b: { a: {} } }, y: {} })
@@ -844,9 +832,9 @@ Test('Should Intern 123', () => {
   const check = (value: unknown) => (value as number) > 0
   const error = () => 'must be positive'
   const A = {
-    $defs: { Pos: { type: 'number', '~refine': [{ check, error }] } },
+    $defs: { A: { type: 'number', '~refine': [{ check, error }] } },
     type: 'object',
-    properties: { a: { $ref: '#/$defs/Pos' }, b: { $ref: '#/$defs/Pos' } },
+    properties: { a: { $ref: '#/$defs/A' }, b: { $ref: '#/$defs/A' } },
     required: ['a', 'b']
   }
   Ok(A, { a: 1, b: 2 })
@@ -866,15 +854,15 @@ Test('Should Intern 124', () => {
 // ----------------------------------------------------------------
 Test('Should Intern 125', () => {
   const A = {
-    $defs: { foo: true },
-    $ref: '#/$defs/foo'
+    $defs: { A: true },
+    $ref: '#/$defs/A'
   }
   Ok(A, 1)
 })
 Test('Should Intern 126', () => {
   const A = {
-    $defs: { foo: false },
-    $ref: '#/$defs/foo'
+    $defs: { A: false },
+    $ref: '#/$defs/A'
   }
   Fail(A, 1)
 })
@@ -884,20 +872,20 @@ Test('Should Intern 126', () => {
 Test('Should Intern 127', () => {
   const A = {
     $defs: {
-      foo: { $ref: '#/$defs/bar' },
-      bar: true
+      A: { $ref: '#/$defs/B' },
+      B: true
     },
-    $ref: '#/$defs/foo'
+    $ref: '#/$defs/A'
   }
   Ok(A, 1)
 })
 Test('Should Intern 128', () => {
   const A = {
     $defs: {
-      foo: { $ref: '#/$defs/bar' },
-      bar: false
+      A: { $ref: '#/$defs/B' },
+      B: false
     },
-    $ref: '#/$defs/foo'
+    $ref: '#/$defs/A'
   }
   Fail(A, 1)
 })
@@ -905,10 +893,10 @@ Test('Should Intern 129', () => {
   // 2 levels of indirection
   const A = {
     $defs: {
-      a: { $ref: '#/$defs/b' },
-      b: { type: 'number' }
+      A: { $ref: '#/$defs/B' },
+      B: { type: 'number' }
     },
-    $ref: '#/$defs/a'
+    $ref: '#/$defs/A'
   }
   Ok(A, 1)
   Fail(A, 'hello')
@@ -917,11 +905,11 @@ Test('Should Intern 130', () => {
   // 3 levels of indirection
   const A = {
     $defs: {
-      a: { $ref: '#/$defs/b' },
-      b: { $ref: '#/$defs/c' },
-      c: { type: 'string' }
+      A: { $ref: '#/$defs/B' },
+      B: { $ref: '#/$defs/C' },
+      C: { type: 'string' }
     },
-    $ref: '#/$defs/a'
+    $ref: '#/$defs/A'
   }
   Ok(A, 'hello')
   Fail(A, 123)
@@ -930,12 +918,12 @@ Test('Should Intern 131', () => {
   // 4 levels of indirection
   const A = {
     $defs: {
-      a: { $ref: '#/$defs/b' },
-      b: { $ref: '#/$defs/c' },
-      c: { $ref: '#/$defs/d' },
-      d: { type: 'boolean' }
+      A: { $ref: '#/$defs/B' },
+      B: { $ref: '#/$defs/C' },
+      C: { $ref: '#/$defs/D' },
+      D: { type: 'boolean' }
     },
-    $ref: '#/$defs/a'
+    $ref: '#/$defs/A'
   }
   Ok(A, true)
   Fail(A, 'true')
@@ -944,12 +932,12 @@ Test('Should Intern 132', () => {
   // 4 levels of indirection pointing to an object schema
   const A = {
     $defs: {
-      a: { $ref: '#/$defs/b' },
-      b: { $ref: '#/$defs/c' },
-      c: { $ref: '#/$defs/d' },
-      d: { type: 'object', properties: { x: { type: 'number' } }, required: ['x'] }
+      A: { $ref: '#/$defs/B' },
+      B: { $ref: '#/$defs/C' },
+      C: { $ref: '#/$defs/D' },
+      D: { type: 'object', properties: { x: { type: 'number' } }, required: ['x'] }
     },
-    $ref: '#/$defs/a'
+    $ref: '#/$defs/A'
   }
   Ok(A, { x: 1 })
   Fail(A, { x: '1' })
@@ -1015,31 +1003,26 @@ Test('Should Intern 135', () => {
 // UnresolvableRef
 // ----------------------------------------------------------------
 Test('Should Intern 136', () => {
-  Assert.Throws(() => Schema.Intern({ $ref: 'unresolvable' }))
+  Assert.IsEqual(Schema.Intern({ $ref: 'unresolvable' }), Schema.Intern(false))
 })
 Test('Should Intern 137', () => {
-  Assert.Throws(() =>
+  Assert.IsEqual(
     Schema.Intern({
       $defs: {
         A: { $ref: 'unresolvable' }
       },
       $ref: '#/defs/A'
-    })
+    }),
+    Schema.Intern(false)
   )
 })
 Test('Should Intern 138', () => {
-  Assert.Throws(() =>
-    Schema.Intern({
-      $dynamicRef: '#/$defs/does-not-exist'
-    })
-  )
+  const A = { $dynamicRef: '#/$defs/does-not-exist' }
+  Assert.IsEqual(Schema.Intern(A), Schema.Intern(false))
 })
 Test('Should Intern 139', () => {
-  Assert.Throws(() =>
-    Schema.Intern({
-      $recursiveRef: '#/$defs/does-not-exist'
-    })
-  )
+  const A = { $recursiveRef: '#/$defs/does-not-exist' }
+  Assert.IsEqual(Schema.Intern(A), Schema.Intern(false))
 })
 // ----------------------------------------------------------------
 // RecursiveRef
@@ -1097,7 +1080,7 @@ Test('Should Intern 143', () => {
     $recursiveAnchor: true,
     $dynamicAnchor: 'itemType',
     $defs: {
-      node: {
+      A: {
         $id: 'https://example.com/schemas/node.json',
         $recursiveAnchor: true,
         $dynamicAnchor: 'itemType',
@@ -1198,13 +1181,13 @@ Test('Should Intern 145', () => {
 Test('Should Intern 146', () => {
   const A = {
     $defs: {
-      T: true,
-      F: false
+      A: true,
+      B: false
     },
     type: 'object',
     properties: {
-      a: { $ref: '#/$defs/T' },
-      b: { $ref: '#/$defs/F' }
+      a: { $ref: '#/$defs/A' },
+      b: { $ref: '#/$defs/B' }
     }
   }
   Ok(A, { a: 1 }) // b absent, valid
@@ -1244,7 +1227,7 @@ Test('Should Intern 148', () => {
 Test('Should Intern 149', () => {
   const A = {
     $defs: {
-      ListNode: {
+      A: {
         $dynamicAnchor: 'listNode',
         type: 'object',
         required: ['value'],
@@ -1254,7 +1237,7 @@ Test('Should Intern 149', () => {
         }
       }
     },
-    $ref: '#/$defs/ListNode'
+    $ref: '#/$defs/A'
   }
   Ok(A, { value: 1, next: { value: 2, next: { value: 3 } } })
   Fail(A, { value: 1, next: { value: 'x' } })
@@ -1303,19 +1286,16 @@ Test('Should Intern 152', () => {
   ContextFail(C, A, { value: 1, next: { value: 'x' } })
 })
 Test('Should Intern 153', () => {
-  const C = {
-    ListNode: {
-      $dynamicAnchor: 'node',
-      type: 'object',
-      properties: {
-        value: { type: 'number' },
-        next: { $dynamicRef: '#node' }
-      }
+  const A = {
+    $dynamicAnchor: 'node',
+    type: 'object',
+    properties: {
+      value: { type: 'number' },
+      next: { $dynamicRef: '#node' }
     }
   }
-  const A = { $ref: 'ListNode' }
-  ContextOk(C, A, { value: 1, next: { value: 2 } })
-  ContextFail(C, A, { value: 1, next: { value: 'x' } })
+  Ok(A, { value: 1, next: { value: 2 } })
+  Fail(A, { value: 1, next: { value: 'x' } })
 })
 Test('Should Intern 154', () => {
   const C = {
