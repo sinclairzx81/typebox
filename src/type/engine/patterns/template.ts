@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
+import { type TUnreachable, Unreachable } from '../../../system/exceptions/index.ts'
 
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'

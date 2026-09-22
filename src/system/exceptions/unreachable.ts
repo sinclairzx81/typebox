@@ -32,6 +32,6 @@ export type TUnreachable = never
 
 /** Used for unreachable logic */
 export function Unreachable(): TUnreachable {
-  throw new Error('Unreachable')
+  throw Error('Unreachable')
 }
 // deno-coverage-ignore-stop

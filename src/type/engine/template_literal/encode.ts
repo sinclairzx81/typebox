@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'
@@ -185,13 +185,13 @@ type TEncodeUnion<Types extends TSchema[], Right extends TSchema[], Pattern exte
   Types extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
     ? TEncodeUnion<Tail, Right, Pattern, [...Result, TEncodeType<Head, [], ''>]>
     : TEncodeTypes<Right, `${Pattern}(${TJoinString<Result>})`>
-function EncodeUnion<Types extends TSchema[], Right extends TSchema[], Pattern extends string>
-  (types: [...Types], right: Right, pattern: Pattern, result: string[] = []): 
-    TEncodeUnion<Types, Right, Pattern> {
-  return Guard.ShiftLeft(types, (head, tail) => 
-    EncodeUnion(tail, right, pattern, [...result, EncodeType(head, [], '')]),
-    () => EncodeTypes(right, `${pattern}(${JoinString(result)})`)) as never
-}
+const EncodeUnion = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[], Right extends TSchema[], Pattern extends string>
+  (types: [...Types], right: Right, pattern: Pattern, result: string[] = []):
+    TEncodeUnion<Types, Right, Pattern> => {
+  return RecursionGuard.ShiftLeft(types, (head, tail) =>
+    RecursionGuard.TailCall(EncodeUnion, tail, right, pattern, RecursionGuard.Push(result, EncodeType(head, [], ''))),
+    () => RecursionGuard.TailCall(EncodeTypes, right, `${pattern}(${JoinString(result)})`)) as never
+})
 // ------------------------------------------------------------------
 // EncodeType
 // ------------------------------------------------------------------
@@ -235,7 +235,7 @@ type TEncodeTypes<Types extends TSchema[], Pattern extends string> = (
 )
 function EncodeTypes<Types extends TSchema[], Pattern extends string>
   (types: [...Types], pattern: Pattern): TEncodeTypes<Types, Pattern> {
-  return Guard.ShiftLeft(types, (left, right) => 
+  return RecursionGuard.ShiftLeft(types, (left, right) => 
     EncodeType(left, right, pattern),
     () => pattern) as never
 }

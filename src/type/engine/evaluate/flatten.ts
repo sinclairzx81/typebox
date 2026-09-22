@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 
@@ -59,8 +59,8 @@ export type TFlatten<Types extends TSchema[], Result extends TSchema[] = []> = (
     ? TFlatten<Right, [...Result, ...TFlattenType<Left>]>
     : Result
 )
-export function Flatten<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TFlatten<Types> {
-  return Guard.ShiftLeft(types, (left, right) => 
-    Flatten(right, [...result, ...FlattenType(left)]),
+export const Flatten = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TFlatten<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) => 
+    RecursionGuard.TailCall(Flatten, right, RecursionGuard.Push(result, ...FlattenType(left))),
     () => result) as never
-}
+})

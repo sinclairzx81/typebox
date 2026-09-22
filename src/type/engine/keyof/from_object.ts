@@ -28,9 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
-
-import { Guard } from '../../../guard/index.ts'
+import { type TUnreachable, Unreachable } from '../../../system/exceptions/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/index.ts'
 import { type TUnionToTuple } from '../helpers/index.ts'
 import { type TProperties } from '../../types/properties.ts'
@@ -66,14 +65,13 @@ type TFromPropertyKeys<Keys extends PropertyKey[], Result extends TSchema[] = []
       : TUnreachable
     : Result
 )
-function FromPropertyKeys<Keys extends PropertyKey[]>(keys: [...Keys]): TFromPropertyKeys<Keys> {
-  const result = keys.reduce<TSchema[]>((result, left) => {
-    return IsLiteralValue(left) 
-      ? [...result, Literal(ConvertToIntegerKey(left))]
+const FromPropertyKeys = /*#__PURE__*/ RecursionGuard.Recursive(<Keys extends PropertyKey[]>(keys: [...Keys], result: TSchema[] = []): TFromPropertyKeys<Keys> => {
+  return RecursionGuard.ShiftLeft(keys, (left, right) => {
+    return IsLiteralValue(left)
+      ? RecursionGuard.TailCall(FromPropertyKeys, right, RecursionGuard.Push(result, Literal(ConvertToIntegerKey(left)))) // divergence
       : Unreachable()
-  }, [])
-  return result as never
-}
+  }, () => result) as never
+})
 // deno-coverage-ignore-stop
 // ------------------------------------------------------------------
 // FromObject
@@ -83,7 +81,6 @@ export type TFromObject<Properties extends TProperties,
   Variants extends TSchema [] = TFromPropertyKeys<PropertyKeys>,
   Result extends TSchema = TEvaluateUnionFast<Variants>
 > =  Result
-
 export function FromObject<Properties extends TProperties>(properties: Properties): TFromObject<Properties> {
   const propertyKeys = Guard.Keys(properties)
   const variants = FromPropertyKeys(propertyKeys) as TSchema[]

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 
 import { type TUnion, IsUnion } from '../../types/union.ts'
@@ -67,21 +67,22 @@ type TCollectDistributionNames<Expression extends TSchema, Result extends string
       Result
     ) : Result
 )
-function CollectDistributionNames<Expression extends TSchema>(expression: Expression, result: string[] = []): TCollectDistributionNames<Expression> {
+const CollectDistributionNames = /*#__PURE__*/ RecursionGuard.Recursive(<Expression extends TSchema>(expression: Expression, result: string[] = []): TCollectDistributionNames<Expression> => {
   return (
     // Conditional
     IsDeferred(expression) && Guard.IsEqual(expression.action, 'Conditional')
       ? IsRef(expression.parameters[0])
-        ? CollectDistributionNames(expression.parameters[2], CollectDistributionNames(expression.parameters[3], [...result, expression.parameters[0]['$ref']]))
-        : CollectDistributionNames(expression.parameters[2], CollectDistributionNames(expression.parameters[3], result))
+        ? RecursionGuard.TailCall(CollectDistributionNames, expression.parameters[2], CollectDistributionNames(expression.parameters[3], RecursionGuard.Push(result, expression.parameters[0]['$ref'])))
+        : RecursionGuard.TailCall(CollectDistributionNames, expression.parameters[2], CollectDistributionNames(expression.parameters[3], result))
     // Mapped
     : IsDeferred(expression) && Guard.IsEqual(expression.action, 'Mapped')
       ? (
-        IsDeferred(expression.parameters[1]) && Guard.IsEqual(expression.parameters[1].action, 'KeyOf') && IsRef(expression.parameters[1].parameters[0]) ? [...result, expression.parameters[1].parameters[0]['$ref']] :
-        result
+        IsDeferred(expression.parameters[1]) && Guard.IsEqual(expression.parameters[1].action, 'KeyOf') && IsRef(expression.parameters[1].parameters[0])
+          ? RecursionGuard.Push(result, expression.parameters[1].parameters[0]['$ref'])
+          : result
       ) : result
   ) as never
-}
+})
 // ------------------------------------------------------------------
 // BuildDistributionArray
 //
@@ -97,12 +98,14 @@ type TBuildDistributionArray<Parameters extends TParameter[], Names extends stri
   : TBuildDistributionArray<Right, Names, [...Result, false]>
   : Result
 )
-function BuildDistributionArray<Parameters extends TParameter[], Names extends string[]>
-  (parameters: [...Parameters], names: [...Names]): TBuildDistributionArray<Parameters, Names> {
-  return parameters.reduce((result, left) =>
-    [...result, names.includes(left.name)]
-    , [] as boolean[]) as never
-}
+const BuildDistributionArray = /*#__PURE__*/ RecursionGuard.Recursive(<Parameters extends TParameter[], Names extends string[]>
+  (parameters: [...Parameters], names: [...Names], result: boolean[] = []): TBuildDistributionArray<Parameters, Names> => {
+  return RecursionGuard.ShiftLeft(parameters, (left, right) => {
+    return names.includes(left.name)
+      ? RecursionGuard.TailCall(BuildDistributionArray, right, names, RecursionGuard.Push(result, true))
+      : RecursionGuard.TailCall(BuildDistributionArray, right, names, RecursionGuard.Push(result, false))
+  }, () => result) as never
+})
 // ------------------------------------------------------------------
 // ZipDistributionArray
 //
@@ -119,15 +122,15 @@ type TZipDistributionArray<Arguments extends TSchema[], DistributionArray extend
       : Result
     : Result
 )
-function ZipDistributionArray<Arguments extends TSchema[], DistributionArray extends boolean[]>
+const ZipDistributionArray = /*#__PURE__*/ RecursionGuard.Recursive(<Arguments extends TSchema[], DistributionArray extends boolean[]>
   (arguments_: [...Arguments], distributionArray: [...DistributionArray], result: [boolean, TSchema][] = []):
-  TZipDistributionArray<Arguments, DistributionArray> {
-  return Guard.ShiftLeft(arguments_, (argumentLeft, argumentRight) => 
-    Guard.ShiftLeft(distributionArray, (booleanLeft, booleanRight) => 
-      ZipDistributionArray(argumentRight as never, booleanRight as never, [...result, [booleanLeft, argumentLeft]]),
+  TZipDistributionArray<Arguments, DistributionArray> => {
+  return RecursionGuard.ShiftLeft(arguments_, (argumentLeft, argumentRight) => 
+    RecursionGuard.ShiftLeft(distributionArray, (booleanLeft, booleanRight) => 
+      RecursionGuard.TailCall(ZipDistributionArray, argumentRight as never, booleanRight as never, RecursionGuard.Push(result, [booleanLeft, argumentLeft])),
       () => result),
     () => result) as never
-}
+})
 // ------------------------------------------------------------------
 // CanonicalArgument
 // ------------------------------------------------------------------
@@ -168,11 +171,11 @@ type TAppend<Current extends TSchema[][], Type extends TSchema, Result extends T
   ? TAppend<Right, Type, [...Result, [...Left, Type]]>
   : Result
 )
-function Append<Current extends TSchema[][], Type extends TSchema>(current: [...Current], type: Type): TAppend<Current, Type> {
-  return current.reduce((result, left) =>
-    [...result, [...left, type]]
-    , [] as TSchema[][]) as never
-}
+const Append = /*#__PURE__*/ RecursionGuard.Recursive(<Current extends TSchema[][], Type extends TSchema>(current: [...Current], type: Type, result: TSchema[][] = []): TAppend<Current, Type> => {
+  return RecursionGuard.ShiftLeft(current, (left, right) =>
+    RecursionGuard.TailCall(Append, right, type, RecursionGuard.Push(result, [...left, type]))
+  , () => result) as never
+})
 // ------------------------------------------------------------------
 // Cross
 // ------------------------------------------------------------------
@@ -181,13 +184,11 @@ type TCross<Current extends TSchema[][], Variants extends TSchema[], Result exte
   ? TCross<Current, Right, [...Result, ...TAppend<Current, Left>]>
   : Result
 )
-function Cross<Current extends TSchema[][], Variants extends TSchema[]>
-  (current: [...Current], variants: [...Variants]):
-  TCross<Current, Variants> {
-  return variants.reduce((result, left) => {
-    return [...result, ...Append(current, left)]
-  }, [] as TSchema[][]) as never
-}
+const Cross = /*#__PURE__*/ RecursionGuard.Recursive(<Current extends TSchema[][], Variants extends TSchema[]>(current: [...Current], variants: [...Variants], result: TSchema[][] = []): TCross<Current, Variants> => {
+  return RecursionGuard.ShiftLeft(variants, (left, right) =>
+    RecursionGuard.TailCall(Cross, current, right, RecursionGuard.Push(result, ...Append(current, left)))
+  , () => result) as never
+})
 // -----------------------------------------------------------------------
 // Distribute
 // -----------------------------------------------------------------------
@@ -198,15 +199,13 @@ type TDistribute<ZippedArguments extends [boolean, TSchema][], Result extends TS
   : TDistribute<Right, TCross<Result, [Left[1]]>> // - no-expansion
   : Result
 )
-function Distribute<ZippedArguments extends [boolean, TSchema][]>
-  (zipped: [...ZippedArguments]):
-  TDistribute<ZippedArguments> {
-  return zipped.reduce((result, left) => {
+const Distribute = /*#__PURE__*/ RecursionGuard.Recursive(<ZippedArguments extends [boolean, TSchema][]>(zipped: [...ZippedArguments], result: TSchema[][] = [[]]): TDistribute<ZippedArguments> => {
+  return RecursionGuard.ShiftLeft(zipped, (left, right) => {
     return Guard.IsEqual(left[0], true)
-      ? Cross(result, Expand(left[1]))
-      : Cross(result, [left[1]]) // - no-expansion
-  }, [[]] as TSchema[][]) as never
-}
+      ? RecursionGuard.TailCall(Distribute, right, Cross(result, Expand(left[1])))
+      : RecursionGuard.TailCall(Distribute, right, Cross(result, [left[1]])) // - no-expansion
+  }, () => result) as never
+})
 // -----------------------------------------------------------------------
 // DistributeArguments
 // -----------------------------------------------------------------------

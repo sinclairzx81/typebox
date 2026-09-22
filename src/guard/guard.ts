@@ -190,10 +190,6 @@ export function SomeAll<T>(value: T[], callback: (value: T, index: number) => bo
 export function Counted(value: unknown[], callback: (value: unknown, index: number) => boolean): number {
   return value.reduce<number>((result, value, index) => callback(value, index) ? ++result : result, 0)
 }
-/** Shifts the left-most element from an array and dispatches to the true arm, or the false arm if empty */
-export function ShiftLeft<T, True extends (left: T, right: T[]) => unknown, False extends () => unknown>(array: T[], true_: True, false_: False): ReturnType<True> | ReturnType<False> {
-  return (IsEqual(array.length, 0) ? false_() : true_(array[0], array.slice(1))) as never
-}
 // --------------------------------------------------------------------------
 // Object
 // --------------------------------------------------------------------------

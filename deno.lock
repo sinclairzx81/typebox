@@ -306,6 +306,8 @@
     "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.6/src/static/until_1.ts": "1195f1cff31c7cefedbdaa30f5fe1f58d872da5575ec64f19f09488bcdd6c5f2",
     "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.6/src/system/arguments/arguments.ts": "38faa50184aaefccf5e4e6d09fd2836b8f54d4e77a974e4033eec4d4e5eec391",
     "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.6/src/system/arguments/index.ts": "aa4acde7e517e6426607c8cacd9c0b31247423176deea8e5bb6de7b9fa808a31",
+    "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.6/src/system/exceptions/index.ts": "ff74d42af2568398b4582ebcac4370bea5925734465bb04ffbbc26ade7627595",
+    "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.6/src/system/exceptions/unreachable.ts": "b51e28a281c0e8c265456f02ca37369383d1748467a0657b9d3aac55221a32cd",
     "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.6/src/system/index.ts": "502ab5957e2cb4e0a83359d1b8facfe531b6024692aa03da80194d3645322230",
     "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.6/src/system/unreachable/index.ts": "ff74d42af2568398b4582ebcac4370bea5925734465bb04ffbbc26ade7627595",
     "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.6/src/system/unreachable/unreachable.ts": "b51e28a281c0e8c265456f02ca37369383d1748467a0657b9d3aac55221a32cd",

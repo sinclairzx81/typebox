@@ -30,9 +30,9 @@ THE SOFTWARE.
 // deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../system/unreachable/index.ts'
+import { type TUnreachable, Unreachable } from '../../system/exceptions/index.ts'
 import { Memory } from '../../system/memory/index.ts'
-import { Guard } from '../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../guard/index.ts'
 
 // ----------------------------------------------------------------------------
 // Schematics
@@ -145,21 +145,13 @@ type TryInferResults<Rest extends TSchema[], Right extends TSchema, Result exten
       : undefined
     : Result
 )
-// function TryInferResults<Rest extends TSchema[], Right extends TSchema>(rest: [...Rest], right: Right, result: TSchema[] = []): TryInferResults<Rest, Right> {
-//   return Guard.ShiftLeft(rest, (head, tail) =>
-//     Result.Match(ExtendsLeft({}, head, right),
-//       () => TryInferResults(tail, right, [...result, head]), // Stack Overflow Here (Large Rest)
-//       () => undefined),
-//     () => result) as never
-// }
-function TryInferResults<Rest extends TSchema[], Right extends TSchema>(rest: [...Rest], right: Right): TryInferResults<Rest, Right> {
-  const result: TSchema[] = []
-  for (const head of rest) {
-    if (!Result.IsExtendsTrueLike(ExtendsLeft({}, head, right))) return undefined as never
-    result.push(head)
-  }
-  return result as never
-}
+const TryInferResults = /*#__PURE__*/ RecursionGuard.Recursive(<Rest extends TSchema[], Right extends TSchema>(rest: [...Rest], right: Right, result: TSchema[] = []): TryInferResults<Rest, Right> => {
+  return RecursionGuard.ShiftLeft(rest, (head, tail) =>
+    Result.Match(ExtendsLeft({}, head, right),
+      () => RecursionGuard.TailCall(TryInferResults, tail, right, RecursionGuard.Push(result, head)),
+      () => undefined),
+    () => result) as never
+})
 // ----------------------------------------------------------------------------
 // InferAsTuple
 // ----------------------------------------------------------------------------

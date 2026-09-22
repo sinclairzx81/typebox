@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/index.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
@@ -58,11 +58,11 @@ type TFromUnion<Types extends TSchema[], Result extends TSchema[] = []> = (
     ? TFromUnion<Right, [...Result, ...TFromType<Left>]>
     : Result
 )
-function FromUnion<Types extends TSchema[]>(types: [...Types]): TFromUnion<Types> {
-  return types.reduce((result, left) => {
-    return [...result, ...FromType(left)]
-  }, [] as TSchema[]) as never
-}
+const FromUnion = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TFromUnion<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
+    RecursionGuard.TailCall(FromUnion, right, RecursionGuard.Push(result, ...FromType(left)))
+  , () => result) as never
+})
 // ------------------------------------------------------------------
 // FromEnum
 // ------------------------------------------------------------------

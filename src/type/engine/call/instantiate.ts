@@ -28,12 +28,11 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Settings } from '../../../system/settings/index.ts'
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TParameter } from '../../types/parameter.ts'
-import { type TCallConstruct, CallConstruct } from '../../types/call.ts'
-import { type TRef, Ref } from '../../types/ref.ts'
+import { type TCallConstruct, CallConstruct, type TCall, IsCall } from '../../types/call.ts'
+import { type TRef, Ref, IsRef } from '../../types/ref.ts'
 import { type TGeneric, IsGeneric } from '../../types/generic.ts'
 import { type TProperties } from '../../types/properties.ts'
 
@@ -50,25 +49,7 @@ import { type TResolveTarget, ResolveTarget } from './resolve_target.ts'
 import { type TResolveArgumentsContext, ResolveArgumentsContext } from './resolve_arguments.ts'
 
 // ------------------------------------------------------------------
-// InstantiationGuard
-// ------------------------------------------------------------------
-let instantiationDepth = 0
-let instantiationCount = 0
-function InstantiationAssert(): void {
-  if(Guard.IsLessThan(instantiationCount, Settings.Get().maxInstantiationCount)) return
-  throw Error('Type instantiation is excessively deep and possibly infinite')
-}
-function InstantiationIncrement(): void {
-  InstantiationAssert()
-  instantiationCount++
-  instantiationDepth++
-}
-function InstantiationDecrement(): void {
-  instantiationDepth--
-  if(Guard.IsEqual(instantiationDepth, 0)) instantiationCount = 0
-}
-// ------------------------------------------------------------------
-// Peek: Top Element in the Stack or Empty
+// Peek
 // ------------------------------------------------------------------
 type TPeek<State extends TState, 
   Result extends string = State['callstack'] extends [...infer _ extends string[], infer Top extends string] ? Top : ''
@@ -78,20 +59,34 @@ function Peek<State extends TState>(state: State): TPeek<State> {
   return result as never
 }
 // ------------------------------------------------------------------
-// IsTailCall
+// IsTailReturn
 //
-// Returns true if Name matches the top of the CallStack, indicating
-// the generic is directly self-recursive at the tail position.
-// CallInstantiate will then return a CallDeferred carrying only the
-// InstantiatedArguments, which CallDispatch trampolines on the
-// next iteration rather than recursing immediately.
-//
+// True when Name is already on top of the CallStack, meaning we're
+// re-entering a generic from within its own expansion. CallInstantiate
+// uses this to defer via CallConstruct instead of instantiating again.
 // ------------------------------------------------------------------
-type TIsTailCall<State extends TState, Name extends string,
+type TIsTailReturn<State extends TState, Name extends string,
   Result extends boolean = TPeek<State> extends Name ? true : false
 > = Result
-function IsTailCall<State extends TState, Name extends string>(state: State, name: Name): TIsTailCall<State, Name> {
+function IsTailReturn<State extends TState, Name extends string>(state: State, name: Name): TIsTailReturn<State, Name> {
   const result = Guard.IsEqual(Peek(state), name)
+  return result as never
+}
+// ------------------------------------------------------------------
+// IsTailCall
+//
+// True when ReturnType is a deferred Call back to Name itself, the
+// signal CallDispatch uses to loop via TailCall rather than treat
+// ReturnType as final.
+// ------------------------------------------------------------------
+type TIsTailCall<ReturnType extends TSchema, Name extends string,
+  Result extends boolean = ReturnType extends TCall<TRef>
+    ? Name extends ReturnType['target']['$ref'] ? true : false
+    : false
+> = Result
+function IsTailCall<ReturnType extends TSchema, Name extends string>
+  (returnType: ReturnType, name: Name): TIsTailCall<ReturnType, Name> {
+  const result = IsCall(returnType) && IsRef(returnType.target) && Guard.IsEqual(name, returnType['target']['$ref'])
   return result as never
 }
 // ------------------------------------------------------------------
@@ -100,27 +95,28 @@ function IsTailCall<State extends TState, Name extends string>(state: State, nam
 // Binds Arguments to Parameters via ResolveArgumentsContext, then
 // instantiates the Expression under that context with the target
 // pushed onto the CallStack. The resulting ReturnType is either a
-// fully instantiated type or a CallDeferred if IsTailCall fired,
+// fully instantiated type or a CallDeferred if IsTailReturn fired,
 // which is then re-instantiated under the original Context to
 // resolve any exterior bindings.
 //
 // ------------------------------------------------------------------
 type TCallDispatch<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, Arguments extends TSchema[],
   ArgumentsContext extends TProperties = TResolveArgumentsContext<Context, State, Parameters, Arguments>,
-  ReturnType extends TSchema = TInstantiateType<ArgumentsContext, TState<[...State['callstack'], Target['$ref']], State['visited']>, Expression>
-> = TInstantiateType<ArgumentsContext, TState<[], []>, ReturnType>
-function CallDispatch<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, Arguments extends TSchema[]>
+  ReturnType extends TSchema = TInstantiateType<ArgumentsContext, TState<[...State['callstack'], Target['$ref']], State['visited']>, Expression>,
+  TailArguments extends TSchema[] = ReturnType extends TCall<TSchema, infer Arguments extends TSchema[]> ? Arguments : []
+> = TIsTailCall<ReturnType, Target['$ref']> extends true
+  ? TCallDispatch<Context, State, Target, Parameters, Expression, TailArguments>
+  : TInstantiateType<ArgumentsContext, TState<[], []>, ReturnType>
+const CallDispatch = /*#__PURE__*/ RecursionGuard.Recursive(<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, Arguments extends TSchema[]>
   (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, arguments_: [...Arguments]):
-    TCallDispatch<Context, State, Target, Parameters, Expression, Arguments> {
-  InstantiationIncrement()
-  try {
-    const argumentsContext = ResolveArgumentsContext(context, state, parameters, arguments_) as TProperties
-    const returnType = InstantiateType(argumentsContext, State([...state['callstack'], target['$ref']], state['visited']), expression) as TSchema
-    return InstantiateType(argumentsContext, State([], []), returnType) as never
-  } finally {
-    InstantiationDecrement()
-  }
-}
+    TCallDispatch<Context, State, Target, Parameters, Expression, Arguments> => {
+  const argumentsContext = ResolveArgumentsContext(context, state, parameters, arguments_) as TProperties
+  const returnType = InstantiateType(argumentsContext, State([...state['callstack'], target['$ref']], state['visited']), expression) as TSchema
+  const tailArguments = IsCall(returnType) ? returnType.arguments : []
+  return (IsTailCall(returnType, target['$ref'])
+    ? RecursionGuard.TailCall(CallDispatch, argumentsContext, state, target, parameters, expression , tailArguments) as never
+    : InstantiateType(argumentsContext, State([], []), returnType)) as never
+})
 // ------------------------------------------------------------------
 // CallDistributed
 //
@@ -138,14 +134,14 @@ type TCallDistributed<Context extends TProperties, State extends TState, Target 
       : never // unreachable - excessive-stack-depth-prevention
     : Result
 )
-function CallDistributed<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, DistributedArguments extends TSchema[][]>
-  (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, distributedArguments: [...DistributedArguments]):
-    TCallDistributed<Context, State, Target, Parameters, Expression, DistributedArguments> {
-  return distributedArguments.reduce((result, arguments_) => {
-    const returnType = CallDispatch(context, state, target, parameters, expression, arguments_)
-    return [...result, returnType] as never
-  }, []) as never
-}
+const CallDistributed = /*#__PURE__*/ RecursionGuard.Recursive(<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, DistributedArguments extends TSchema[][]>
+  (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, distributedArguments: [...DistributedArguments], result: TSchema[] = []):
+    TCallDistributed<Context, State, Target, Parameters, Expression, DistributedArguments> => {
+  return RecursionGuard.ShiftLeft(distributedArguments, (_arguments, distributedArguments) => {
+    const returnType = CallDispatch(context, state, target, parameters, expression, _arguments) as TSchema
+    return RecursionGuard.TailCall(CallDistributed, context, state, target, parameters, expression, distributedArguments, RecursionGuard.Push(result, returnType))
+  }, () => result) as never
+})
 // ------------------------------------------------------------------
 // Immediate
 // ------------------------------------------------------------------
@@ -172,7 +168,7 @@ export type TCallInstantiate<Context extends TProperties, State extends TState, 
   Type extends TSchema = Resolved[1],
   Result extends TSchema = (
     Type extends TGeneric<infer Parameters extends TParameter[], infer Expression extends TSchema>
-    ? TIsTailCall<State, Name> extends true
+    ? TIsTailReturn<State, Name> extends true
       ? TCallConstruct<TRef<Name>, InstantiatedArguments>
       : TCallImmediate<Context, State, TRef<Name>, Parameters, Expression, InstantiatedArguments>
     : TCallConstruct<Target, InstantiatedArguments>
@@ -186,7 +182,7 @@ export function CallInstantiate<Context extends TProperties, State extends TStat
   const type = resolved[1]
   const result = (
     IsGeneric(type)
-      ? IsTailCall(state, name)
+      ? IsTailReturn(state, name)
         ? CallConstruct(Ref(name), instantiatedArguments)
         : CallImmediate(context, state, Ref(name), type.parameters, type.expression, instantiatedArguments)
       : CallConstruct(target, instantiatedArguments)

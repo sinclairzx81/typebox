@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TNumber, IsNumber } from '../../types/number.ts'
@@ -38,6 +38,7 @@ import { type TToIndexableKeys, ToIndexableKeys } from '../indexable/to_indexabl
 
 import { IntegerKey } from '../../types/record.ts'
 import { type TExpandThis, ExpandThis } from '../this/expand_this.ts'
+
 // ------------------------------------------------------------------
 // IndexProperty
 // ------------------------------------------------------------------
@@ -62,13 +63,11 @@ type TIndexProperties<Properties extends TProperties, Keys extends string[], Res
     ? TIndexProperties<Properties, Right, [...Result, TIndexProperty<Properties, Left>]>
     : Result
 )
-function IndexProperties<Properties extends TProperties, Keys extends string[]>
-  (properties: Properties, keys: [...Keys]): 
-    TIndexProperties<Properties, Keys> {
-  return keys.reduce((result, left) => {
-    return [...result, IndexProperty(properties, left)]
-  }, [] as TSchema[]) as never
-}
+const IndexProperties = /*#__PURE__*/ RecursionGuard.Recursive(<Properties extends TProperties, Keys extends string[]>(properties: Properties, keys: [...Keys], result: TSchema[] = []): TIndexProperties<Properties, Keys> => {
+  return RecursionGuard.ShiftLeft(keys, (left, right) =>
+    RecursionGuard.TailCall(IndexProperties, properties, right, RecursionGuard.Push(result, IndexProperty(properties, left)))
+  , () => result) as never
+})
 // ------------------------------------------------------------------
 // FromIndexer
 // ------------------------------------------------------------------

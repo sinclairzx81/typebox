@@ -30,6 +30,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../../system/memory/index.ts'
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TLiteral, IsLiteralNumber, IsLiteralString } from '../../types/literal.ts'
 import { type TObject, Object } from '../../types/object.ts'
@@ -87,33 +88,33 @@ type TMappedProperties<Context extends TProperties, State extends TState, Identi
     ? TMappedProperties<Context, State, Identifier, Right, As, Property, [...Result, TMappedVariant<Context, State, Identifier, Left, As, Property>]>
     : Result
 )
-function MappedProperties<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Variants extends TSchema[], As extends TSchema, Property extends TSchema>
-  (context: Context, state: State, identifier: Identifier, variants: [...Variants], as: As, property: Property): 
-    TMappedProperties<Context, State, Identifier, Variants, As, Property> {
-  return variants.reduce((result, left) => {
-    return [...result, MappedVariant(context, state, identifier, left, as, property) ]
-  }, [] as TProperties[]) as never
-}
+const MappedProperties = /*#__PURE__*/ RecursionGuard.Recursive(<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Variants extends TSchema[], As extends TSchema, Property extends TSchema>
+  (context: Context, state: State, identifier: Identifier, variants: [...Variants], as: As, property: Property, result: TProperties[] = []):
+    TMappedProperties<Context, State, Identifier, Variants, As, Property> => {
+  return RecursionGuard.ShiftLeft(variants, (left, right) =>
+    RecursionGuard.TailCall(MappedProperties, context, state, identifier, right, as, property, RecursionGuard.Push(result, MappedVariant(context, state, identifier, left, as, property)))
+  , () => result) as never
+})
 // ------------------------------------------------------------------
 // MappedObjects
 // ------------------------------------------------------------------
-type TReduceProperties<Properties extends TProperties[], Result extends TSchema[] = []> = (
+type TMappedObjects<Properties extends TProperties[], Result extends TSchema[] = []> = (
   Properties extends [infer Left extends TProperties, ...infer Right extends TProperties[]]
-    ? TReduceProperties<Right, [...Result, TObject<Left>]>
+    ? TMappedObjects<Right, [...Result, TObject<Left>]>
     : Result
 )
-function MappedObjects<Properties extends TProperties[]>(properties: [...Properties]): TReduceProperties<Properties> {
-  return properties.reduce<TSchema[]>((result, left) => {
-    return [...result, Object(left)]
-  }, []) as never
-}
+const MappedObjects = /*#__PURE__*/ RecursionGuard.Recursive(<Properties extends TProperties[]>(properties: [...Properties], result: TSchema[] = []): TMappedObjects<Properties> => {
+  return RecursionGuard.ShiftLeft(properties, (left, right) =>
+    RecursionGuard.TailCall(MappedObjects, right, RecursionGuard.Push(result, Object(left)))
+  , () => result) as never
+})
 // ------------------------------------------------------------------
 // MappedAction
 // ------------------------------------------------------------------
 export type TMappedOperation<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema,
   Variants extends TSchema[] = TMappedVariants<Type>,
   MappedProperties extends TProperties[] = TMappedProperties<Context, State, Identifier, Variants, As, Property>,
-  MappedObjects extends TSchema[] = TReduceProperties<MappedProperties>,
+  MappedObjects extends TSchema[] = TMappedObjects<MappedProperties>,
   Result extends TSchema = TEvaluateIntersect<MappedObjects>
 > = Result
 export function MappedOperation<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>

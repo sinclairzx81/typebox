@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-lint-ignore-file
 
-import { Guard } from '../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Modifiers
@@ -121,17 +121,17 @@ export function State<CallStack extends string[], Visited extends string[]>(call
 export type TCanInstantiate<Types extends TSchema[]> =
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? Left extends TRef
-  ? false
-  : TCanInstantiate<Right>
+    ? false
+    : TCanInstantiate<Right>
   : true
-export function CanInstantiate<Types extends TSchema[]>(types: [...Types]): TCanInstantiate<Types> {
-  return Guard.ShiftLeft(types, (left, right) =>
+export const CanInstantiate = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types]): TCanInstantiate<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
     IsRef(left)
       ? false
-      : CanInstantiate(right),
+      : RecursionGuard.TailCall(CanInstantiate, right),
     () => true
   ) as never
-}
+})
 // ------------------------------------------------------------------
 // InstantiateProperties
 // ------------------------------------------------------------------

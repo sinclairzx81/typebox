@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TAny, IsAny } from '../../types/any.ts'
 import { type TNever, IsNever } from '../../types/never.ts'
@@ -57,72 +57,54 @@ type TBroadenFilter<Type extends TSchema, Types extends TSchema[], Result extend
         : TBroadenFilter<Type, Right, Result, All> // Left in Type, drop it
     : [...Result, Type] // Type broadest in set
 )
-function BroadenFilter<Type extends TSchema, Types extends TSchema[]>
-  (type: Type, types: [...Types], result: TSchema[] = [], all: TSchema[] = types): TBroadenFilter<Type, Types> {
-  return Guard.ShiftLeft(types, (left, right) => {
+const BroadenFilter = /*#__PURE__*/ RecursionGuard.Recursive(<Type extends TSchema, Types extends TSchema[]>
+  (type: Type, types: [...Types], result: TSchema[] = [], all: TSchema[] = types): TBroadenFilter<Type, Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) => {
     const compare = Compare(type, left)
     return (
       (Guard.IsEqual(compare, CompareResultLeftInside) || Guard.IsEqual(compare, CompareResultEqual))
         ? all // Left in set. Return original All set.
         : Guard.IsEqual(compare, CompareResultDisjoint)
-          ? BroadenFilter(type, right, [...result, left], all) // Left is disjoint, keep it
-          : BroadenFilter(type, right, result, all) // Left in Type, drop it
+          ? RecursionGuard.TailCall(BroadenFilter, type, right, RecursionGuard.Push(result, left), all) // Left is disjoint, keep it
+          : RecursionGuard.TailCall(BroadenFilter, type, right, result, all) // Left in Type, drop it
     )
-  }, () => [...result, type]) as never // Type broadest in set
-}
-// ------------------------------------------------------------------
-// BroadenType
-//
-// Evaluates a single Type and folds it into the accumulated Result,
-// then continues on to the remaining Types. Any and Unknown terminate
-// immediately: both are top types that dominate every other type
-// unconditionally, so the remaining Types and Result are discarded
-// outright rather than compared.
-//
-// TObject is pushed into Result without comparison, since comparing
-// objects is currently too expensive.
-//
-// (revise-candidate-fast-path-property-sets)
-//
-// ------------------------------------------------------------------
-type TBroadenType<Type extends TSchema, Types extends TSchema[], Result extends TSchema[],
-  Evaluated extends TSchema = TEvaluateType<Type>
-> = (
-  Evaluated extends TAny ? [Evaluated] : // terminate (always the most broad)
-  Evaluated extends TUnknown ? [Evaluated] : // terminate (always the most broad)
-  Evaluated extends TNever ? TBroadenTypes<Types, Result> : // ignored: never is dropped
-  Evaluated extends TObject ? TBroadenTypes<Types, [...Result, Evaluated]> : // objects are always considered (too expensive to compare)
-  TBroadenTypes<Types, TBroadenFilter<Evaluated, Result>>
-)
-function BroadenType<Type extends TSchema, Types extends TSchema[], Result extends TSchema[]>
-  (type: Type, types: [...Types], result: [...Result]): TBroadenType<Type, Types, Result> {
-  const evaluated = EvaluateType(type)
-  return (
-    IsAny(evaluated) ? [evaluated] : // terminate (always the most broad)
-    IsUnknown(evaluated) ? [evaluated] : // terminate (always the most broad)
-    IsNever(evaluated) ? BroadenTypes(types, result) :  // ignored: never is dropped
-    IsObject(evaluated) ? BroadenTypes(types, [...result, evaluated]) : // objects are always considered (too expensive to compare)
-    BroadenTypes(types, BroadenFilter(evaluated, result))
-  ) as never
-}
+  }, () => RecursionGuard.Push(result, type)) as never // Type broadest in set
+})
 // ------------------------------------------------------------------
 // BroadenTypes
 //
-// Folds a list of Types into their broadest set. Each element is
-// handed to BroadenType along with the remaining list and the
-// accumulator, so BroadenType decides how iteration continues.
-//
+// Evaluates and folds Types down to their broadest members. Any or
+// Unknown wins outright and short-circuits the rest, Never is dropped,
+// Object is always kept as-is (too expensive to compare structurally),
+// and everything else is run through BroadenFilter to drop or merge
+// against what has already been kept.
 // ------------------------------------------------------------------
 type TBroadenTypes<Types extends TSchema[], Result extends TSchema[] = []> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TBroadenType<Left, Right, Result>
+    ? TEvaluateType<Left> extends infer Evaluated extends TSchema
+      ? (
+          Evaluated extends TAny ? [Evaluated] : // terminate (always the most broad)
+          Evaluated extends TUnknown ? [Evaluated] : // terminate (always the most broad)
+          Evaluated extends TNever ? TBroadenTypes<Right, Result> : // ignored: never is dropped
+          Evaluated extends TObject ? TBroadenTypes<Right, [...Result, Evaluated]> : // objects are always considered (too expensive to compare)
+          TBroadenTypes<Right, TBroadenFilter<Evaluated, Result>>
+        )
+      : never
     : Result
 )
-function BroadenTypes<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TBroadenTypes<Types> {
-  return Guard.ShiftLeft(types, (left, right) => (
-    BroadenType(left, right, result)
-  ), () => result) as never
-}
+const BroadenTypes = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>
+  (types: [...Types], result: TSchema[] = []): TBroadenTypes<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) => {
+    const evaluated = EvaluateType(left)
+    return (
+      IsAny(evaluated) ? [evaluated] : // terminate (always the most broad)
+      IsUnknown(evaluated) ? [evaluated] : // terminate (always the most broad)
+      IsNever(evaluated) ? RecursionGuard.TailCall(BroadenTypes, right, result) :  // ignored: never is dropped
+      IsObject(evaluated) ? RecursionGuard.TailCall(BroadenTypes, right, RecursionGuard.Push(result, evaluated)) : // objects are always considered (too expensive to compare)
+      RecursionGuard.TailCall(BroadenTypes, right, BroadenFilter(evaluated, result))
+    )
+  }, () => result) as never
+})
 // ------------------------------------------------------------------
 // Broaden
 // ------------------------------------------------------------------

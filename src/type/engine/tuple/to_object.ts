@@ -29,6 +29,7 @@ THE SOFTWARE.
 // deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TObject, Object } from '../../types/object.ts'
 import { type TProperties } from '../../types/properties.ts'
@@ -42,12 +43,11 @@ export type TTupleElementsToProperties<Types extends TSchema[], Result extends T
     ? TTupleElementsToProperties<Left, { [_ in Left['length']]: Right } & Result>
     : { [Key in keyof Result]: Result[Key] }
 )
-export function TupleElementsToProperties<Types extends TSchema[]>(types: [...Types]): TTupleElementsToProperties<Types> {
-  const result = types.reduceRight((result, right, index) => {
-    return { [index]: right, ...result }
-  }, {} as TProperties)
-  return result as never
-}
+export const TupleElementsToProperties = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TProperties = {}): TTupleElementsToProperties<Types> => {
+  return RecursionGuard.ShiftRight(types, (left, right) =>
+    RecursionGuard.TailCall(TupleElementsToProperties, left,  { [left.length]: right, ...result })
+  , () => result) as never
+})
 // ------------------------------------------------------------------
 // TupleToObject
 // ------------------------------------------------------------------

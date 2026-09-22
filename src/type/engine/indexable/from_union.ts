@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TFromType, FromType } from './from_type.ts'
 
@@ -36,8 +37,8 @@ export type TFromUnion<Types extends TSchema[], Result extends string[] = []> = 
     ? TFromUnion<Right, [...Result, ...TFromType<Left>]>
     : Result
 )
-export function FromUnion<Types extends TSchema[]>(types: [...Types]): TFromUnion<Types> {
-  return types.reduce((result, left) => {
-    return [...result, ...FromType(left)]
-  }, [] as string[]) as never
-}
+export const FromUnion = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types], result: string[] = []): TFromUnion<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
+    RecursionGuard.TailCall(FromUnion, right, RecursionGuard.Push(result, ...FromType(left)))
+  , () => result) as never
+})
