@@ -105,6 +105,40 @@
         "comment": "https://www.rfc-editor.org/rfc/rfc6531#section-3.3 atext =/ UTF8-non-ascii, and https://www.rfc-editor.org/rfc/rfc3629#section-4 UTF8-4 covers U+10000 and above",
         "data": "𝕏@example.com",
         "valid": true
+      },
+      {
+        "description": "a domain label starting with a hyphen is not valid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5321#section-4.1.2 sub-domain = Let-dig [Ldh-str], so a label starts with a letter or digit; RFC 6531 section 3.3 only adds sub-domain =/ U-label",
+        "data": "δοκιμή@-example.com",
+        "valid": false
+      },
+      {
+        "description": "a domain label ending with a hyphen is not valid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5321#section-4.1.2 Ldh-str = *( ALPHA / DIGIT / \"-\" ) Let-dig, so a label ends with a letter or digit",
+        "data": "δοκιμή@example-.com",
+        "valid": false
+      },
+      {
+        "description": "a domain starting with a dot is not valid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5321#section-4.1.2 Domain = sub-domain *(\".\" sub-domain) admits no empty sub-domain",
+        "data": "δοκιμή@.example.com",
+        "valid": false
+      },
+      {
+        "description": "a domain ending with a dot is not valid",
+        "data": "δοκιμή@example.com.",
+        "valid": false
+      },
+      {
+        "description": "two subsequent dots inside the domain are not valid",
+        "data": "δοκιμή@example..com",
+        "valid": false
+      },
+      {
+        "description": "domain is required",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5321#section-4.1.2 Mailbox = Local-part \"@\" ( Domain / address-literal )",
+        "data": "δοκιμή@",
+        "valid": false
       }
     ]
   }

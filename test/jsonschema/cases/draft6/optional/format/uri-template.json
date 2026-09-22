@@ -116,6 +116,11 @@
         "valid": true
       },
       {
+        "description": "a supplementary private-use character in a literal is valid",
+        "data": "a󰀀b",
+        "valid": true
+      },
+      {
         "description": "reserved expansion operator",
         "data": "{+var}",
         "valid": true
@@ -154,6 +159,11 @@
         "description": "the explode modifier is valid",
         "data": "{var*}",
         "valid": true
+      },
+      {
+        "description": "combined prefix and explode modifiers are invalid",
+        "data": "{var:1*}",
+        "valid": false
       },
       {
         "description": "a variable list with more than one varspec is valid",
