@@ -29,18 +29,16 @@ THE SOFTWARE.
 import { BuildResult } from '../../../schema/index.ts'
 import { Writer } from '../../writer.ts'
 import { Banner } from './banner.ts'
-// ------------------------------------------------------------------
-// AnnotateParameter
-// ------------------------------------------------------------------
-function AnnotateFunction(func: string): string {
-  return func.replace(/= \(\(value\) =>/, '= ((value: any) =>')
-}
+
 // ------------------------------------------------------------------
 // ChecksSection
 // ------------------------------------------------------------------
 export function ChecksSection(build: BuildResult): string {
   const writer = new Writer()
   writer.WriteLine(Banner('Check'))
-  build.Functions().forEach((func) => writer.WriteLine(AnnotateFunction(func)))
+  build.Functions().forEach((func) => {
+    writer.WriteLine('// @ts-ignore')
+    writer.WriteLine(func)
+  })
   return writer.ToString()
 }

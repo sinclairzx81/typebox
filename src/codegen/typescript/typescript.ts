@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { Arguments } from '../../system/arguments/index.ts'
-import { Build, type XSchema } from '../../schema/index.ts'
+import { Build, BuildResult, type XSchema } from '../../schema/index.ts'
 import { ImportsSection } from './section/imports.ts'
 import { SchemasSection } from './section/schemas.ts'
 import { VariableSection } from './section/variables.ts'
@@ -37,6 +37,9 @@ import { StaticsSection } from './section/statics.ts'
 import { DefaultsSection } from './section/defaults.ts'
 import { Writer } from '../writer.ts'
 
+function UseVariables(build: BuildResult) {
+  return build.External().variables.length > 0
+}
 /** Generates a TypeScript validation module for the given schema */
 export function TypeScript(schema: XSchema): string
 /** Generates a TypeScript validation module for the given type */
@@ -49,9 +52,8 @@ export function TypeScript(...args: unknown[]): string {
   })
   const build = Build(context, schema)
   const writer = new Writer()
-  writer.WriteLine('// @ts-nocheck')
   writer.WriteLine(ImportsSection(build))
-  writer.WriteLine(VariableSection(build))
+  if (UseVariables(build)) writer.WriteLine(VariableSection(build))
   writer.WriteLine(SchemasSection(build))
   writer.WriteLine(ChecksSection(build))
   writer.WriteLine(StaticsSection(build))

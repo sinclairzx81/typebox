@@ -41,27 +41,27 @@ import { Writer } from '../../writer.ts'
 // ------------------------------------------------------------------
 function FromFunction(_build: Schema.BuildResult, variable: Function): string {
   return (
-    Guard.IsEqual(variable, Format.IsDateTime) ? 'Format.IsDateTime' :
-    Guard.IsEqual(variable, Format.IsDate) ? 'Format.IsDate' :
-    Guard.IsEqual(variable, Format.IsDuration) ? 'Format.IsDuration' :
-    Guard.IsEqual(variable, Format.IsEmail) ? 'Format.IsEmail' :
-    Guard.IsEqual(variable, Format.IsHostname) ? 'Format.IsHostname' :
-    Guard.IsEqual(variable, Format.IsIdnEmail) ? 'Format.IsIdnEmail' :
-    Guard.IsEqual(variable, Format.IsIdnHostname) ? 'Format.IsIdnHostname' :
-    Guard.IsEqual(variable, Format.IsIPv4) ? 'Format.IsIPv4' :
-    Guard.IsEqual(variable, Format.IsIPv6) ? 'Format.IsIPv6' :
-    Guard.IsEqual(variable, Format.IsIriReference) ? 'Format.IsIriReference' :
-    Guard.IsEqual(variable, Format.IsIri) ? 'Format.IsIri' :
-    Guard.IsEqual(variable, Format.IsJsonPointerUriFragment) ? 'Format.IsJsonPointerUriFragment' :
-    Guard.IsEqual(variable, Format.IsJsonPointer) ? 'Format.IsJsonPointer' :
-    Guard.IsEqual(variable, Format.IsRegex) ? 'Format.IsRegex' :
-    Guard.IsEqual(variable, Format.IsRelativeJsonPointer) ? 'Format.IsRelativeJsonPointer' :
-    Guard.IsEqual(variable, Format.IsTime) ? 'Format.IsTime' :
-    Guard.IsEqual(variable, Format.IsUriReference) ? 'Format.IsUriReference' :
-    Guard.IsEqual(variable, Format.IsUriTemplate) ? 'Format.IsUriTemplate' :
-    Guard.IsEqual(variable, Format.IsUri) ? 'Format.IsUri' :
-    Guard.IsEqual(variable, Format.IsUrl) ? 'Format.IsUrl' :
-    Guard.IsEqual(variable, Format.IsUuid) ? 'Format.IsUuid' :
+    Guard.IsEqual(variable, Format.IsDateTime) ? 'F.IsDateTime' :
+    Guard.IsEqual(variable, Format.IsDate) ? 'F.IsDate' :
+    Guard.IsEqual(variable, Format.IsDuration) ? 'F.IsDuration' :
+    Guard.IsEqual(variable, Format.IsEmail) ? 'F.IsEmail' :
+    Guard.IsEqual(variable, Format.IsHostname) ? 'F.IsHostname' :
+    Guard.IsEqual(variable, Format.IsIdnEmail) ? 'F.IsIdnEmail' :
+    Guard.IsEqual(variable, Format.IsIdnHostname) ? 'F.IsIdnHostname' :
+    Guard.IsEqual(variable, Format.IsIPv4) ? 'F.IsIPv4' :
+    Guard.IsEqual(variable, Format.IsIPv6) ? 'F.IsIPv6' :
+    Guard.IsEqual(variable, Format.IsIriReference) ? 'F.IsIriReference' :
+    Guard.IsEqual(variable, Format.IsIri) ? 'F.IsIri' :
+    Guard.IsEqual(variable, Format.IsJsonPointerUriFragment) ? 'F.IsJsonPointerUriFragment' :
+    Guard.IsEqual(variable, Format.IsJsonPointer) ? 'F.IsJsonPointer' :
+    Guard.IsEqual(variable, Format.IsRegex) ? 'F.IsRegex' :
+    Guard.IsEqual(variable, Format.IsRelativeJsonPointer) ? 'F.IsRelativeJsonPointer' :
+    Guard.IsEqual(variable, Format.IsTime) ? 'F.IsTime' :
+    Guard.IsEqual(variable, Format.IsUriReference) ? 'F.IsUriReference' :
+    Guard.IsEqual(variable, Format.IsUriTemplate) ? 'F.IsUriTemplate' :
+    Guard.IsEqual(variable, Format.IsUri) ? 'F.IsUri' :
+    Guard.IsEqual(variable, Format.IsUrl) ? 'F.IsUrl' :
+    Guard.IsEqual(variable, Format.IsUuid) ? 'F.IsUuid' :
     variable.toString()
   )
 }

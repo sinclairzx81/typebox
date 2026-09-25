@@ -7,68 +7,11 @@ import Schema from 'typebox/schema'
 import Value from 'typebox/value'
 import Type from 'typebox'
 
-// ------------------------------------------------------------------
-// Settings
-// ------------------------------------------------------------------
-
-System.Settings.Set({ enumerableKind: false })
-
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-
-const A = Guard.GraphemeCount('type-📦')      // 6
-const B = Guard.HasPropertyKey({ x: 1 }, 'x') // true
-
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-
 const T = Type.Object({
   x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
+  y: Type.String({ format: 'email' }),
+  w: Type.Array(Type.String(), { uniqueItems: true })
 })
 
-// ------------------------------------------------------------------
-// Script
-// ------------------------------------------------------------------
-
-const U = Type.Script(`string with { format: 'email' }`)
-
-const S = Type.Script({ T }, `{
-  [K in keyof T]: T[K] | null
-}`)
-
-// ------------------------------------------------------------------
-// Infer
-// ------------------------------------------------------------------
-
-type U = Type.Static<typeof U>
-type T = Type.Static<typeof T>
-type S = Type.Static<typeof S>
-
-// ------------------------------------------------------------------
-// Parse
-// ------------------------------------------------------------------
-
-const R = Value.Parse(T, { x: 1, y: 2, z: 3 })
-
-// ------------------------------------------------------------------
-// Compile
-// ------------------------------------------------------------------
-const C = Compile(S)
-
-const X = C.Parse({ x: 1, y: 2, z: 3 })
-
-// ------------------------------------------------------------------
-// Format
-// ------------------------------------------------------------------
-
-const E = Format.IsEmail('user@domain.com')
-
-// ------------------------------------------------------------------
-// Schema
-// ------------------------------------------------------------------
-
-const D = Schema.Parse({ const: 'hello' }, 'hello')
+Deno.writeTextFileSync(new URL('./vector.ts', import.meta.url), Codegen.TypeScript(T))
+Deno.writeTextFileSync(new URL('./vector.js', import.meta.url), Codegen.JavaScript(T))

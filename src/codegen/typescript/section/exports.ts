@@ -31,20 +31,9 @@ import { Writer } from '../../writer.ts'
 import { Banner } from './banner.ts'
 
 // ------------------------------------------------------------------
-// Parse
-// ------------------------------------------------------------------
-function Parse(_build: BuildResult): string {
-  const writer = new Writer()
-  writer.WriteLine('export function Parse(value: unknown): Module.Static {')
-  writer.WriteLine('  if(Check(value)) return value')
-  writer.WriteLine(`  throw new ParseError(Schema(), value, Errors(value))`)
-  writer.WriteLine('}')
-  return writer.ToString()
-}
-// ------------------------------------------------------------------
 // CheckWithUnevaluated
 // ------------------------------------------------------------------
-function UnevaluatedCheck(build: BuildResult): string {
+function CheckUnevaluated(build: BuildResult): string {
   const writer = new Writer()
   writer.WriteLine('export function Check(value: unknown): value is Module.Static {')
   writer.WriteLine('  const context = new CheckContext({}, {})')
@@ -59,10 +48,24 @@ function Check(build: BuildResult): string {
   writer.WriteLine('}')
   return writer.ToString()
 }
+// ------------------------------------------------------------------
+// Parse
+// ------------------------------------------------------------------
+function Parse(_build: BuildResult): string {
+  const writer = new Writer()
+  writer.WriteLine('export function Parse(value: unknown): Module.Static {')
+  writer.WriteLine('  if(Check(value)) return value')
+  writer.WriteLine(`  throw new S.ParseError(Schema(), value, Errors(value)[1])`)
+  writer.WriteLine('}')
+  return writer.ToString()
+}
+// ------------------------------------------------------------------
+// Errors
+// ------------------------------------------------------------------
 function Errors(_build: BuildResult): string {
   const writer = new Writer()
-  writer.WriteLine('export function Errors(value: unknown): [boolean, TLocalizedValidationError[]] {')
-  writer.WriteLine(`  return SchemaErrors(Context(), Schema(), value)`)
+  writer.WriteLine('export function Errors(value: unknown): [boolean, E.TLocalizedValidationError[]] {')
+  writer.WriteLine(`  return S.Errors(Context(), Schema(), value)`)
   writer.WriteLine('}')
   return writer.ToString()
 }
@@ -72,7 +75,7 @@ function Errors(_build: BuildResult): string {
 export function ExportsSection(build: BuildResult): string {
   const writer = new Writer()
   writer.WriteLine(Banner('Export'))
-  writer.WriteLine(build.UseUnevaluated() ? UnevaluatedCheck(build) : Check(build))
+  writer.WriteLine(build.UseUnevaluated() ? CheckUnevaluated(build) : Check(build))
   writer.WriteLine(Parse(build))
   writer.WriteLine(Errors(build))
   return writer.ToString()

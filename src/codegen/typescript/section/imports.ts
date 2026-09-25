@@ -29,18 +29,60 @@ THE SOFTWARE.
 import { BuildResult } from '../../../schema/index.ts'
 import { Writer } from '../../writer.ts'
 import { Banner } from './banner.ts'
+import { Guard } from '../../../guard/index.ts'
+import { Format } from '../../../format/index.ts'
 
+// ------------------------------------------------------------------
+// UseFormat
+// ------------------------------------------------------------------
+function UseFormat(build: BuildResult): boolean {
+  return build.External().variables.some((variable) => {
+    return (
+      Guard.IsEqual(variable, Format.IsDateTime) ||
+      Guard.IsEqual(variable, Format.IsDate) ||
+      Guard.IsEqual(variable, Format.IsDuration) ||
+      Guard.IsEqual(variable, Format.IsEmail) ||
+      Guard.IsEqual(variable, Format.IsHostname) ||
+      Guard.IsEqual(variable, Format.IsIdnEmail) ||
+      Guard.IsEqual(variable, Format.IsIdnHostname) ||
+      Guard.IsEqual(variable, Format.IsIPv4) ||
+      Guard.IsEqual(variable, Format.IsIPv6) ||
+      Guard.IsEqual(variable, Format.IsIriReference) ||
+      Guard.IsEqual(variable, Format.IsIri) ||
+      Guard.IsEqual(variable, Format.IsJsonPointerUriFragment) ||
+      Guard.IsEqual(variable, Format.IsJsonPointer) ||
+      Guard.IsEqual(variable, Format.IsRegex) ||
+      Guard.IsEqual(variable, Format.IsRelativeJsonPointer) ||
+      Guard.IsEqual(variable, Format.IsTime) ||
+      Guard.IsEqual(variable, Format.IsUriReference) ||
+      Guard.IsEqual(variable, Format.IsUriTemplate) ||
+      Guard.IsEqual(variable, Format.IsUri) ||
+      Guard.IsEqual(variable, Format.IsUrl) ||
+      Guard.IsEqual(variable, Format.IsUuid)
+    )
+  })
+}
+// ------------------------------------------------------------------
+// UseHashing
+// ------------------------------------------------------------------
+function UseHashing(build: BuildResult): boolean {
+  return build.Functions().join('\n').includes('Hashing.Hash')
+}
+// ------------------------------------------------------------------
+// UseGuard
+// ------------------------------------------------------------------
+function UseGuard(build: BuildResult): boolean {
+  return build.Functions().join('\n').includes('Guard.CodePointCount')
+}
 // ------------------------------------------------------------------
 // ImportsSection
 // ------------------------------------------------------------------
 export function ImportsSection(build: BuildResult): string {
   const writer = new Writer()
-  writer.WriteLine(Banner('Import'))
-  writer.WriteLine(`import { type TLocalizedValidationError } from 'typebox/error'`)
-  if (build.UseUnevaluated()) writer.WriteLine(`import { CheckContext } from 'typebox/schema'`)
-  writer.WriteLine(`import { Errors as SchemaErrors, ParseError } from 'typebox/schema'`)
-  writer.WriteLine(`import { Hashing } from 'typebox/system'`)
-  writer.WriteLine(`import { Guard } from 'typebox/guard'`)
-  writer.WriteLine(`import { Format } from 'typebox/format'`)
+  if (UseHashing(build)) writer.WriteLine(`import { Hashing } from 'typebox/system'`)
+  if (UseFormat(build)) writer.WriteLine(`import * as F from 'typebox/format'`)
+  if (UseGuard(build)) writer.WriteLine(`import * as G from 'typebox/guard'`)
+  writer.WriteLine(`import * as E from 'typebox/error'`)
+  writer.WriteLine(`import * as S from 'typebox/schema'`)
   return writer.ToString()
 }
