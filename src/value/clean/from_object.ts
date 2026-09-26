@@ -43,7 +43,7 @@ export function FromObject(context: TProperties, type: TObject, value: unknown):
   
   const additionalProperties = GetAdditionalProperties(type)
   for (const key of Guard.Keys(value)) {
-    if (Guard.HasPropertyKey(type.properties, key)) {
+    if (Object.prototype.hasOwnProperty.call(type.properties, key)) {
       value[key] = FromType(context, type.properties[key], value[key])
       continue
     }
