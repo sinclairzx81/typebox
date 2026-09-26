@@ -240,3 +240,11 @@ Test('Should Clean 20', () => {
   const R = Value.Clean(T, { x: 1, y: 2, z: 3 })
   Assert.IsEqual(R, { x: 1, y: 2 })
 })
+// ----------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1698
+// ----------------------------------------------------------------
+Test('Should Clean 21', () => {
+  const T = Type.Object({ a: Type.String() })
+  const R = Value.Clean(T, { a: '1', toString: 'x', valueOf: 'y', hasOwnProperty: 'z' })
+  Assert.IsEqual(R, { a: '1' })
+})
