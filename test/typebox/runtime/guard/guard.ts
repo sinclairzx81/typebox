@@ -137,6 +137,22 @@ Test('Should guard HasPropertyKey: prototype', () => {
   Assert.IsEqual(Guard.HasPropertyKey(obj, 'a'), true)
 })
 // ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1698
+// ------------------------------------------------------------------
+Test('Should guard HasPropertyKey: 3', () => {
+  Assert.IsEqual(Guard.HasPropertyKey({}, 'toString'), false)
+  Assert.IsEqual(Guard.HasPropertyKey({}, 'valueOf'), false)
+  Assert.IsEqual(Guard.HasPropertyKey({}, 'hasOwnProperty'), false)
+})
+Test('Should guard HasPropertyKey: 4', () => {
+  Assert.IsEqual(Guard.HasPropertyKey({ toString: 1 }, 'toString'), true)
+})
+Test('Should guard HasPropertyKey: 5', () => {
+  Assert.IsEqual(Guard.HasPropertyKey(new Date(), 'getTime'), true)
+  Assert.IsEqual(Guard.HasPropertyKey(new Date(), 'toString'), true)
+  Assert.IsEqual(Guard.HasPropertyKey(new Date(), 'hasOwnProperty'), false)
+})
+// ------------------------------------------------------------------
 // Guard.IsArray
 // ------------------------------------------------------------------
 Test('Should guard IsArray: 1', () => {

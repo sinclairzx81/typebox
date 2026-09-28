@@ -452,3 +452,12 @@ Test('Should not generate edits for nested unsafe properties on INSERT', () => {
   const C = Value.Diff(A, B)
   Assert.IsEqual(C, [{ type: 'insert', path: '/outer/value', value: 1 }])
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1698
+// ------------------------------------------------------------------
+Test('Should diff INSERT for keys named after Object.prototype members', () => {
+  const A = { a: 1 }
+  const B = { a: 1, toString: 'x' }
+  const C = Value.Diff(A, B)
+  Assert.IsEqual(C, [{ type: 'insert', path: '/toString', value: 'x' }])
+})

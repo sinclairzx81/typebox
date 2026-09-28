@@ -155,3 +155,14 @@ Test('Should Repair 13', () => {
     z: { a: 0, b: 1 }
   })
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1698
+// ------------------------------------------------------------------
+Test('Should Repair 14', () => {
+  const T = Type.Object({
+    id: Type.String(),
+    toString: Type.Optional(Type.String())
+  })
+  const R = Value.Repair(T, { id: 1 })
+  Assert.IsEqual(R, { id: '1' })
+})

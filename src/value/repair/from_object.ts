@@ -45,8 +45,9 @@ export function FromObject(context: TProperties, type: TObject, value: unknown):
   // Properties
   const result = {} as Record<PropertyKey, unknown>
   for (const [key, schema] of Guard.Entries<TSchema>(type.properties)) {
-    if (!required.has(key) && Guard.IsUndefined(value[key])) continue
-    result[key] = key in value
+    const hasKey = Guard.HasPropertyKey(value, key)
+    if (!required.has(key) && (!hasKey || Guard.IsUndefined(value[key]))) continue
+    result[key] = hasKey
       ? FromType(context, schema, value[key])
       : Create(context, schema)
   }
