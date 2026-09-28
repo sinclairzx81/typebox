@@ -7,7 +7,7 @@ While TypeBox takes measures to ensure evaluation is safe, some environments do 
 
 ## IsAccelerated
 
-You can check if a compiled Validator is using accleration with the IsAccelerated function.
+You can check if a compiled Validator is using acceleration with the IsAccelerated function.
 
  ```typescript
 import { Compile } from 'typebox/compile'

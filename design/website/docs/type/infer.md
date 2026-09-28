@@ -2,7 +2,7 @@
 
 Creates an Infer instruction to extract types in conditional type expression.
 
-> ⚠️ This function is a Script evalutation action.
+> ⚠️ This function is a Script evaluation action.
 
 ## Example
 
