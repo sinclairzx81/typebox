@@ -2,7 +2,7 @@
 <p>TypeBox achieves high performance by compiling JSON schematics into optimized validation routines. The generated code is then evaluated at runtime within the environment; a technique known as Just-In-Time (JIT) compilation.</p>
 <p>While TypeBox takes measures to ensure evaluation is safe, some environments do restrict runtime code evaluation by preventing calls to <code>eval()</code> or <code>new Function()</code>. In such cases, acceleration will not be possible. TypeBox will automatically fall back to interpreted dynamic checking if it detects a restrictive <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP">Content Security Policy</a>.</p>
 <h2>IsAccelerated</h2>
-<p>You can check if a compiled Validator is using accleration with the IsAccelerated function.</p>
+<p>You can check if a compiled Validator is using acceleration with the IsAccelerated function.</p>
 <pre><code class="language-typescript">import { Compile } from &#39;typebox/compile&#39;
 
 const C = Compile(Type.String())
