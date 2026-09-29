@@ -429,3 +429,32 @@ Test('Should Escape Property Keys 3', () => {
   const T = Type.Object({ foo: Type.String() }, { additionalProperties: false })
   Ok(T, { foo: 'abc' })
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1698
+// ------------------------------------------------------------------
+Test('Should Check Object.prototype Keys 1', () => {
+  const T = Type.Object({
+    id: Type.String(),
+    toString: Type.Optional(Type.String()),
+    valueOf: Type.Optional(Type.Number())
+  })
+  Ok(T, { id: 'a' })
+  Ok(T, { id: 'a', toString: 'x', valueOf: 1 })
+  Fail(T, { id: 'a', toString: 1 })
+})
+Test('Should Check Object.prototype Keys 2', () => {
+  const T = Type.Object({
+    id: Type.String(),
+    toString: Type.String()
+  })
+  Fail(T, { id: 'a' })
+  Ok(T, { id: 'a', toString: 'x' })
+})
+Test('Should Check Object.prototype Keys 3', () => {
+  const T = Type.Object({
+    getTime: Type.Function([], Type.Number()),
+    toString: Type.Function([], Type.String()),
+    valueOf: Type.Function([], Type.Number())
+  })
+  Ok(T, new Date())
+})

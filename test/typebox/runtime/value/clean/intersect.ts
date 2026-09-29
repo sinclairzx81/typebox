@@ -364,3 +364,14 @@ Test('Should Clean 30', () => {
   Assert.IsEqual(V1, R1)
   Assert.IsEqual(V2, R2)
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1698
+// ------------------------------------------------------------------
+Test('Should Clean 31', () => {
+  const T = Type.Intersect([
+    Type.Object({ a: Type.String() }),
+    Type.Object({ b: Type.Number() })
+  ])
+  const R = Value.Clean(T, { a: '1', b: 1, toString: 'x', valueOf: 'y', hasOwnProperty: 'z' })
+  Assert.IsEqual(R, { a: '1', b: 1 })
+})

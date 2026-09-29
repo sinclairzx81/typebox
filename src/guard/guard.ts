@@ -201,9 +201,15 @@ export function ShiftLeft<T, True extends (left: T, right: T[]) => unknown, Fals
 export function IsUnsafePropertyKey(key: PropertyKey): boolean {
   return IsEqual(key, '__proto__') || IsEqual(key, 'constructor') || IsEqual(key, 'prototype')
 }
-/** Returns true if this value has this property key */
+/** Returns true if this value has this property key. Inherited keys count (e.g. Date getTime), except those from Object.prototype. */
 export function HasPropertyKey<Key extends PropertyKey>(value: object, key: Key): value is { [_ in Key]: unknown } {
-  return IsUnsafePropertyKey(key) ? Object.prototype.hasOwnProperty.call(value, key) : key in value
+  if (IsUnsafePropertyKey(key)) return Object.prototype.hasOwnProperty.call(value, key)
+  let current: object | null = value
+  while (!IsNull(current) && !IsEqual(current, Object.prototype)) {
+    if (Object.prototype.hasOwnProperty.call(current, key)) return true
+    current = Object.getPrototypeOf(current)
+  }
+  return false
 }
 /** Returns object entries as `[RegExp, Value][]` */
 export function EntriesRegExp<Value extends unknown = unknown>(value: Record<PropertyKey, Value>): [RegExp, Value][] {

@@ -393,3 +393,14 @@ Test('Should Default 34', () => {
   Assert.IsEqual(calls, 2)
   Assert.IsEqual(R, { x: 'v1', y: 2 })
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1698
+// ------------------------------------------------------------------
+Test('Should Default 35', () => {
+  const T = Type.Object({
+    id: Type.String(),
+    toString: Type.Optional(Type.String())
+  })
+  const R = Value.Default(T, { id: 'a' })
+  Assert.IsEqual(Object.getOwnPropertyNames(R), ['id'])
+})

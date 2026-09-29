@@ -156,9 +156,12 @@ export function Entries(value: string): string {
 export function Keys(value: string): string {
   return `Object.getOwnPropertyNames(${value})`
 }
+// Keys where `in` can disagree with Guard.HasPropertyKey (Object.prototype members and unsafe keys)
+function IsGuardedPropertyKey(key: string): boolean {
+  return [...Object.getOwnPropertyNames(Object.prototype), 'prototype'].some((name) => G.IsEqual(key, JSON.stringify(name)))
+}
 export function HasPropertyKey(value: string, key: string): string {
-  const isProtoField = G.IsEqual(key, '"__proto__"') || G.IsEqual(key, '"constructor"')
-  return isProtoField ? `Object.prototype.hasOwnProperty.call(${value}, ${key})` : `${key} in ${value}`
+  return IsGuardedPropertyKey(key) ? `Guard.HasPropertyKey(${value}, ${key})` : `${key} in ${value}`
 }
 export function IsDeepEqual(left: string, right: string): string {
   return `Guard.IsDeepEqual(${left}, ${right})`

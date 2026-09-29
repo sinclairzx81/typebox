@@ -42,7 +42,7 @@ export function FromObject(context: TProperties, type: TObject, value: unknown):
   // Properties
   for (const key of knownPropertyKeys) {
     // Resolve Value for Property
-    const propertyValue = FromType(context, type.properties[key], value[key])
+    const propertyValue = FromType(context, type.properties[key], Guard.HasPropertyKey(value, key) ? value[key] : undefined)
 
     // Ambiguious Undefined: If the value is undefined, the type is optional there's no default. ignore.
     const isUnassignableUndefined = Guard.IsUndefined(propertyValue) && (IsOptional(type.properties[key]) || !Guard.HasPropertyKey(type.properties[key], 'default') )
