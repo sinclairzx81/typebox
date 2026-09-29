@@ -2,7 +2,7 @@
 
 Applies a Mapped operation to a type.
 
-> ⚠️ This function is a Script evalutation action.
+> ⚠️ This function is a Script evaluation action.
 
 ## Example
 
