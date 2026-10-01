@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,32 +28,41 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../../system/exceptions/index.ts'
+import { Hashing } from '../../system/index.ts'
+import { Guard } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
 
-import { Guard } from '../../../guard/index.ts'
-import { type TSchema } from '../../types/schema.ts'
-import { type TTemplateLiteralTypes, TemplateLiteralTypes } from '../../script/parser.ts'
+const HASH_PREFIX = 'x-'
+const DEFS_PREFIX = '#/$defs/'
+const PLACEHOLDER_PREFIX = 'x-ref-'
 
-/** Parses a Template into TemplateLiteral types */
-export type TParseTemplateIntoTypes<Template extends string,
-  Parsed extends [TSchema[], string] | [] = TTemplateLiteralTypes<`\`${Template}\``>,
-  Result extends TSchema = Parsed extends [infer Types extends TSchema[], string] 
-    ? Types 
-    : TUnreachable // []
-> = Result
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start - symmetric unreachable
-//
-// Parser is parsing regular expression for strings and will return 
-// at least 1 TLiteral at a minumum.
-//
+// HashKey
 // ------------------------------------------------------------------
-/** Parses a Template into a TemplateLiteral types */
-export function ParseTemplateIntoTypes<Template extends string>(template: Template): TParseTemplateIntoTypes<Template> {
-  const parsed = TemplateLiteralTypes(`\`${template}\``)
-  const result = Guard.IsEqual(parsed.length, 2) 
-    ? parsed[0]
-    : Unreachable() // []
-  return result as never
+export function HashKey(schema: Schema.XSchema): string {
+  return `${HASH_PREFIX}${Hashing.Hash(schema)}`
 }
-// deno-coverage-ignore-stop
+export function IsHashKey(key: string, schema: Schema.XSchema): boolean {
+  return key.startsWith(HASH_PREFIX) && Guard.IsEqual(key, HashKey(schema))
+}
+// ------------------------------------------------------------------
+// PlaceholderKey
+// ------------------------------------------------------------------
+export function PlaceholderKey(completed: number, depth: number): string {
+  return `${PLACEHOLDER_PREFIX}${completed}-${depth}`
+}
+export function IsPlaceholderKey(key: string): boolean {
+  return key.startsWith(PLACEHOLDER_PREFIX)
+}
+// ------------------------------------------------------------------
+// DefsRef
+// ------------------------------------------------------------------
+export function DefsRef(key: string): string {
+  return `${DEFS_PREFIX}${key}`
+}
+export function IsDefsRef(ref: string): boolean {
+  return ref.startsWith(DEFS_PREFIX)
+}
+export function DefsKey(ref: string): string {
+  return ref.slice(DEFS_PREFIX.length)
+}

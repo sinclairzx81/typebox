@@ -28,11 +28,24 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { InstantiationDepthExceeded } from '../../../system/exceptions/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TLiteral, type TLiteralValue, IsLiteral } from '../../types/literal.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 
+const MAX_TEMPLATE_LITERAL_VARIANTS = 128
+
+// ------------------------------------------------------------------
+// AssertTemplateLiteralFinite
+// ------------------------------------------------------------------
+function AssertTemplateLiteralFinite(types: TSchema[]): void {
+  let variants = 1
+  for (const type of types) {
+    variants *= IsUnion(type) ? type.anyOf.length : 1
+    if (variants > MAX_TEMPLATE_LITERAL_VARIANTS) InstantiationDepthExceeded()
+  }
+}
 // ------------------------------------------------------------------
 // FromLiteral
 // ------------------------------------------------------------------
@@ -50,13 +63,13 @@ type TFromTypesReduce<Types extends TSchema[]> = (
     : false
   : true
 )
-function FromTypesReduce<Types extends TSchema[]>(types: [...Types]): TFromTypesReduce<Types> {
-  return Guard.ShiftLeft(types, (left, right) =>
+const FromTypesReduce = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types]): TFromTypesReduce<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
     FromType(left)
-      ? FromTypesReduce(right)
+      ? RecursionGuard.TailCall(FromTypesReduce, right)
       : false,
     () => true) as never
-}
+})
 type TFromTypes<Types extends TSchema[],
   Result extends boolean = Types extends [] ? false : TFromTypesReduce<Types>
 > = Result
@@ -87,6 +100,7 @@ export type TIsTemplateLiteralFinite<Types extends TSchema[],
 > = Result
 /** Returns true if the given TemplateLiteral types yields a finite variant set */
 export function IsTemplateLiteralFinite<Types extends TSchema[]>(types: [...Types]): TIsTemplateLiteralFinite<Types> {
+  AssertTemplateLiteralFinite(types)
   const result = FromTypes(types)
   return result as never
 }

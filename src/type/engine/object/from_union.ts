@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
-import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
+import { type TUnreachable, Unreachable } from '../../../system/exceptions/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/evaluate.ts'
@@ -61,13 +61,13 @@ type TReduceVariants<Types extends TSchema[], Result extends TProperties> = (
   ? TReduceVariants<Right, TCollapseUnionProperties<Result, TFromType<Left>>>
   : Result
 )
-function ReduceVariants<Types extends TSchema[], Result extends TProperties>
+const ReduceVariants = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[], Result extends TProperties>
   (types: [...Types], result: Result):
-  TReduceVariants<Types, Result> {
-  return Guard.ShiftLeft(types, (left, right) =>
-    ReduceVariants(right, CollapseUnionProperties(result, FromType(left))),
+  TReduceVariants<Types, Result> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
+    RecursionGuard.TailCall(ReduceVariants, right, CollapseUnionProperties(result, FromType(left))),
     () => result) as never
-}
+})
 // ------------------------------------------------------------------
 // FromUnion
 //
@@ -85,7 +85,7 @@ export type TFromUnion<Types extends TSchema[]> = (
 export function FromUnion<Types extends TSchema[]>
   (types: [...Types]):
   TFromUnion<Types> {
-  return Guard.ShiftLeft(types, (left, right) =>
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
     ReduceVariants(right, FromType(left)),
     () => Unreachable()) as never
 }

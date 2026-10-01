@@ -26,4 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+export * from './instantiation.ts'
 export * from './unreachable.ts'

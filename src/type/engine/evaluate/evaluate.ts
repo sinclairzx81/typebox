@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TDependent, IsDependent } from '../../types/dependent.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
@@ -69,11 +69,11 @@ export type TEvaluateEnum<Values extends TEnumValue[], Result extends TSchema[] 
     ? TEvaluateEnum<Right, [...Result, TLiteral<Left>]>
     : TEvaluateUnion<Result>
 )
-export function EvaluateEnum<Values extends TEnumValue[]>(values: [...Values], result: TSchema[] = []): TEvaluateEnum<Values> {
-  return Guard.ShiftLeft(values, (left, right) => 
-    EvaluateEnum(right, [...result, Literal(left)]), 
+export const EvaluateEnum = /*#__PURE__*/ RecursionGuard.Recursive(<Values extends TEnumValue[]>(values: [...Values], result: TSchema[] = []): TEvaluateEnum<Values> => {
+  return RecursionGuard.ShiftLeft(values, (left, right) => 
+    RecursionGuard.TailCall(EvaluateEnum, right, RecursionGuard.Push(result, Literal(left))), 
     () => EvaluateUnion(result)) as never
-}
+})
 // ------------------------------------------------------------------
 // EvaluateIntersect
 // ------------------------------------------------------------------

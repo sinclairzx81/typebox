@@ -65,14 +65,16 @@ export interface TSettings {
   maxParseErrors: number
 
   /**
-   * Specifies the maximum number of instantiations allowed within a top-level generic instantiation
-   * context. This setting can be used to bound generic calls to a fixed count, which can be useful if
-   * evaluating string-encoded types originating from untrusted sources. Setting this value to 0 will
-   * disallow generics entirely, ensuring type instantiation runs linear.
+   * Specifies the maximum number of generic calls allowed within a top-level instantiation
+   * session. Each generic call counts as one tracked stack frame against this limit, whether
+   * resolved via tail-call trampolining or true recursion, and the count resets once recursion
+   * fully unwinds. By default, this setting is configured to 16K, which matches most JavaScript
+   * engine stack limits. Instantiations that exceed this limit will result in an "Instantiation
+   * Excessively Deep and Possibly Infinite" exception being thrown.
    *
-   * @default 128
+   * @default 16384
    */
-  maxInstantiationCount: number
+  maxInstantiationDepth: number
 
   /**
    * Enables or disables the use of runtime code evaluation to accelerate validation. By default,
@@ -133,7 +135,7 @@ const settings: TSettings = {
   immutableTypes: false,
   maxErrors: 8,
   maxParseErrors: 1,
-  maxInstantiationCount: 128,
+  maxInstantiationDepth: 16384,
   useAcceleration: true,
   exactOptionalPropertyTypes: false,
   enumerableKind: false,
@@ -148,7 +150,7 @@ export function Reset(): void {
   settings.immutableTypes = false
   settings.maxErrors = 8
   settings.maxParseErrors = 1
-  settings.maxInstantiationCount = 128
+  settings.maxInstantiationDepth = 16384
   settings.useAcceleration = true
   settings.exactOptionalPropertyTypes = false
   settings.enumerableKind = false

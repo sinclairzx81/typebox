@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-lint-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema, IsSchema } from '../../types/schema.ts'
 import { type TLiteral, IsLiteral } from '../../types/literal.ts'
 import { type TNumber, IsNumber } from '../../types/number.ts'
@@ -102,13 +102,13 @@ type TCreateProperties<Variants extends TSchema[], Value extends TSchema, Result
       : TCreateProperties<Right, Value, Result>
     : { [Key in keyof Result]: Result[Key] }
 )
-function CreateProperties<Types extends TSchema[], Value extends TSchema>(types: [...Types], value: Value): TCreateProperties<Types, Value> {
-  return types.reduce((result, left) => {
+const CreateProperties = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[], Value extends TSchema>(types: [...Types], value: Value, result: TProperties = {}): TCreateProperties<Types, Value> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) => {
     return IsLiteral(left) && (Guard.IsString(left.const) || Guard.IsNumber(left.const))
-      ? { ...result, [left.const]: value }
-      : result
-  }, {} as TProperties) as never
-}
+      ? RecursionGuard.TailCall(CreateProperties, right, value, { ...result, [left.const]: value })
+      : RecursionGuard.TailCall(CreateProperties, right, value, result)
+  }, () => result) as never
+})
 // ------------------------------------------------------------------
 //
 // CreateObject

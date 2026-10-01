@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TExtends, Extends, ExtendsResult } from '../../extends/index.ts'
@@ -57,11 +57,11 @@ type TExtractUnion<Left extends TSchema[], Right extends TSchema, Result extends
     ? TExtractUnion<Tail, Right, [...Result, ...TExtractType<Head, Right>]>
     : Result
 )
-function ExtractUnion<Left extends TSchema[], Right extends TSchema>(left: [...Left], right: Right, result: TSchema[] = []): TExtractUnion<Left, Right> {
-  return Guard.ShiftLeft(left, (head, tail) => 
-    ExtractUnion(tail, right, [...result, ...ExtractType(head, right)]),
+const ExtractUnion = /*#__PURE__*/ RecursionGuard.Recursive(<Left extends TSchema[], Right extends TSchema>(left: [...Left], right: Right, result: TSchema[] = []): TExtractUnion<Left, Right> => {
+  return RecursionGuard.ShiftLeft(left, (head, tail) => 
+    RecursionGuard.TailCall(ExtractUnion, tail, right, RecursionGuard.Push(result, ...ExtractType(head, right))),
     () => result) as never
-}
+})
 // ------------------------------------------------------------------
 // Operation
 // ------------------------------------------------------------------

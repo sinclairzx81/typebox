@@ -28,9 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
-import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
-
+import { type TUnreachable, Unreachable } from '../../../system/exceptions/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'
 import { type TString, String } from '../../types/string.ts'
@@ -49,11 +48,11 @@ type TFromLiteralPush<Variants extends string[], Value extends TLiteralValue, Re
   ? TFromLiteralPush<Right, Value, [...Result, `${Left}${Value}`]>
   : Result
 
-function FromLiteralPush<Variants extends string[], Value extends TLiteralValue>(variants: [...Variants], value: Value, result: string[] = []): TFromLiteralPush<Variants, Value> {
-  return Guard.ShiftLeft(variants, (left, right) =>
-    FromLiteralPush(right, value, [...result, `${left}${value}`]),
+const FromLiteralPush = /*#__PURE__*/ RecursionGuard.Recursive(<Variants extends string[], Value extends TLiteralValue>(variants: [...Variants], value: Value, result: string[] = []): TFromLiteralPush<Variants, Value> => {
+  return RecursionGuard.ShiftLeft(variants, (left, right) =>
+    RecursionGuard.TailCall(FromLiteralPush, right, value, RecursionGuard.Push(result, `${left}${value}`)),
     () => result) as never
-}
+})
 type TFromLiteral<Variants extends string[], Value extends TLiteralValue> =
   Variants extends [] ? [`${Value}`] : TFromLiteralPush<Variants, Value>
 
@@ -67,12 +66,12 @@ type TFromUnion<Variants extends string[], Types extends TSchema[], Result exten
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? TFromUnion<Variants, Right, [...Result, ...TFromType<Variants, Left>]>
   : Result
-function FromUnion<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types], result: string[] = []): TFromUnion<Variants, Types> {
-  return Guard.ShiftLeft(types, (left, right) =>
-    FromUnion(variants, right, [...result, ...FromType(variants, left)]),
+const FromUnion = /*#__PURE__*/ RecursionGuard.Recursive(<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types], result: string[] = []): TFromUnion<Variants, Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
+    RecursionGuard.TailCall(FromUnion, variants, right, RecursionGuard.Push(result, ...FromType(variants, left))),
     () => result
   ) as never
-}
+})
 // ------------------------------------------------------------------
 // FromType
 // ------------------------------------------------------------------
@@ -109,11 +108,11 @@ type TDecodeFromSpan<Variants extends string[], Types extends TSchema[]> =
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? TDecodeFromSpan<TFromType<Variants, Left>, Right>
   : Variants
-function DecodeFromSpan<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types]): TDecodeFromSpan<Variants, Types> {
-  return Guard.ShiftLeft(types, (left, right) =>
-    DecodeFromSpan(FromType(variants, left) as string[], right),
+const DecodeFromSpan = /*#__PURE__*/ RecursionGuard.Recursive(<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types]): TDecodeFromSpan<Variants, Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
+    RecursionGuard.TailCall(DecodeFromSpan, FromType(variants, left) as string[], right),
     () => variants) as never
-}
+})
 // ------------------------------------------------------------------
 // VariantsToLiterals
 // ------------------------------------------------------------------

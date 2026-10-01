@@ -26,17 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// ------------------------------------------------------------------
-// Guards
-// ------------------------------------------------------------------
-export * as EmitGuard from './emit.ts'
-export * as GlobalsGuard from './globals.ts'
-export * as NativeGuard from './native.ts'
-export * as RecursionGuard from './recursion.ts'
+// deno-coverage-ignore-start - unreachable by definition
 
-// ------------------------------------------------------------------
-// Default
-// ------------------------------------------------------------------
-import * as Guard from './guard.ts'
-export * as Guard from './guard.ts'
-export default Guard
+export type TInstantiationDepth = never
+
+/** Throws a type instantiation is excessively deep and possibly infinite exception */
+export function InstantiationDepthExceeded(): never {
+  throw Error('Type instantiation is excessively deep and possibly infinite')
+}

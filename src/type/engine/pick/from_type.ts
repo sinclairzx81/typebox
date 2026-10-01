@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../../system/memory/index.ts'
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TObject, Object } from '../../types/object.ts'
@@ -46,6 +46,9 @@ import { type TToIndexable, ToIndexable } from '../indexable/to_indexable.ts'
 type TComparable<Indexable extends TProperties> = (
   keyof Indexable extends string | number ? `${keyof Indexable}` : never
 )
+function Comparable<Indexable extends TProperties>(left: string, properties: Indexable): boolean {
+  return Guard.HasPropertyKey(properties, left)
+}
 // ------------------------------------------------------------------
 // FromKeys
 // ------------------------------------------------------------------
@@ -56,12 +59,13 @@ type TFromKeys<Indexable extends TProperties, Keys extends string[], Result exte
       : TFromKeys<Indexable, Right, Result>
     : Result
 )
-function FromKeys<Indexable extends TProperties, Keys extends string[]>(properties: Indexable, keys: Keys): TFromKeys<Indexable, Keys> {
-  const result = Guard.Keys(properties).reduce((result, key) => {
-    return keys.includes(key) ? Memory.Assign(result, { [key]: properties[key] }) : result
-  }, {} as TProperties)
-  return result as never
-}
+const FromKeys = /*#__PURE__*/ RecursionGuard.Recursive(<Indexable extends TProperties, Keys extends string[]>(properties: Indexable, keys: [...Keys], result: TProperties = {}): TFromKeys<Indexable, Keys> => {
+  return RecursionGuard.ShiftLeft(keys, (left, right) => {
+    return Comparable(left, properties)
+      ? RecursionGuard.TailCall(FromKeys, properties, right, Memory.Assign(result, { [left]: properties[left] }))
+      : RecursionGuard.TailCall(FromKeys, properties, right, result)
+  }, () => result) as never
+})
 // ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
@@ -75,7 +79,7 @@ export function FromType<Type extends TSchema, Indexer extends TSchema>
   (type: Type, indexer: Indexer): 
     TFromType<Type, Indexer> {
   const indexable = ToIndexable(type) as TProperties
-  const keys = ToIndexableKeys(indexer)
+  const keys = ToIndexableKeys(indexer) as string[]
   const applied = FromKeys(indexable, keys)
   const result = Object(applied)
   return result as never

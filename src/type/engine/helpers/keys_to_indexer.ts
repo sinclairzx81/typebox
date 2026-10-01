@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteralValue } from '../../types/literal.ts'
 import { type TUnion, Union } from '../../types/union.ts'
@@ -43,13 +44,13 @@ type TKeysToLiterals<Keys extends PropertyKey[], Result extends TLiteral[] = []>
         : TKeysToLiterals<Right, Result>
     ) : Result
 )
-function KeysToLiterals<Keys extends PropertyKey[]>(keys: [...Keys]): TKeysToLiterals<Keys> {
-  return keys.reduce((result, left) => {
-    return IsLiteralValue(left) 
-      ? [...result, Literal(left)]
-      : result
-  }, [] as TLiteral[]) as never
-}
+const KeysToLiterals = /*#__PURE__*/ RecursionGuard.Recursive(<Keys extends PropertyKey[]>(keys: [...Keys], result: TLiteral[] = []): TKeysToLiterals<Keys> => {
+  return RecursionGuard.ShiftLeft(keys, (left, right) => {
+    return IsLiteralValue(left)
+      ? RecursionGuard.TailCall(KeysToLiterals, right, RecursionGuard.Push(result, Literal(left)))
+      : RecursionGuard.TailCall(KeysToLiterals, right, result)
+  }, () => result) as never
+})
 // ------------------------------------------------------------------
 // KeysToIndexer
 // ------------------------------------------------------------------

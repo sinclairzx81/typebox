@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { RecursionGuard } from 'typebox/guard'
 import Type from 'typebox'
 
 // ------------------------------------------------------------------
@@ -36,23 +37,24 @@ type TKeysToUnionKeys<Keys extends Type.TLiteralValue[], Result extends Type.TLi
   ? TKeysToUnionKeys<Right, [...Result, Type.TLiteral<Left>]>
   : Type.TUnion<Result>
 )
-function KeysToUnionKeys<Keys extends Type.TLiteralValue[]>(keys: [...Keys]): TKeysToUnionKeys<Keys> {
-  const result = keys.map(key => Type.Literal(key))
-  return Type.Union(result) as never
-}
+const KeysToUnionKeys = /*#__PURE__*/ RecursionGuard.Recursive(<Keys extends Type.TLiteralValue[]>(keys: [...Keys], result: Type.TLiteral[] = []): TKeysToUnionKeys<Keys> => {
+  return RecursionGuard.ShiftLeft(keys, (left, right) => 
+    RecursionGuard.TailCall(KeysToUnionKeys, right, RecursionGuard.Push(result, Type.Literal(left))),
+    () => Type.Union(result)) as never
+})
 // ------------------------------------------------------------------
 // FromTypes
 // ------------------------------------------------------------------
 type TFromTypes<Types extends Type.TSchema[], UnionKeys extends Type.TSchema, Result extends Type.TSchema[] = []> = (
   Types extends [infer Left extends Type.TSchema, ...infer Right extends Type.TSchema[]]
-  ? TFromTypes<Right, UnionKeys, [...Result, TFromType<Left, UnionKeys>]>
-  : Result
+    ? TFromTypes<Right, UnionKeys, [...Result, TFromType<Left, UnionKeys>]>
+    : Result
 )
-function FromTypes<Types extends Type.TSchema[], UnionKeys extends Type.TSchema>(types: [...Types], unionKeys: UnionKeys): TFromTypes<Types, UnionKeys> {
-  return types.reduce((result, left) => {
-    return [...result, FromType(left, unionKeys)]
-  }, [] as Type.TSchema[]) as never
-}
+const FromTypes = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends Type.TSchema[], UnionKeys extends Type.TSchema>(types: [...Types], unionKeys: UnionKeys, result: Type.TSchema[] = []): TFromTypes<Types, UnionKeys> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) => 
+    RecursionGuard.TailCall(FromTypes, right, unionKeys, RecursionGuard.Push(result, FromType(left, unionKeys))),
+    () => result) as never
+})
 // ------------------------------------------------------------------
 // FromType
 // ------------------------------------------------------------------
@@ -64,8 +66,8 @@ type TFromType<Type extends Type.TSchema, UnionKeys extends Type.TSchema> = (
 function FromType<Type extends Type.TSchema, UnionKeys extends Type.TSchema>(type: Type, keys: UnionKeys): TFromType<Type, UnionKeys> {
   return (
     Type.IsIntersect(type) ? Type.Intersect(FromTypes(type.allOf, keys)) :
-      Type.IsUnion(type) ? Type.Union(FromTypes(type.anyOf, keys)) :
-        Type.Pick(type, keys)
+    Type.IsUnion(type) ? Type.Union(FromTypes(type.anyOf, keys)) :
+    Type.Pick(type, keys)
   ) as never
 }
 // ------------------------------------------------------------------

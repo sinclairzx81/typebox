@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TCompare, type TCompareResult, Compare, CompareResultRightInside, CompareResultDisjoint } from '../evaluate/compare.ts'
 
@@ -62,13 +62,13 @@ type TInsert<Type extends TSchema, Types extends TSchema[], Result extends TSche
       : [...Result, Type, ...Types]
     : [...Result, Type]
 )
-function Insert<Type extends TSchema, Types extends TSchema[]>(type: Type, types: [...Types], result: TSchema[] = []): TInsert<Type, Types> {
-  return Guard.ShiftLeft(types, (left, right) =>
+const Insert = /*#__PURE__*/ RecursionGuard.Recursive(<Type extends TSchema, Types extends TSchema[]>(type: Type, types: [...Types], result: TSchema[] = []): TInsert<Type, Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
     Guard.IsEqual(Comparer(type, left), 1)
-      ? Insert(type, right, [...result, left])
-      : [...result, type, ...types],
-    () => [...result, type]) as never
-}
+      ? RecursionGuard.TailCall(Insert, type, right, RecursionGuard.Push(result, left))
+      : RecursionGuard.Push(result, type, ...types),
+    () => RecursionGuard.Push(result, type)) as never
+})
 // ------------------------------------------------------------------
 // Sort
 // ------------------------------------------------------------------
@@ -77,11 +77,11 @@ type TSort<Types extends TSchema[], Result extends TSchema[] = []> = (
     ? TSort<Right, TInsert<Left, Result>>
     : Result
 )
-function Sort<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TSort<Types> {
-  return Guard.ShiftLeft(types, (left, right) =>
-    Sort(right, Insert(left, result)),
+const Sort = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TSort<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
+    RecursionGuard.TailCall(Sort, right, Insert(left, result)),
     () => result) as never
-}
+})
 // ------------------------------------------------------------------
 // Priority
 // ------------------------------------------------------------------

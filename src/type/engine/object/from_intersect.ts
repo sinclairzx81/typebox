@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../../system/memory/index.ts'
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TFromType, FromType } from './from_type.ts'
@@ -73,8 +73,8 @@ export type TFromIntersect<Types extends TSchema[], Result extends TProperties =
   ? TFromIntersect<Right, TCollapseIntersectProperties<Result, TFromType<Left>>>
   : { [Key in keyof Result]: Result[Key] }
 )
-export function FromIntersect<Types extends TSchema[]>(types: [...Types]): TFromIntersect<Types> {
-  return types.reduce((result, left) => {
-    return CollapseIntersectProperties(result, FromType(left))
-  }, {}) as never
-}
+export const FromIntersect = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TProperties = {}): TFromIntersect<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
+    RecursionGuard.TailCall(FromIntersect, right, CollapseIntersectProperties(result, FromType(left)))
+  , () => result) as never
+})

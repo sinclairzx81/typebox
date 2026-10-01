@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TProperties, type TPropertyKeys, PropertyKeys } from '../../types/properties.ts'
 import { type TCyclicCheck, CyclicCheck } from './check.ts'
 
@@ -41,15 +42,13 @@ type TResolveCandidateKeys<Context extends TProperties, Keys extends (keyof Cont
       : TResolveCandidateKeys<Context, Right, Result>
   : Result
 )
-function ResolveCandidateKeys<Context extends TProperties, Keys extends (keyof Context)[]>
-  (context: Context, keys: [...Keys]): 
-    TResolveCandidateKeys<Context, Keys> {
-  return keys.reduce<(keyof Context)[]>((result, left) => {
+const ResolveCandidateKeys = /*#__PURE__*/ RecursionGuard.Recursive(<Context extends TProperties, Keys extends (keyof Context)[]>(context: Context, keys: [...Keys], result: (keyof Context)[] = []): TResolveCandidateKeys<Context, Keys> => {
+  return RecursionGuard.ShiftLeft(keys, (left, right) => {
     return CyclicCheck([left], context, context[left])
-      ? [...result, left]
-      : result
-  }, []) as never
-}
+      ? RecursionGuard.TailCall(ResolveCandidateKeys, context, right, RecursionGuard.Push(result, left))
+      : RecursionGuard.TailCall(ResolveCandidateKeys, context, right, result)
+  }, () => result) as never
+})
 // ------------------------------------------------------------------
 // CyclicCandidates
 // ------------------------------------------------------------------

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { RecursionGuard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TArray, IsArray } from '../../types/array.ts'
 import { type TConstructor, IsConstructor } from '../../types/constructor.ts'
@@ -76,23 +76,22 @@ function FromProperties<Stack extends (keyof Context)[], Context extends TProper
 // ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
-type TFromTypes<Stack extends (keyof Context)[], Context extends TProperties, Types extends TSchema[]> =
+type TFromTypes<Stack extends (keyof Context)[], Context extends TProperties, Types extends TSchema[]> = 
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? TFromType<Stack, Context, Left> extends true
     ? true
     : TFromTypes<Stack, Context, Right>
   : false
-
-function FromTypes<Stack extends (keyof Context)[], Context extends TProperties, Types extends TSchema[]>
+const FromTypes = /*#__PURE__*/ RecursionGuard.Recursive(<Stack extends (keyof Context)[], Context extends TProperties, Types extends TSchema[]>
   (stack: [...Stack], context: Context, types: [...Types]):
-    TFromTypes<Stack, Context, Types> {
-  return Guard.ShiftLeft(types, (left, right) => 
+    TFromTypes<Stack, Context, Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) => 
     FromType(stack, context, left)
       ? true
-      : FromTypes(stack, context, right),
+      : RecursionGuard.TailCall(FromTypes, stack, context, right),
     () => false
   ) as never
-}
+})
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------

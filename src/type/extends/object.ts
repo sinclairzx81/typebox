@@ -29,10 +29,10 @@ THE SOFTWARE.
 // deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../system/unreachable/index.ts'
+import { type TUnreachable, Unreachable } from '../../system/exceptions/index.ts'
 
 import { Memory } from '../../system/memory/index.ts'
-import { Guard } from '../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../guard/index.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TSchema } from '../types/schema.ts'
 import { type TOptional, IsOptional } from '../types/_optional.ts'
@@ -118,18 +118,17 @@ type TExtractInferredProperties<Keys extends PropertyKey[], Properties extends R
     : TUnreachable // TExtractInferredProperties<Right, Properties, Result>
   : Result
 )
-function ExtractInferredProperties<Keys extends PropertyKey[], Properties extends Record<PropertyKey, Result.TResult>>
-  (keys: [...Keys], properties: Properties): 
-    TExtractInferredProperties<Keys, Properties> {
-  return keys.reduce((result, key) => {
-    return key in properties
-      ? Result.IsExtendsTrueLike(properties[key])
+const ExtractInferredProperties = /*#__PURE__*/ RecursionGuard.Recursive(<Keys extends PropertyKey[], Properties extends Record<PropertyKey, Result.TResult>>
+  (keys: [...Keys], properties: Properties, result: TProperties = {}): TExtractInferredProperties<Keys, Properties> => {
+  return RecursionGuard.ShiftLeft(keys, (left, right) => {
+    return Guard.HasPropertyKey(properties, left)
+      ? Result.IsExtendsTrueLike(properties[left])
         // @ts-ignore 5.0.4 cannot see `.inferred`
-        ? { ...result, ...properties[key].inferred }
-        : Unreachable() // result
-      : Unreachable() // result
-  }, {}) as never
-}
+        ? RecursionGuard.TailCall(ExtractInferredProperties, right, properties, { ...result, ...properties[left].inferred })
+        : RecursionGuard.TailCall(ExtractInferredProperties, right, properties, result)
+      : Unreachable() // TExtractInferredProperties<Right, Properties, Result>
+  }, () => result) as never
+})
 // deno-coverage-ignore-stop
 // ---
 type TExtendsPropertiesComparer<Inferred extends TProperties, Left extends TProperties, Right extends TProperties,
@@ -155,10 +154,10 @@ type TExtendsPropertiesComparer<Inferred extends TProperties, Left extends TProp
       // property on right is the same as property missing in left. If the
       // right is infer, then we just assign the extend type to inferred.
       : Right[RightKey] extends TOptional<Right[RightKey]>
-      ? Right[RightKey] extends TInfer
-      ? Result.TExtendsTrue<Memory.TAssign<Inferred, { [_ in Right[RightKey]['name']]: Right[RightKey]['extends'] }>>
-      : Result.TExtendsTrue<Inferred>
-      : Result.TExtendsFalse
+        ? Right[RightKey] extends TInfer
+          ? Result.TExtendsTrue<Memory.TAssign<Inferred, { [_ in Right[RightKey]['name']]: Right[RightKey]['extends'] }>>
+          : Result.TExtendsTrue<Inferred>
+        : Result.TExtendsFalse
     )
   },
   // Check if all properties are ExtendsTrueLike
@@ -299,14 +298,14 @@ type TExtendsRecordComparer<Properties extends TProperties, Keys extends (keyof 
       : Result.TExtendsFalse
     : Result.TExtendsTrue<Result>
 )
-function ExtendsRecordComparer<Properties extends TProperties, Keys extends (keyof Properties)[], Type extends TSchema, Result extends TProperties>
- (properties: Properties, keys: Keys, type: Type, result: Result): TExtendsRecordComparer<Properties, Keys, Type, Result> {
-  return Guard.ShiftLeft(keys, (left, right) => 
+const ExtendsRecordComparer = /*#__PURE__*/ RecursionGuard.Recursive(<Properties extends TProperties, Keys extends (keyof Properties)[], Type extends TSchema, Result extends TProperties>
+ (properties: Properties, keys: Keys, type: Type, result: Result): TExtendsRecordComparer<Properties, Keys, Type, Result> => {
+  return RecursionGuard.ShiftLeft(keys, (left, right) => 
     Result.Match(ExtendsLeft({}, properties[left], type), inferred => 
-      ExtendsRecordComparer(properties, right, type, RecordMergeInferred(result, inferred)),
+      RecursionGuard.TailCall(ExtendsRecordComparer, properties, right, type, RecordMergeInferred(result, inferred)),
       () => Result.ExtendsFalse()),
     () => Result.ExtendsTrue(result)) as never
-}
+})
 // ----------------------------------------------------------------------------
 // ExtendsObjectToRecord
 // ----------------------------------------------------------------------------

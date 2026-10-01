@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-lint-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { Guard } from '../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../guard/index.ts'
 import * as T from '../types/index.ts'
 import * as S from '../action/index.ts'
 
@@ -111,11 +111,11 @@ type TDelimitedDecode<Input extends [unknown, unknown][], Result extends unknown
     ? TDelimitedDecode<Right, [...Result, Left[1]]>
     : Result
 )
-function DelimitedDecode(input: unknown[], result: unknown[] = []): unknown[] {
-  return Guard.ShiftLeft(input, (left, right) => 
-    DelimitedDecode(right, [...result, (left as [unknown, unknown])[1]]),
+const DelimitedDecode = /*#__PURE__*/ RecursionGuard.Recursive((input: unknown[], result: unknown[] = []): unknown[] => {
+  return RecursionGuard.ShiftLeft(input, (left, right) => 
+    RecursionGuard.TailCall(DelimitedDecode, right, RecursionGuard.Push(result, (left as [unknown, unknown])[1])),
     () => result)
-}
+})
 type TDelimited<Input extends [unknown, unknown, unknown] | []> = (  
   Input extends [infer Left extends unknown, infer Right extends [unknown, unknown][], infer _ extends unknown[]]
     ? [Left, ...TDelimitedDecode<Right>]

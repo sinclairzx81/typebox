@@ -37,18 +37,8 @@ import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildRefineMultiple(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XRefine, value: string): string {
-  const external = Externals.CreateVariable(schema['~refine'])
-  return E.Every(external, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'check'), [value]))
-}
-function BuildRefineSingle(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XRefine, value: string): string {
-  const external = Externals.CreateVariable(schema['~refine'][0])
-  return E.Call(E.Member(external, 'check'), [value])
-}
 export function BuildRefine(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XRefine, value: string): string {
-  return G.IsEqual(schema['~refine'].length, 1) 
-    ? BuildRefineSingle(_stack, _context, schema, value)
-    : BuildRefineMultiple(_stack, _context, schema, value)
+  return E.ReduceAnd(schema['~refine'].map((refinement) => E.Call(Externals.CreateVariable(refinement.check), [value])))
 }
 // ------------------------------------------------------------------
 // Check

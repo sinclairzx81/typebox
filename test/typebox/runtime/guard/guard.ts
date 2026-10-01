@@ -324,28 +324,6 @@ Test('Should IsClassInstance 15', () => {
   const strObj = new String('abc')
   Assert.IsEqual(Guard.IsClassInstance(strObj), true)
 })
-
-// ------------------------------------------------------------------
-// Guard.ShiftLeft
-// ------------------------------------------------------------------
-Test('Should ShiftLeft 1', () => {
-  const result: any = Guard.ShiftLeft([], (left, right) => ({ left, right }), () => 'empty')
-  Assert.IsEqual(result, 'empty')
-})
-Test('Should ShiftLeft 2', () => {
-  const result: string | {
-    left: number
-    right: number[]
-  } = Guard.ShiftLeft([1, 2, 3], (left, right) => ({ left, right }), () => 'empty')
-  Assert.IsEqual(result, { left: 1, right: [2, 3] })
-})
-Test('Should ShiftLeft 3', () => {
-  const result: string | {
-    left: number
-    right: number[]
-  } = Guard.ShiftLeft([42], (left, right) => ({ left, right }), () => 'empty')
-  Assert.IsEqual(result, { left: 42, right: [] })
-})
 // ------------------------------------------------------------------
 // CodePoint
 // ------------------------------------------------------------------

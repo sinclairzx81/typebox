@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { RecursionGuard } from '../../../guard/index.ts'
+
 import { type TSchema } from '../../types/schema.ts'
 import { type TInfer, IsInfer } from '../../types/infer.ts'
 import { type TNever, Never } from '../../types/never.ts'
@@ -81,9 +83,8 @@ export type TRestSpread<Types extends TSchema[], Result extends TSchema[] = []> 
     ? TRestSpread<Right, [...Result, ...TSpreadElement<Left>]>
     : Result
 )
-export function RestSpread<Types extends TSchema[]>(types: [...Types]): TRestSpread<Types> {
-  const result = types.reduce((result, left) => {
-    return [...result, ...SpreadElement(left)]
-  }, [] as TSchema[]) as never
-  return result as never
-}
+export const RestSpread = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TRestSpread<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
+    RecursionGuard.TailCall(RestSpread, right, RecursionGuard.Push(result, ...SpreadElement(left)))
+  , () => result) as never
+})

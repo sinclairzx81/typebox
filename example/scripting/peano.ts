@@ -37,8 +37,6 @@ THE SOFTWARE.
 import System from 'typebox/system'
 import Type from 'typebox'
 
-System.Settings.Set({ maxInstantiationCount: 2048 })
-
 console.time()
 console.log('Solving ... Please Wait')
 const { Result } = Type.Script(`

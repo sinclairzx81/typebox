@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
+import { Guard, RecursionGuard } from '../../../guard/index.ts'
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TAny, Any } from '../../types/any.ts'
@@ -69,16 +69,16 @@ function FromProperties<Properties extends TProperties>(properties: Properties):
 // ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
-type TFromTypes<Types extends TSchema[], Result extends TSchema[] = []> =
+type TFromTypes<Types extends TSchema[], Result extends TSchema[] = []> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? TFromTypes<Right, [...Result, TFromType<Left>]>
   : Result
-
-function FromTypes<Types extends TSchema[]>(types: [...Types]): TFromTypes<Types> {
-  return types.reduce((result, left) => {
-    return [...result, FromType(left)]
-  }, [] as TSchema[]) as never
-}
+)
+const FromTypes = /*#__PURE__*/ RecursionGuard.Recursive(<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TFromTypes<Types> => {
+  return RecursionGuard.ShiftLeft(types, (left, right) =>
+    RecursionGuard.TailCall(FromTypes, right, RecursionGuard.Push(result, FromType(left)))
+  , () => result) as never
+})
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
