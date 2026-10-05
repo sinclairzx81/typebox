@@ -241,9 +241,9 @@ Test('Should Clean 20', () => {
   Assert.IsEqual(R, { x: 1, y: 2 })
 })
 // ----------------------------------------------------------------
-// Ensure Clean Handles Object Prototype Key Override
+// Ensure Clean Handles Keys that Override Object Prototype
 //
-// https://github.com/sinclairzx81/typebox/issues/1698
+// Ref: https://github.com/sinclairzx81/typebox/issues/1698
 // ----------------------------------------------------------------
 Test('Should Clean 21', () => {
   const T = Type.Object({})
