@@ -240,3 +240,23 @@ Test('Should Clean 20', () => {
   const R = Value.Clean(T, { x: 1, y: 2, z: 3 })
   Assert.IsEqual(R, { x: 1, y: 2 })
 })
+// ----------------------------------------------------------------
+// Ensure Clean Handles Keys that Override Object Prototype
+//
+// Ref: https://github.com/sinclairzx81/typebox/issues/1698
+// ----------------------------------------------------------------
+Test('Should Clean 21', () => {
+  const T = Type.Object({})
+  const R = Value.Clean(T, { toString: 'x' })
+  Assert.IsEqual(R, {})
+})
+Test('Should Clean 22', () => {
+  const T = Type.Object({}, { additionalProperties: false })
+  const R = Value.Clean(T, { toString: 'x' })
+  Assert.IsEqual(R, {})
+})
+Test('Should Clean 23', () => {
+  const T = Type.Object({}, { additionalProperties: Type.String() })
+  const R = Value.Clean(T, { toString: 'x' })
+  Assert.IsEqual(R, { toString: 'x' })
+})
