@@ -241,7 +241,7 @@ Test('Should Clean 20', () => {
   Assert.IsEqual(R, { x: 1, y: 2 })
 })
 // ----------------------------------------------------------------
-// Should Handle Object Prototype Properties.
+// Ensure Clean Handles Object Prototype Key Override
 //
 // https://github.com/sinclairzx81/typebox/issues/1698
 // ----------------------------------------------------------------
