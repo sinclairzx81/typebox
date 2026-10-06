@@ -153,7 +153,7 @@ Test('Should Priority 10', () => {
   Assert.IsTrue(Type.IsNumber(T[2].properties.x))
 })
 // ------------------------------------------------------------------
-// UnionPrioritySort (Runtime Rests)
+// UnionPrioritySort (Runtime Tests)
 // ------------------------------------------------------------------
 Test('Should Priority 11', () => {
   const A = Type.String()
