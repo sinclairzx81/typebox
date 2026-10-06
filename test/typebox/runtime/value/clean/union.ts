@@ -231,6 +231,7 @@ Test('Should Clean 23', () => {
   Settings.Reset()
 })
 Test('Should Clean 24', () => {
+  Settings.Set({ unionPrioritySort: true })
   const A = Type.Union([
     Type.Object({ x: Type.Number() }),
     Type.Object({ x: Type.Number(), y: Type.Number() })
@@ -238,4 +239,24 @@ Test('Should Clean 24', () => {
   // matched on second variant
   const R = Value.Clean(A, { x: 1, y: 2, w: 4 })
   Assert.IsEqual(R, { x: 1, y: 2 })
+  Settings.Reset()
+})
+// ------------------------------------------------------------------
+// UnionPrioritySort: Key Pattern Is Retained
+//
+// Ref: https://github.com/sinclairzx81/typebox/issues/1703
+// ------------------------------------------------------------------
+Test('Should Clean 25', () => {
+  Settings.Set({ unionPrioritySort: false })
+  const T = Type.Record(Type.String({ pattern: '^custom[A-Z]' }), Type.Any())
+  const A = Value.Clean(T, { customColor: 'Red', rating: 5 })
+  Assert.IsEqual(A, { customColor: 'Red' })
+  Settings.Reset()
+})
+Test('Should Clean 26', () => {
+  Settings.Set({ unionPrioritySort: true })
+  const T = Type.Record(Type.String({ pattern: '^custom[A-Z]' }), Type.Any())
+  const A = Value.Clean(T, { customColor: 'Red', rating: 5 })
+  Assert.IsEqual(A, { customColor: 'Red' })
+  Settings.Reset()
 })

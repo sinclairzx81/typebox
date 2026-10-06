@@ -31,12 +31,14 @@ THE SOFTWARE.
 import Guard from '../../guard/index.ts'
 import { type TSchema } from '../../type/index.ts'
 import { type TProperties } from '../../type/index.ts'
-import { IsArray, Array as _Array_, ArrayOptions } from '../../type/index.ts'
-import { IsUnion, Union } from '../../type/index.ts'
+import { Array as _Array_, ArrayOptions, IsArray } from '../../type/index.ts'
+import { Intersect, IsIntersect } from '../../type/index.ts'
 import { IsObject, Object as _Object_ } from '../../type/index.ts'
-import { IsRecord, Record, RecordKey, RecordValue } from '../../type/index.ts'
+import { IsRecord, Record, RecordPattern, RecordValue, type TRecord } from '../../type/index.ts'
+import { String, type TString } from '../../type/index.ts'
 import { IsTuple, Tuple } from '../../type/index.ts'
-import { IsIntersect, Intersect } from '../../type/index.ts'
+import { IsUnion, Union } from '../../type/index.ts'
+
 import { Priority } from '../../type/index.ts'
 
 // ------------------------------------------------------------------
@@ -49,8 +51,8 @@ import { Priority } from '../../type/index.ts'
 //
 // ------------------------------------------------------------------
 function Modifiers(type: TSchema, next: TSchema): TSchema {
-  for(const key of Guard.Keys(type as Record<PropertyKey, unknown>)) {
-    if(Guard.HasPropertyKey(next, key)) continue
+  for (const key of Guard.Keys(type as Record<PropertyKey, unknown>)) {
+    if (Guard.HasPropertyKey(next, key)) continue
     next[key as keyof TSchema] = type[key as keyof TSchema]
   }
   return next
@@ -60,8 +62,20 @@ function Modifiers(type: TSchema, next: TSchema): TSchema {
 // ------------------------------------------------------------------
 function FromProperties(properties: TProperties): TProperties {
   const result = {} as TProperties
-  for(const key of Guard.Keys(properties)) result[key] = FromType(properties[key])
+  for (const key of Guard.Keys(properties)) result[key] = FromType(properties[key])
   return result
+}
+// ------------------------------------------------------------------
+// FromRecordKey
+//
+// This is required because RecordKey(...) returns a canonical
+// decoded type derived from the pattern. When the pattern is an
+// unrecognized user-defined one, the result falls through to
+// TString (^.*$) and the user-defined pattern is lost. This
+// function ensures the exact pattern is retained.
+// ------------------------------------------------------------------
+function FromRecordKey(type: TRecord): TString {
+  return String({ pattern: RecordPattern(type) })
 }
 // ------------------------------------------------------------------
 // PriorityTypes
@@ -73,7 +87,7 @@ function FromPriorityTypes(types: TSchema[]): TSchema[] {
 // Types
 // ------------------------------------------------------------------
 function FromTypes(types: TSchema[]): TSchema[] {
-  return types.map(type => FromType(type))
+  return types.map((type) => FromType(type))
 }
 // ------------------------------------------------------------------
 // Type
@@ -84,7 +98,7 @@ function FromType(type: TSchema): TSchema {
     IsIntersect(type) ? Intersect(FromTypes(type.allOf)) :
     IsUnion(type) ? Union(FromPriorityTypes(type.anyOf)) :
     IsObject(type) ? _Object_(FromProperties(type.properties)) :
-    IsRecord(type) ? Record(RecordKey(type), FromType(RecordValue(type))) :
+    IsRecord(type) ? Record(FromRecordKey(type), FromType(RecordValue(type))) :
     IsTuple(type) ? Tuple(FromTypes(type.items)) :
     type
   )
