@@ -51,7 +51,16 @@ function Decode(direction: string, context: TProperties, type: TUnion, value: un
 // ------------------------------------------------------------------
 function Encode(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
   const exterior = Callback(direction, context, type, value)
+  // select the first member matching the unencoded value to prevent
+  // a codec member claiming values that belong to another member.
   for (const schema of type.anyOf) {
+    if(!Check(context, schema, exterior)) continue
+    const variant = FromType(direction, context, schema, Clone(exterior))
+    if(!Check(context, schema, variant)) continue
+    return variant
+  }
+  for (const schema of type.anyOf) {
+    if(Check(context, schema, exterior)) continue
     const variant = FromType(direction, context, schema, Clone(exterior))
     if(!Check(context, schema, variant)) continue
     return variant
