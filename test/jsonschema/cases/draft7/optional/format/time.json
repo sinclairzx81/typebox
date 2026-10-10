@@ -290,6 +290,12 @@
         "comment": "RFC 3339 section 5.6: no production of full-time emits whitespace",
         "data": " 08:30:06Z",
         "valid": false
+      },
+      {
+        "description": "trailing whitespace after a valid time",
+        "comment": "RFC 3339 section 5.6: no production of full-time emits whitespace",
+        "data": "08:30:06Z ",
+        "valid": false
       }
     ]
   }

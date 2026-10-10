@@ -176,6 +176,11 @@
         "valid": true
       },
       {
+        "description": "a trailing dot in a variable name is invalid",
+        "data": "{a.}",
+        "valid": false
+      },
+      {
         "description": "a double dot in a variable name is invalid",
         "data": "{a..b}",
         "valid": false

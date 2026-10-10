@@ -14,6 +14,33 @@
         "description": "a regular expression with unclosed parens is invalid",
         "data": "^(abc]",
         "valid": false
+      },
+      {
+        "description": "a quantifier with nothing to repeat is invalid",
+        "comment": "https://tc39.es/ecma262/#sec-patterns a Quantifier follows something (Term :: Atom Quantifier), so a pattern cannot begin with one",
+        "data": "*a",
+        "valid": false
+      },
+      {
+        "description": "a character class range in reverse order is invalid",
+        "comment": "https://tc39.es/ecma262/#sec-patterns-static-semantics-early-errors it is a Syntax Error if the first ClassAtom of a range has a greater CharacterValue than the second",
+        "data": "[z-a]",
+        "valid": false
+      },
+      {
+        "description": "a trailing backslash is invalid",
+        "data": "\\",
+        "valid": false
+      },
+      {
+        "description": "an unmatched closing parenthesis is invalid",
+        "data": "a)",
+        "valid": false
+      },
+      {
+        "description": "an unterminated character class is invalid",
+        "data": "[abc",
+        "valid": false
       }
     ]
   }

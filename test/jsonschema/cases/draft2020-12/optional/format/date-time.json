@@ -220,6 +220,30 @@
         "description": "century year 2100 is not a leap year",
         "data": "2100-02-29T00:00:00Z",
         "valid": false
+      },
+      {
+        "description": "a second fraction with no digits",
+        "comment": "RFC 3339 section 5.6: time-secfrac = \".\" 1*DIGIT requires at least one digit",
+        "data": "1985-04-12T23:20:50.Z",
+        "valid": false
+      },
+      {
+        "description": "a comma decimal separator with a time-offset",
+        "comment": "RFC 3339 section 5.6: the decimal separator in time-secfrac is \".\" - the ISO 8601 comma is not part of this profile",
+        "data": "1985-04-12T23:20:50,5Z",
+        "valid": false
+      },
+      {
+        "description": "leading whitespace before a valid date-time",
+        "comment": "RFC 3339 section 5.6: no production of date-time emits whitespace",
+        "data": " 1985-04-12T23:20:50Z",
+        "valid": false
+      },
+      {
+        "description": "trailing whitespace after a valid date-time",
+        "comment": "RFC 3339 section 5.6: no production of date-time emits whitespace",
+        "data": "1985-04-12T23:20:50Z ",
+        "valid": false
       }
     ]
   }
