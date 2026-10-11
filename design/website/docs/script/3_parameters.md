@@ -1,10 +1,10 @@
 # Script.Parameters
 
-Script can accept exterior types using a leading context argument.
+Script can accept external types using a leading context argument.
 
-### Parameters
+## Parameters
 
-The following creates a nullable string by passing an exterior string into the Script.
+The following creates a nullable string by passing an external string into the Script.
 
 ```typescript
 const T = Type.String()
@@ -15,7 +15,7 @@ const S = Type.Script({ T }, `T | null`)            // const S: TUnion<[
                                                     // ]>
 ```
 
-Multiple exterior types can be passed via the context object.
+Multiple external types can be passed via the context object.
 
 ```typescript
 const A = Type.Literal(1)
@@ -29,7 +29,7 @@ const T = Type.Script({ A, B, C }, `[A, B, C]`)     // const T: TTuple<[
                                                     // ]>
 ```
 
-### Module Dependencies
+## Module Dependencies
 
 Script modules can be passed as the context for other modules, allowing type definitions to be shared across dependent modules.
 

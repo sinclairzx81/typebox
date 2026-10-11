@@ -43,7 +43,7 @@ THE SOFTWARE.
 /* ================================================================ */
 .frontend > .header {
   background: var(--app-head-background);
-  border-bottom: 1px solid var(--app-edge-color);
+  border-bottom: 1px solid var(--app-frame-edge-color);
   display: flex;
   flex-direction: row;
   flex-shrink: 0; 
@@ -121,7 +121,7 @@ THE SOFTWARE.
   color: var(--app-navigation-color);
   font-family: var(--app-font-family-advanced);
   background: var(--app-foot-background);
-  border-top: 1px solid var(--app-edge-color);
+  border-top: 1px solid var(--app-frame-edge-color);
   text-align: center;
   height: 48px;
   font-size: 14px;
@@ -134,4 +134,23 @@ THE SOFTWARE.
 
 }
 
+.frontend.frontend-light-startup > .header,
+.frontend.frontend-light-startup > .footer {
+  animation: frontend-frame-fade-in 900ms ease-in-out both;
+}
 
+@keyframes frontend-frame-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frontend.frontend-light-startup > .header,
+  .frontend.frontend-light-startup > .footer {
+    animation: none;
+  }
+}

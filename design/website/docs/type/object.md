@@ -38,36 +38,36 @@ The following options are available for Object
 
 ```typescript
 export interface TObjectOptions extends TSchemaOptions {
-  /** 
-   * Defines whether additional properties are allowed beyond those explicitly defined in `properties`. 
+  /**
+   * Defines whether additional properties are allowed beyond those explicitly defined in `properties`.
    */
   additionalProperties?: TSchema | boolean
-  /** 
-   * The minimum number of properties required in the object. 
+  /**
+   * The minimum number of properties required in the object.
    */
   minProperties?: number
-  /** 
-   * The maximum number of properties allowed in the object. 
+  /**
+   * The maximum number of properties allowed in the object.
    */
   maxProperties?: number
-  /** 
-   * Defines conditional requirements for properties. 
+  /**
+   * Defines conditional requirements for properties.
    */
   dependencies?: Record<string, boolean | TSchema | string[]>
-  /** 
-   * Specifies properties that *must* be present if a given property is present. 
+  /**
+   * Specifies properties that *must* be present if a given property is present.
    */
   dependentRequired?: Record<string, string[]>
-  /** 
-   * Defines schemas that apply if a specific property is present. 
+  /**
+   * Defines schemas that apply if a specific property is present.
    */
   dependentSchemas?: Record<string, TSchema>
-  /** 
-   * Maps regular expressions to schemas properties matching a pattern must validate against the schema. 
+  /**
+   * Maps regular expressions to schemas that matching properties must validate against.
    */
   patternProperties?: Record<string, TSchema>
-  /** 
-   * A schema that all property names within the object must validate against. 
+  /**
+   * A schema that all property names within the object must validate against.
    */
   propertyNames?: TSchema
 }

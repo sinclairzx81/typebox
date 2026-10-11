@@ -26,6 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Range from './range.ts'
-
-export { Range }
+export * from './range.ts'

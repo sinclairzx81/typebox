@@ -1,5 +1,5 @@
 <h1>Schema.Errors</h1>
-<p>The Errors(...) function returns an array of gathered validation errors up to the configured <code>maxErrors</code> limit. If the value contains no errors, an empty array is returned.</p>
+<p>The Errors(...) function returns a tuple containing a boolean indicating whether the value is valid and an array of validation errors gathered up to the configured <code>maxErrors</code> limit. If the value is valid, the errors array is empty.</p>
 <blockquote>
 <p>⚠️ For performance, this function should only be called after a failed Check. The function performs an exhaustive check up to the <code>maxErrors</code> setting (the default is <code>8</code>). For additional performance, consider reducing <code>maxErrors</code> to <code>1</code>, which will terminate gathering on the first error.</p>
 </blockquote>
@@ -9,7 +9,7 @@
 // ------------------------------------------------------------------
 // Schema
 // ------------------------------------------------------------------
-const T = { 
+const T = {
   type: &#39;object&#39;,
   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
   properties: {
@@ -45,5 +45,5 @@ const E = Schema.Errors(T, { x: null })             // const E = [
                                                     //   ]
                                                     // ]
 
-console.log(errors)
+console.log(E)
 </code></pre>

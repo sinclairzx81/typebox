@@ -9,9 +9,9 @@ The Errors(...) function returns an array of gathered validation errors up to th
 Example usage is shown below.
 
 ```typescript
-const T = Type.Object({ 
-  x: Type.Number(), 
-  y: Type.Number() 
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number()
 })
 
 const value = { x: 'not-a-number' }
@@ -34,13 +34,13 @@ const errors = Value.Errors(T, value)               // const errors = [{
 //
 // Optional
 //
-// Use Value.Pointer.Get to access invalid values via `instancePath` 
+// Use Value.Pointer.Get to access invalid values via `instancePath`
 //
 // ------------------------------------------------------------------
 
 const errorsWithValue = errors.map(error => {
-  return { ...error, 
-    value: Value.Pointer.Get(value, error.instancePath) 
+  return { ...error,
+    value: Value.Pointer.Get(value, error.instancePath)
   }
 })
 ```

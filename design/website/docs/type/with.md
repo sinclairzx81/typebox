@@ -6,7 +6,7 @@ An action that augments a type with additional constraints and annotations. This
 
 ## Syntax
 
-This type is a IR target for the following syntax
+This type is an IR target for the following syntax.
 
 ```typescript
 type T = string with { format: 'email' }

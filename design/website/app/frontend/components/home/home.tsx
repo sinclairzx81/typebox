@@ -33,6 +33,32 @@ import * as React from 'react'
 import * as ReactRouter from 'react-router-dom'
 import { AnimatedSubHeading } from './heading.tsx'
 import { TypeBoxLogo } from './logo.tsx'
+import { DebugMode } from './debug.tsx'
+import {
+  applyThemeSettings,
+  sharedSceneSettings,
+  DEBUG_MODE_ENABLED,
+  notifySceneGeometryChanged,
+  resetThemeSettings,
+  setSharedSceneSettings,
+  setThemeProgress,
+  themeSettings,
+  themeProgress,
+  type ThemeMode,
+  type CubeSetKey,
+  type CubeDistribution,
+  type ThemeColorPath,
+  type ThemeConfiguration,
+  type ThemeProperties,
+  type ThemeSettingPath,
+} from '../../../mode.ts'
+
+const messages = [
+  'JSON Schema Type Builder with Static Type Resolution for TypeScript',
+  'JSON Schema Type Builder with Static Type Resolution for TypeScript',
+  'High Performance Validation for JSON Schema',
+  'Runtime TypeScript Engine for JSON Schema',
+]
 
 // ------------------------------------------------------------------
 // CopyIcon
@@ -73,7 +99,11 @@ function InstallButton() {
   return <div className='button-wrapper'>
     <div className='install'>
       <span>{'$ npm install typebox'}</span>
-      <button onClick={copyCommand} className='copy-btn' aria-label='Copy to clipboard'>
+      <button
+        onClick={copyCommand}
+        className='copy-btn'
+        aria-label={copied ? 'Copied to clipboard' : 'Copy to clipboard'}
+      >
         {copied ? <CheckIcon /> : <CopyIcon />}
       </button>
     </div>
@@ -91,27 +121,159 @@ function DocumentationButton() {
 // ------------------------------------------------------------------
 // Home
 // ------------------------------------------------------------------
-export function Home() {
-  const H = 'JSON Schema Type Builder with Static Type Resolution for TypeScript'
+export function Home({ mode }: { mode: 'light' | 'dark' }) {
+  const [, setSettingsVersion] = React.useState(0)
+  function updateMode(mode: ThemeMode, path: ThemeSettingPath, value: number) {
+    const settings = themeSettings[mode]
+    switch (path.group) {
+      case 'appearance':
+        settings.appearance[path.key] = value
+        break
+      case 'flash':
+        settings.flash[path.key] = value
+        break
+      case 'camera':
+        settings.camera[path.key] = value
+        break
+      case 'cameraPosition':
+        settings.camera.position[path.key] = value
+        break
+      case 'cameraAim':
+        settings.camera.aim[path.key] = value
+        break
+      case 'cubeSetA':
+        settings.cubeSetA[path.key] = value
+        notifySceneGeometryChanged()
+        break
+      case 'cubeSetAWaveEmitter': {
+        const emitter = settings.cubeSetA.waveEmitters[path.index]
+        if (!emitter) throw new RangeError(`Invalid CubeSetA wave emitter index: ${path.index}`)
+        emitter[path.key] = value
+        notifySceneGeometryChanged()
+        break
+      }
+      case 'cubeSetB':
+        settings.cubeSetB[path.key] = value
+        notifySceneGeometryChanged()
+        break
+      case 'ground':
+        settings.ground[path.key] = value
+        notifySceneGeometryChanged()
+        break
+      case 'light':
+        settings.light[path.key] = value
+        break
+      case 'lightPosition':
+        settings.light.position[path.key] = value
+        break
+    }
+    setThemeProgress(themeProgress.value)
+    setSettingsVersion((version) => version + 1)
+  }
+  function updateModeColor(
+    mode: ThemeMode,
+    path: ThemeColorPath,
+    value: string,
+  ) {
+    switch (path.group) {
+      case 'appearance':
+        themeSettings[mode].appearance.dropShadowColor = value
+        break
+      case 'flash':
+        themeSettings[mode].flash.color = value
+        break
+      case 'cubeSetA':
+        themeSettings[mode].cubeSetA.color = value
+        break
+      case 'cubeSetB':
+        themeSettings[mode].cubeSetB.color = value
+        break
+      case 'ground':
+        themeSettings[mode].ground.color = value
+        break
+      case 'light':
+        themeSettings[mode].light[path.key] = value
+        break
+    }
+    setThemeProgress(themeProgress.value)
+    setSettingsVersion((version) => version + 1)
+  }
+  function updateDistribution(mode: ThemeMode, key: CubeSetKey, value: CubeDistribution) {
+    themeSettings[mode][key].distribution = value
+    notifySceneGeometryChanged()
+    setSettingsVersion((version) => version + 1)
+  }
+  function updateCubeCount(key: CubeSetKey, value: number) {
+    setSharedSceneSettings({
+      ...sharedSceneSettings,
+      cubeCounts: { ...sharedSceneSettings.cubeCounts, [key]: value },
+    })
+    setSettingsVersion((version) => version + 1)
+  }
+  // ------------------------------------------------------------------
+  // UpdateCubeBevel
+  // ------------------------------------------------------------------
+  function updateCubeBevel(key: CubeSetKey, value: number) {
+    setSharedSceneSettings({
+      ...sharedSceneSettings,
+      cubeBevels: { ...sharedSceneSettings.cubeBevels, [key]: value },
+    })
+    setSettingsVersion((version) => version + 1)
+  }
+  // ------------------------------------------------------------------
+  // UpdateWaveTilt
+  // ------------------------------------------------------------------
+  function updateWaveTilt(mode: ThemeMode, value: boolean) {
+    themeSettings[mode].cubeSetA.waveTilt = value
+    notifySceneGeometryChanged()
+    setSettingsVersion((version) => version + 1)
+  }
+  function updateFlashEnabled(mode: ThemeMode, value: boolean) {
+    themeSettings[mode].flash.enabled = value
+    setSettingsVersion((version) => version + 1)
+  }
+  function resetMode(mode: ThemeMode) {
+    resetThemeSettings(mode)
+    setThemeProgress(themeProgress.value)
+    setSettingsVersion((version) => version + 1)
+  }
+  function importSettings(settings: ThemeConfiguration) {
+    applyThemeSettings(settings)
+    setThemeProgress(themeProgress.value)
+    setSettingsVersion((version) => version + 1)
+  }
   return (
     <div className='home'>
       <div className='home-card'>
-        <TypeBoxLogo />
-        <h1>TypeBox</h1>
-        <AnimatedSubHeading
-          intervalMs={5000}
-          stepDelayMs={25}
-          messages={[
-            H, H,
-            'High Performance Validation for JSON Schema',
-            'Runtime TypeScript Engine for JSON Schema'
-          ]}
-        />
+        <div className='home-hero'>
+          <TypeBoxLogo />
+          <h1>TypeBox</h1>
+          <AnimatedSubHeading
+            intervalMs={5000}
+            stepDelayMs={25}
+            messages={messages}
+          />
+        </div>
         <div className='actions'>
           <InstallButton />
           <DocumentationButton />
         </div>
       </div>
+      {DEBUG_MODE_ENABLED && (
+        <DebugMode
+          mode={mode}
+          sharedSettings={sharedSceneSettings}
+          onChange={updateMode}
+          onColorChange={updateModeColor}
+          onDistributionChange={updateDistribution}
+          onWaveTiltChange={updateWaveTilt}
+          onFlashEnabledChange={updateFlashEnabled}
+          onCountChange={updateCubeCount}
+          onBevelChange={updateCubeBevel}
+          onReset={resetMode}
+          onImport={importSettings}
+        />
+      )}
     </div>
   )
 }

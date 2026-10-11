@@ -15,14 +15,14 @@ const T = Type.Rest(Type.Tuple([                    // const T = {
 ]))                                                 //     type: "array",
                                                     //     additionalItems: false,
                                                     //     items: [
-                                                    //       { const: 1 }, 
-                                                    //       { const: 2 } 
+                                                    //       { const: 1 },
+                                                    //       { const: 2 }
                                                     //     ],
                                                     //     minItems: 2
                                                     //   }
                                                     // }
 
-type T = Static<typeof T>                           // type A = [1, 2][]
+type T = Static<typeof T>                           // type T = [1, 2][]
 ```
 
 ## Guard

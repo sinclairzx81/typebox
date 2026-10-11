@@ -8,8 +8,8 @@ Example usage is shown below.
 
 ```typescript
 const T = Type.Tuple([                              // const T = {
-  Type.String(),                                    //   type: 'array', 
-  Type.Number(),                                    //   additionalItems: false, 
+  Type.String(),                                    //   type: 'array',
+  Type.Number(),                                    //   additionalItems: false,
 ])                                                  //   minItems: 2,
                                                     //   items: [
                                                     //     { type: 'string' },

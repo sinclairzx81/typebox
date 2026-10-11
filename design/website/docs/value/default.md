@@ -9,9 +9,9 @@ The Default function automatically generates values for any missing properties o
 Example usage is shown below.
 
 ```typescript
-const Pagination = Type.Object({ 
-  skip: Type.Optional(Type.Number({ default: 0 })), 
-  take: Type.Optional(Type.Number({ default: 10 })) 
+const Pagination = Type.Object({
+  skip: Type.Optional(Type.Number({ default: 0 })),
+  take: Type.Optional(Type.Number({ default: 10 }))
 })
 
 const A = Value.Default(Pagination, {})             // const A = { skip: 0, take: 10 }

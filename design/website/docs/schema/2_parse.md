@@ -1,6 +1,6 @@
 # Schema.Parse
 
-The Parse(...) function returns the value if match, otherwise throw.
+The Parse(...) function returns the value if it matches the schema; otherwise, it throws an error.
 
 ## Example
 
@@ -10,7 +10,7 @@ import Schema from 'typebox/schema'
 // ------------------------------------------------------------------
 // Schema
 // ------------------------------------------------------------------
-const T = { 
+const T = {
   type: 'object',
   required: ['x', 'y', 'z'],
   properties: {

@@ -27,13 +27,14 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 /* ------------------------------------------------------------------
-   Variables
+   Documentation layout
    ------------------------------------------------------------------ */
 .docs {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
+  min-width: 0;
 }
 /* ------------------------------------------------------------------
    Header
@@ -68,6 +69,8 @@ THE SOFTWARE.
   display: flex;
   flex: 1;
   overflow: hidden;
+  min-height: 0;
+  min-width: 0;
 }
 /* ------------------------------------------------------------------
    Menu
@@ -79,11 +82,27 @@ THE SOFTWARE.
   border-right: none;
   padding: 1rem;
   overflow-y: auto;
+  box-sizing: border-box;
+  scrollbar-color: var(--docs-menu-scrollbar-color) transparent;
+  scrollbar-width: thin;
+}
+.docs .body .menu::-webkit-scrollbar {
+  width: 6px;
+}
+.docs .body .menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+.docs .body .menu::-webkit-scrollbar-thumb {
+  background: var(--docs-menu-scrollbar-color);
+  border: 1px solid var(--docs-menu-background-color);
+  border-radius: 6px;
+}
+.docs .body .menu::-webkit-scrollbar-thumb:hover {
+  background: var(--docs-menu-scrollbar-hover-color);
 }
 .docs .body .menu button {
   color: var(--docs-text-color-muted);
   font-family: var(--app-font-family-standard);
-
   display: block;
   outline: none;
   width: 100%;
@@ -103,8 +122,8 @@ THE SOFTWARE.
   border-left-color: var(--docs-text-color-select);
 }
 /* ------------------------------------------------------------------
-   Menu
- ------------------------------------------------------------------ */
+   Search
+   ------------------------------------------------------------------ */
 .docs .body .menu .search {
   margin-bottom: 0.75rem;
 }
@@ -119,7 +138,6 @@ THE SOFTWARE.
   font-size: 0.9rem;
   outline: none;
   box-sizing: border-box;
-  /* transition: border-color 0.2s, box-shadow 0.2s; */
 }
 .docs .body .menu .search input::placeholder {
   color: var(--docs-search-placeholder-color);
@@ -135,87 +153,135 @@ THE SOFTWARE.
   background: var(--docs-body-background-color);
   color: var(--docs-text-color);
   flex: 1;
-  padding: 1.2rem;
+  min-height: 0;
+  min-width: 0;
+  padding: clamp(1.25rem, 3vw, 3rem);
   overflow-y: auto;
-  line-height: 1.9;
+  line-height: 1.78;
 }
-.docs .markdown {
-  max-width: 100%;
-  width: 1280px;
+.docs .markdown,
+.docs .content-layout {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
 }
 .docs .content h1,
 .docs .content h2,
 .docs .content h3 {
   color: var(--docs-head-color);
   font-family: var(--app-font-family-standard);
-  margin-top: 0.5rem;  
-  margin-bottom: 0.5rem; 
+  font-weight: 650;
+  line-height: 1.25;
 }
 .docs .content h1 {
-  font-size: 1.8rem;
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  letter-spacing: -0.035em;
+  margin: 0 0 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--app-edge-color);
 }
 .docs .content h2 {
-  font-size: 1.5rem;
+  font-size: 1.55rem;
+  letter-spacing: -0.02em;
+  margin: 3rem 0 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--app-edge-color);
 }
 .docs .content h3 {
-  font-size: 1.3rem;
+  font-size: 1.18rem;
+  margin: 2rem 0 0.75rem;
+  padding-left: 0.8rem;
+  border-left: 2px solid var(--docs-text-color-select);
 }
 .docs .content p {
-  margin-top: 0.5rem;  
+  margin: 0 0 1.1rem;
+}
+.docs .content ul,
+.docs .content ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.5rem;
+}
+.docs .content li {
+  padding-left: 0.2rem;
+}
+.docs .content li + li {
+  margin-top: 0.35rem;
+}
+.docs .content li::marker {
+  color: var(--docs-text-color-select);
 }
 .docs .content a {
-  text-decoration: none;
   color: var(--docs-link-color);
+  text-decoration-color: color-mix(in srgb, var(--docs-link-color) 55%, transparent);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+.docs .content a:hover {
+  text-decoration-color: currentColor;
+}
+.docs .content a:focus-visible {
+  outline: 2px solid var(--docs-text-color-select);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.docs .table-of-contents {
+  display: none;
+}
+.docs .content hr {
+  border: 0;
+  border-top: 1px solid var(--app-edge-color);
+  margin: 2rem 0;
 }
 .docs .content blockquote {
   background: var(--docs-blockquote-background);
   color: var(--docs-blockquote-color);
-  border: 1px solid var(--docs-blockquote-border-color);
+  border: 1px solid var(--app-edge-color);
+  border-left: 3px solid var(--docs-text-color-select);
   padding: 1rem 1.25rem;
-  margin: 1.25rem 0;
+  margin: 1.5rem 0;
   border-radius: 8px;
   font-size: 0.95rem;
 }
 
 .docs .content blockquote p {
-  margin: 0; /* remove extra spacing inside */
+  margin: 0;
 }
 /* ------------------------------------------------------------------
-   Prism code blocks
+   Code blocks
    ------------------------------------------------------------------ */
 .docs .content pre {
   background: var(--docs-code-background-color);
-  color: var(--docs-text-color);
-  border-left: 2px solid var(--docs-text-color-select);
-  border-right: 1px solid var(--docs-blockquote-border-color);
-  border-top: 1px solid var(--docs-blockquote-border-color);
-  border-bottom: 1px solid var(--docs-blockquote-border-color);
-  padding: 1rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
+  color: var(--docs-code-text-color);
+  border: 1px solid var(--app-edge-color);
+  border-left: 3px solid var(--docs-text-color-select);
+  padding: 1.15rem 1.25rem;
+  border-radius: 9px;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  margin: 1.25rem 0 1.75rem;
+  max-width: 100%;
+  overflow-x: auto;
+  tab-size: 2;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 16%);
 }
 .docs .content code {
   background: var(--docs-code-background-color);
   color: var(--docs-code-text-color);
-  padding: 0.15rem 0.35rem;
+  padding: 0.16rem 0.38rem;
   border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.88em;
 }
-.docs .content p code {
-  font-size: 0.85rem;
-}
-/* Inline code */
-.docs .content p code {
-  padding: 0.15rem 0.35rem;
-}
-/* Code blocks */
 .docs .content pre code {
   color: var(--docs-code-text-color);
-  padding: 0; 
+  background: transparent;
+  padding: 0;
   display: block;
+  font-size: inherit;
+  line-height: inherit;
 }
 /* ------------------------------------------------------------------
-   TABLE LAYOUT
+   Tables
    ------------------------------------------------------------------ */
 .docs .content .docs-table-wrap {
   overflow-x: auto;
@@ -223,6 +289,7 @@ THE SOFTWARE.
 }
 .docs .content table {
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
   font-family: var(--app-font-family-standard);
@@ -276,22 +343,165 @@ THE SOFTWARE.
   color: var(--docs-text-color-muted);
 }
 /* ------------------------------------------------------------------
-   PrismJS syntax highlighting
+   Syntax highlighting
    ------------------------------------------------------------------ */
 .token.keyword,
 .token.control-flow {
-  color: var(--docs-code-keyword-color);
-  font-weight: bold;
+  color: var(--docs-token-keyword-color);
+  font-weight: 600;
 }
-.token.string {
-  color:var(--docs-code-string-color); 
+.token.string,
+.token.char,
+.token.attr-value,
+.token.template-string {
+  color: var(--docs-token-string-color);
 }
-.token.keyword {
-  color: var(--docs-code-keyword-color);
+.token.boolean,
+.token.constant,
+.token.number {
+  color: var(--docs-token-literal-color);
 }
-.token.function {
-  color: var(--docs-code-function-color); 
+.token.function,
+.token.important {
+  color: var(--docs-token-function-color);
 }
-.token.comment {
-  color: var(--docs-code-comment-color);
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--docs-token-comment-color);
+  font-style: italic;
+}
+.token.class-name,
+.token.builtin {
+  color: var(--docs-token-class-color);
+}
+.token.selector,
+.token.tag {
+  color: var(--docs-token-selector-color);
+}
+.token.operator {
+  color: var(--docs-token-keyword-color);
+}
+.token.punctuation {
+  color: var(--docs-token-punctuation-color);
+}
+
+.docs .content img,
+.docs .content video,
+.docs .content svg {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 720px) {
+  .docs .header {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.4rem 0.5rem;
+  }
+  .docs .header button {
+    flex: 0 0 auto;
+    padding: 0.45rem 0.55rem;
+    white-space: nowrap;
+  }
+  .docs .body {
+    flex-direction: column;
+  }
+  .docs .body .menu {
+    width: 100%;
+    max-height: 32%;
+    flex: 0 1 auto;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--app-edge-color);
+  }
+  .docs .body .menu .search {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0.1rem 0;
+    background: var(--docs-menu-background-color);
+  }
+  .docs .body .menu button {
+    padding: 0.5rem 0.6rem;
+    margin-bottom: 0.1rem;
+  }
+  .docs .content {
+    flex: 1 1 0;
+    padding: 1rem;
+    overscroll-behavior: contain;
+  }
+  .docs .content h2 {
+    margin-top: 2.5rem;
+  }
+  .docs .content pre {
+    padding: 1rem;
+    font-size: 0.82rem;
+  }
+  .docs .content table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (min-width: 1200px) {
+  .docs .content-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 860px) minmax(150px, 180px);
+    gap: clamp(2rem, 3vw, 2.5rem);
+    max-width: 1080px;
+  }
+  .docs .content-layout .markdown {
+    margin: 0;
+  }
+  .docs .table-of-contents {
+    display: block;
+    align-self: start;
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 10rem);
+    overflow-y: auto;
+    border-left: 1px solid var(--app-edge-color);
+    padding: 0.25rem 0 0.25rem 1rem;
+  }
+  .docs .table-of-contents h2 {
+    color: var(--docs-text-color-muted);
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.09em;
+    line-height: 1.4;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    border: 0;
+    text-transform: uppercase;
+  }
+  .docs .table-of-contents ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .docs .table-of-contents li + li {
+    margin-top: 0.2rem;
+  }
+  .docs .table-of-contents li {
+    padding-left: 0;
+  }
+  .docs .table-of-contents a {
+    color: var(--docs-text-color-muted);
+    display: block;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    padding: 0.25rem 0;
+    text-decoration: none;
+    transition: color 120ms ease;
+  }
+  .docs .table-of-contents a:hover,
+  .docs .table-of-contents a:focus-visible {
+    color: var(--docs-text-color-select);
+  }
+  .docs .markdown h2,
+  .docs .markdown h3 {
+    scroll-margin-top: 1rem;
+  }
 }

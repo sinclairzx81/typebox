@@ -1,6 +1,6 @@
 # Format.IsDate
 
-Returns true if the string is a [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) date component.
+Returns true if the string is an [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) date component.
 
 ## Function
 
@@ -12,11 +12,11 @@ import Format from 'typebox/format'
 const R = Format.IsDate('2025-08-22')
 ```
 
-## Schema 
+## Schema
 
 Test with format keyword
 
-```typescript 
+```typescript
 import Schema from 'typebox/schema'
 
 const R = Schema.Check({ format: 'date' }, '2025-08-22')

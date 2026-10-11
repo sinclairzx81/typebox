@@ -1,6 +1,6 @@
 # Format.IsIri
 
-Returns true if the string is an IRI
+Returns true if the string is an IRI as defined by [RFC 3987](https://datatracker.ietf.org/doc/html/rfc3987).
 
 ## Function
 
@@ -16,7 +16,7 @@ const R = Format.IsIri('https://예제.회사/경로')
 
 Test with format keyword
 
-```typescript 
+```typescript
 import Schema from 'typebox/schema'
 
 const R = Schema.Check({ format: 'iri' }, 'https://예제.회사/경로')

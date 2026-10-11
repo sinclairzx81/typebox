@@ -1,6 +1,6 @@
 # Format.IsUrl
 
-Returns true if the string is a URL
+Returns true if the string is a URL using the syntax defined by [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) and [RFC 3987](https://datatracker.ietf.org/doc/html/rfc3987).
 
 ## Function
 

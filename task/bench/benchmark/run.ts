@@ -59,12 +59,12 @@ function PrintTest(testName: string): void {
   const spinner = spinnerFrames[spinnerIndex % spinnerFrames.length]
   spinnerIndex++
   const message = `\r\x1b[2K${spinner} Running: ${testName}`
-  Deno.stdout.writeSync(encoder.encode(message))
+  process.stdout.write(encoder.encode(message))
 }
 
 function ClearLine(): void {
   const message = `\r\x1b[2K`
-  Deno.stdout.writeSync(encoder.encode(message))
+  process.stdout.write(encoder.encode(message))
 }
 
 // ------------------------------------------------------------------

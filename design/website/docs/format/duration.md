@@ -1,6 +1,6 @@
 # Format.IsDuration
 
-Returns true if the string is a [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) duration
+Returns true if the string is a duration conforming to [RFC 3339, Appendix A](https://www.rfc-editor.org/rfc/rfc3339.html#appendix-A).
 
 ## Function
 
@@ -12,7 +12,7 @@ import Format from 'typebox/format'
 const R = Format.IsDuration('PT2H30M')
 ```
 
-## Schema 
+## Schema
 
 Test with format keyword
 

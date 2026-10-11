@@ -41,11 +41,14 @@ import * as Schema from './types/index.ts'
 // ParseError
 // ------------------------------------------------------------------
 export class ParseError {
-  constructor(
-    public schema: Schema.XSchema, 
-    public value: unknown, 
-    public errors: TLocalizedValidationError[]
-  ) {}
+  public schema: Schema.XSchema
+  public value: unknown
+  public errors: TLocalizedValidationError[]
+  constructor(schema: Schema.XSchema, value: unknown, errors: TLocalizedValidationError[]) {
+    this.schema = schema
+    this.value = value
+    this.errors = errors
+  }
 }
 // ------------------------------------------------------------------
 // ThrowParseError

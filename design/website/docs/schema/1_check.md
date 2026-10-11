@@ -10,7 +10,7 @@ import Schema from 'typebox/schema'
 // ------------------------------------------------------------------
 // Schema
 // ------------------------------------------------------------------
-const T = { 
+const T = {
   type: 'object',
   required: ['x', 'y', 'z'],
   properties: {
@@ -23,9 +23,5 @@ const T = {
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-const R = Schema.Check(T, { x: 1, y: 2, z: 3 })     // const R: value is {
-                                                    //   x: number,
-                                                    //   y: number,
-                                                    //   z: number
-                                                    // }
+const R = Schema.Check(T, { x: 1, y: 2, z: 3 })     // const R: boolean = true
 ```

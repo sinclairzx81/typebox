@@ -41,7 +41,6 @@ const DRAFT_LABELS: Record<string, string> = {
   'draft2020-12': '2020-12',
   'v1': 'v1'
 }
-
 // ------------------------------------------------------------------
 // Normalize keyword
 // ------------------------------------------------------------------
@@ -57,7 +56,6 @@ function cell(entry: { passed: number; total: number } | undefined): string {
   if (entry.passed === entry.total) return '✅'
   return `${entry.passed}/${entry.total}`
 }
-
 // ------------------------------------------------------------------
 // Render a markdown table
 //

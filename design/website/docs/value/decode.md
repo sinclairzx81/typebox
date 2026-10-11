@@ -1,6 +1,6 @@
 # Value.Decode
 
-The Decode function will execute Decode callbacks embedded within the provided type. 
+The Decode function will execute Decode callbacks embedded within the provided type.
 
 > ⚠️ This function may throw an error if the provided value is invalid or if a failure occurs during the decoding process. It is recommended to wrap this function in a try / catch block.
 
@@ -39,7 +39,7 @@ const Decoder = Pipeline([
 
 ## Unsafe
 
-The Decode function runs the full decoder pipeline to ensure Codec callbacks receive validated values. In some cases, applications may require greater control, for example, to optimize performance or integrate with functions beyond what is offered by TypeBox. For these scenarios, the Value module provides the DecodeUnsafe function, which executes Codec callbacks directly without additional processing. 
+The Decode function runs the full decoder pipeline to ensure Codec callbacks receive validated values. In some cases, applications may require greater control, for example, to optimize performance or integrate with functions beyond what is offered by TypeBox. For these scenarios, the Value module provides the DecodeUnsafe function, which executes Codec callbacks directly without additional processing.
 
 >  ⚠️ The DecodeUnsafe function returns unknown and provides no assurances the decoded value is valid. Callers must handle validation and inference manually. This is usually achieved by wrapping a pipeline in a generic function constrained by a TypeBox type.
 

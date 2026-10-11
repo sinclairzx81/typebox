@@ -1,6 +1,6 @@
 # Value.Clone
 
-The Clone function will clone a value. This function is similar to `structuredClone()` but also clones JavaScript collections such as `Map`, `Set` and `TypeArray`.
+The Clone function will clone a value. This function is similar to `structuredClone()` but also clones JavaScript collections such as `Map`, `Set`, and `TypedArray`.
 
 ## Example
 

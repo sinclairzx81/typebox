@@ -1,17 +1,28 @@
-// ------------------------------------------------------------------
-// TypeScript-7: Strict Required
-// ------------------------------------------------------------------
 {
   "compilerOptions": {
     "strict": true,
     "target": "ES2020",
-    "module": "ESNext",
-    "noEmit": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "allowImportingTsExtensions": true,
-    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    // ------------------------------------------------------------
+    // Environment
+    // ------------------------------------------------------------
+    "lib": ["ES2022"], // test: replaceAll, cause 
+    "types": ["node"], // task: import 'node:path'
     "paths": {
+      // ------------------------------------------------------------
+      // Test
+      // ------------------------------------------------------------
+      "test": ["./test/common/index.ts"],
+      // ------------------------------------------------------------
+      // Local
+      // ------------------------------------------------------------
       "typebox/compile": ["./src/compile/index.ts"],
-      "typebox/errors": ["./src/errors/index.ts"],
+      "typebox/error": ["./src/error/index.ts"],
       "typebox/format": ["./src/format/index.ts"],
       "typebox/guard": ["./src/guard/index.ts"],
       "typebox/schema": ["./src/schema/index.ts"],
@@ -20,5 +31,14 @@
       "typebox/value": ["./src/value/index.ts"],
       "typebox": ["./src/index.ts"]
     }
-  }
+  },
+  "exclude": ["node_modules", "target", "docs"],
+  "include": [
+    "design/syntax/**/*.ts",
+    "src/**/*.ts",
+    "task/**/*.ts",
+    "test/**/*.ts",
+    "tasks.ts",
+  ],
+  
 }

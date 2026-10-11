@@ -40,9 +40,8 @@ function uint8ToBase64(bytes: Uint8Array): string {
 // ------------------------------------------------------------------
 // FontLoader
 //
-// Deno doesn't support ttf font embedding in CSS so we need to load
-// another way. This code will load and inject the font then render
-// embedded child elements. This is a bit cleaner than having open
+// Load and inject the font before rendering embedded child elements,
+// rather than keeping open
 // <style> tags embedded in the raw HTML.
 //
 // ------------------------------------------------------------------

@@ -1,5 +1,6 @@
 import Type, { Extends, ExtendsResult } from 'typebox'
 import { Assert } from 'test'
+import type { TsEnum } from '../../../static/type/_enum.ts'
 
 const Test = Assert.Context('Extends.Enum')
 
@@ -14,11 +15,6 @@ const Test = Assert.Context('Extends.Enum')
 //
 // ------------------------------------------------------------------
 const TbEnum = Type.Enum({ A: 0, B: 1, C: 2 } as const)
-enum TsEnum {
-  A,
-  B,
-  C
-}
 
 // ------------------------------------------------------------------
 // Identity

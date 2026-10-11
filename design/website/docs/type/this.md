@@ -1,8 +1,8 @@
 # Type.This
 
-Creates a This type. 
+Creates a This type.
 
-> ⚠️ The `This` type is supported for top level Object and Interface types only. The type is represented as a `{ $ref: '#' }` reference that will always points to the root of the schema. TypeBox does not transform `#` references when embedding Objects within other Objects so care should be taken when using this type.
+> ⚠️ The `This` type is supported for top-level Object and Interface types only. The type is represented as a `{ $ref: '#' }` reference that always points to the root of the schema. TypeBox does not transform `#` references when embedding Objects within other Objects, so care should be taken when using this type.
 
 ## Example
 

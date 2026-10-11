@@ -26,4 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * as Spec from './refresh.ts'
+export * from './refresh.ts'

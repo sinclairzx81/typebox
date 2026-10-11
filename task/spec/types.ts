@@ -25,19 +25,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
-
 export interface JSONSchemaTestGroup {
   description: string
   schema: Record<string, unknown> | boolean
   tests: JSONSchemaTestCase[]
 }
-
 export interface JSONSchemaTestCase {
   description: string
   data: unknown
   valid: boolean
 }
-
 // A single file to be written (either a passing or failing file)
 // Failing files are _-prefixed, e.g. "draft7/_additionalProperties.json"
 export interface JSONSchemaTestFile {

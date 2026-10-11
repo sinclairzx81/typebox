@@ -1,6 +1,6 @@
 # Compile.Accelerate
 
-TypeBox achieves high performance by compiling JSON schematics into optimized validation routines. The generated code is then evaluated at runtime within the environment; a technique known as Just-In-Time (JIT) compilation.
+TypeBox achieves high performance by compiling JSON schemas into optimized validation routines. The generated code is then evaluated at runtime within the environment, a technique known as Just-In-Time (JIT) compilation.
 
 While TypeBox takes measures to ensure evaluation is safe, some environments do restrict runtime code evaluation by preventing calls to `eval()` or `new Function()`. In such cases, acceleration will not be possible. TypeBox will automatically fall back to interpreted dynamic checking if it detects a restrictive [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP).
 

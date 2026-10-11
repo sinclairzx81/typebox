@@ -4,7 +4,7 @@ Creates an Intersect type.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const T = Type.Intersect([                          // const T = {
@@ -23,13 +23,13 @@ const T = Type.Intersect([                          // const T = {
                                                     //  }]
                                                     // }
 
-type T = Static<typeof T>                           // type T = { 
+type T = Static<typeof T>                           // type T = {
                                                     //   x: number
                                                     // } & {
                                                     //   y: number
                                                     // }
 
-``` 
+```
 
 ## Guard
 
@@ -43,10 +43,10 @@ Type.IsIntersect(value)                             // value is TIntersect
 
 ```typescript
 export interface TIntersectOptions extends TSchemaOptions {
-  /** 
-   * A schema to apply to any properties in the object that were not validated 
-   * by other keywords like `properties`, `patternProperties`, or `additionalProperties`. 
-   * If `false`, no additional properties are allowed. 
+  /**
+   * A schema to apply to any properties in the object that were not validated
+   * by other keywords like `properties`, `patternProperties`, or `additionalProperties`.
+   * If `false`, no additional properties are allowed.
    */
   unevaluatedProperties?: TSchema | boolean
 }

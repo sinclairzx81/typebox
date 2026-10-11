@@ -4,14 +4,14 @@ The Evaluate function will evaluate logical type expressions and return the resu
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const T = Type.Intersect([
   Type.Object({ x: Type.Number() }),
-  Type.Union([  
+  Type.Union([
     Type.Object({ y: Type.Number() }),
-    Type.Object({ z: Type.Number() }) 
+    Type.Object({ z: Type.Number() })
   ])
 ])
 

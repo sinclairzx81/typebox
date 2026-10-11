@@ -15,8 +15,8 @@ const T = Type.Object({
   z: Type.Number()
 })
 
-                                                    // type S = { 
-                                                    //   [K in keyof T]: T[K] | null 
+                                                    // type S = {
+                                                    //   [K in keyof T]: T[K] | null
                                                     // }
 
 const S = Type.Mapped(                              // const S: TObject<{

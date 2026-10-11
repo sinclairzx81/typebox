@@ -79,11 +79,14 @@ export type CheckFunction = (value: unknown) => boolean
 // EvaluateResult
 // ------------------------------------------------------------------
 export class EvaluateResult {
-  constructor(
-    private readonly isAccelerated: boolean,
-    private readonly code: string,
-    private readonly check: CheckFunction
-  ) {}
+  private readonly isAccelerated: boolean
+  private readonly code: string
+  private readonly check: CheckFunction
+  constructor(isAccelerated: boolean, code: string, check: CheckFunction) {
+    this.isAccelerated = isAccelerated
+    this.code = code
+    this.check = check
+  }
   public IsAccelerated() {
     return this.isAccelerated
   }
@@ -98,14 +101,20 @@ export class EvaluateResult {
 // BuildResult
 // ------------------------------------------------------------------
 export class BuildResult {
-  constructor(
-    private readonly context: Record<PropertyKey, Schema.XSchema>,
-    private readonly schema: Schema.XSchema,
-    private readonly external: Engine.TExternal,
-    private readonly functions: string[],
-    private readonly entry: string,
-    private readonly useUnevaluated: boolean
-  ) {}
+  private readonly context: Record<PropertyKey, Schema.XSchema>
+  private readonly schema: Schema.XSchema
+  private readonly external: Engine.TExternal
+  private readonly functions: string[]
+  private readonly entry: string
+  private readonly useUnevaluated: boolean
+  constructor(context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, external: Engine.TExternal, functions: string[], entry: string, useUnevaluated: boolean) {
+    this.context = context
+    this.schema = schema
+    this.external = external
+    this.functions = functions
+    this.entry = entry
+    this.useUnevaluated = useUnevaluated
+  }
   /** Returns the Context used for this build */
   public Context(): Record<PropertyKey, Schema.XSchema> {
     return this.context

@@ -4,7 +4,7 @@ Extracts Keys from an Object or Tuple.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const T = Type.Object({

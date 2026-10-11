@@ -55,7 +55,12 @@ export type TCodec<Type extends TSchema = TSchema, Decoded extends unknown = unk
 // Factory
 // ------------------------------------------------------------------
 export class EncodeBuilder<Type extends TSchema, Encoded extends unknown, Decoded extends unknown> {
-  constructor(private readonly type: Type, private readonly decode: globalThis.Function) {}
+  private readonly type: Type
+  private readonly decode: globalThis.Function
+  constructor(type: Type, decode: globalThis.Function) {
+    this.type = type
+    this.decode = decode
+  }
   public Encode(callback: TEncodeCallback<Encoded, Decoded>): TCodec<Type, Decoded> {
     const type = this.type
     const decode = IsCodec(type) ? (value: unknown) => this.decode(type['~codec'].decode(value)) : this.decode
@@ -65,7 +70,10 @@ export class EncodeBuilder<Type extends TSchema, Encoded extends unknown, Decode
   }
 }
 export class DecodeBuilder<Type extends TSchema, Encoded extends unknown> {
-  constructor(private readonly type: Type) {}
+  private readonly type: Type
+  constructor(type: Type) {
+    this.type = type
+  }
   public Decode<Callback extends TDecodeCallback<Encoded, unknown>>(callback: Callback): EncodeBuilder<Type, Encoded, ReturnType<Callback>> {
     return new EncodeBuilder(this.type, callback)
   }

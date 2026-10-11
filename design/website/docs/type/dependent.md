@@ -2,7 +2,7 @@
 
 Creates a Dependent type.
 
-> ⚠️ This type is an experimental syntax extension used to express Dependent Conditional Type semantics via JSON Schema `if/then/else`. TypeScript doesn't currently provide a means to express the semantics of this type, but may in the future. Users of `Dependent` should therefore be mindful that should TypeScript introduce Dependent Types in future, TypeBox may need to amend its implementation in line with TypeScript.
+> ⚠️ This type is an experimental syntax extension used to express dependent conditional type semantics via JSON Schema `if/then/else`. TypeScript doesn't currently provide a means to express the semantics of this type, but may in the future. Users of `Dependent` should therefore be mindful that if TypeScript introduces dependent types in the future, TypeBox may need to amend its implementation in line with TypeScript.
 
 ## Example
 
@@ -21,7 +21,7 @@ type T = Static<typeof T>                           // type T = 1 | string
 
 ## Syntax
 
-This type is a IR target for the following syntax
+This type is an IR target for the following syntax.
 
 ```typescript
 type T = if number then 1 else string

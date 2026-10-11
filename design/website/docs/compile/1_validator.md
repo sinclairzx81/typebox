@@ -4,7 +4,7 @@ Validators provide optimized implementations of the functions available in the V
 
 ## Example
 
-The following compiles a Validator and calls Check. 
+The following compiles a Validator and calls Check.
 
 ```typescript
 import { Compile, Validator } from 'typebox/compile'
@@ -34,7 +34,7 @@ const R = C.Check(value)                            // const R: boolean
 
 ## Errors
 
-Returns a errors for the value or empty if no error.
+Returns the errors for the value, or an empty array if there are none.
 
 ```typescript
 const R = C.Errors(value)                          // const R: ValidationError[]
@@ -96,7 +96,7 @@ Encodes a value, running any Encode callbacks if available.
 const R = C.Encode(value)                       // const R: ...
 ```
 
-## IsEvaluated
+## IsAccelerated
 
 Returns true if the Validator is using evaluated optimizations.
 

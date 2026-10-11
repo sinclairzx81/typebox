@@ -4,22 +4,17 @@
 <p>⚠️ This function is a Script evaluation action.</p>
 </blockquote>
 <h2>Example</h2>
-<p>Example usage is shown below. </p>
+<p>Example usage is shown below.</p>
 <pre><code class="language-typescript">const G = Type.Generic([Type.Parameter(&#39;T&#39;)],       // const G = {
   Type.Array(Type.Ref(&#39;T&#39;)))                        //   type: &#39;generic&#39;,
-                                                    //   parameters: [{ 
-                                                    //     name: &#39;T&#39;, 
-                                                    //     extends: {}, 
+                                                    //   parameters: [{
+                                                    //     name: &#39;T&#39;,
+                                                    //     extends: {},
                                                     //     equals: {}
-                                                    //   }], 
+                                                    //   }],
                                                     //   expression: {
-                                                    //     type: &#39;object&#39;, 
-                                                    //     required: [&#39;x&#39;],
-                                                    //     properties: { 
-                                                    //       x: { 
-                                                    //         &#39;$ref&#39;: &#39;T&#39; 
-                                                    //       } 
-                                                    //     },
+                                                    //     type: &#39;array&#39;,
+                                                    //     items: { &#39;$ref&#39;: &#39;T&#39; }
                                                     //   }
                                                     // }
 

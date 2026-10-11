@@ -1,8 +1,10 @@
 {
-  "deno.enable": true,
-  "deno.lint": false,
-  "deno.cacheOnSave": false,
-  "typescript.inlayHints.variableTypes.enabled": false,
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.inlayHints.variableTypes.enabled": false,
   "editor.lightbulb.enabled": "off",
-  "typescript.experimental.useTsgo": false
+  "js/ts.experimental.useTsgo": true,
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/package-lock.json": true
+  }
 }

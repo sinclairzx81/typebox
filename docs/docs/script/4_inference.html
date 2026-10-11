@@ -4,21 +4,21 @@
 <p>Script is designed to support wide data structures. These structures use TypeScript tail call optimizations to prevent +1 depth per sequence token or element.</p>
 <pre><code class="language-typescript">const T = Type.Script(`[   // depth + 1
   0, 1, 2, 3, 4, 5, 6, 7,  // 128 x elements  
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
   0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
-  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
 ]`)
 </code></pre>
 <p>However, deeply nested structures will hit TypeScript instantiation depth limits very quickly.</p>

@@ -1,6 +1,12 @@
 import { type Static, Type } from 'typebox'
 import { Assert } from 'test'
 
+export enum TsEnum {
+  A,
+  B,
+  C
+}
+
 // ------------------------------------------------------------------
 // Standard
 // ------------------------------------------------------------------

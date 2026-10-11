@@ -11,14 +11,14 @@
 ]))                                                 //     type: &quot;array&quot;,
                                                     //     additionalItems: false,
                                                     //     items: [
-                                                    //       { const: 1 }, 
-                                                    //       { const: 2 } 
+                                                    //       { const: 1 },
+                                                    //       { const: 2 }
                                                     //     ],
                                                     //     minItems: 2
                                                     //   }
                                                     // }
 
-type T = Static&lt;typeof T&gt;                           // type A = [1, 2][]
+type T = Static&lt;typeof T&gt;                           // type T = [1, 2][]
 </code></pre>
 <h2>Guard</h2>
 <p>Use the IsRest function to guard values of this type.</p>

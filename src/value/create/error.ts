@@ -31,10 +31,9 @@ THE SOFTWARE.
 import type { TSchema } from '../../type/index.ts'
 
 export class CreateError extends Error {
-  constructor(
-    public readonly type: TSchema,
-    message: string
-  ) {
+  public readonly type: TSchema
+  constructor(type: TSchema, message: string) {
     super(message)
+    this.type = type
   }
 }

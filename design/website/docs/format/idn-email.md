@@ -1,6 +1,6 @@
 # Format.IsIdnEmail
 
-Returns true if the string is an internationalized [RFC 6531](https://datatracker.ietf.org/doc/html/rfc6531) email address
+Returns true if the string is an internationalized email address described by [RFC 4952](https://datatracker.ietf.org/doc/html/rfc4952) and supported by the SMTP extension in [RFC 6531](https://datatracker.ietf.org/doc/html/rfc6531).
 
 ## Function
 
@@ -16,7 +16,7 @@ const R = Format.IsIdnEmail('사용자@예제.회사')
 
 Test with format keyword
 
-```typescript 
+```typescript
 import Schema from 'typebox/schema'
 
 const R = Schema.Check({ format: 'idn-email' }, '사용자@예제.회사')

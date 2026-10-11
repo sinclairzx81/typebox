@@ -29,27 +29,64 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import './backend.css'
-import * as Fiber from 'react-three/fiber'
+import * as React from 'react'
+import * as Fiber from '@react-three/fiber'
+import {
+  getSharedSceneVersion,
+  sharedSceneSettings,
+  subscribeSharedScene,
+  themeSettings,
+  themeProgress,
+} from '../mode.ts'
 import { Camera } from './components/camera.tsx'
 import { Light } from './components/light.tsx'
 import { Ground } from './components/ground.tsx'
 import { Cubes } from './components/cubes.tsx'
 import { Flash } from './components/flash.tsx'
+
+type SceneReadyProperties = {
+  onReady: () => void
+}
+function SceneReady({ onReady }: SceneReadyProperties) {
+  const ready = React.useRef(false)
+  Fiber.useFrame(() => {
+    if (ready.current) return
+    ready.current = true
+    requestAnimationFrame(onReady)
+  })
+  return null
+}
 // ------------------------------------------------------------------
 // Backend
 // ------------------------------------------------------------------
-export function Backend() {
+export function Backend({ active }: { active: boolean }) {
+  const [sceneReady, setSceneReady] = React.useState(false)
+  React.useSyncExternalStore(subscribeSharedScene, getSharedSceneVersion, getSharedSceneVersion)
   return (
     <div className='backend'>
-      <Fiber.Canvas shadows>
+      <Fiber.Canvas shadows frameloop={active ? 'always' : 'never'}>
         <Camera />
-        <fogExp2 attach="fog" args={['#000000', 0.02]} />
-        <Flash color="#7a839b" minInterval={2} maxInterval={6} peakIntensity={40} />
-        <Cubes color="#e0c285" count={32} bounds={[65, 14, 65]} minSize={2} maxSize={4}  />
-        <Cubes color="#000000" count={512} bounds={[128, 0, 128]} minSize={4} maxSize={8}  />
-        <Ground color='#000000' width={32} height={32} />
-        <Light color='#555e6d' />
+        <fogExp2 attach="fog" args={[themeSettings.dark.light.fogColor, themeSettings.dark.light.fogDensity]} />
+        <Flash mode='dark' minInterval={2} maxInterval={6} />
+        <Flash mode='light' minInterval={2} maxInterval={6} />
+        <Cubes cubeSet='cubeSetB' count={sharedSceneSettings.cubeCounts.cubeSetB} />
+        <Cubes cubeSet='cubeSetA' count={sharedSceneSettings.cubeCounts.cubeSetA} />
+        <Ground
+          width={48}
+          height={48}
+          darkScale={themeSettings.dark.ground.scale}
+          lightScale={themeSettings.light.ground.scale}
+          darkY={themeSettings.dark.ground.y}
+          lightY={themeSettings.light.ground.y}
+        />
+        <Light />
+        <SceneReady onReady={() => setSceneReady(true)} />
       </Fiber.Canvas>
+      <div
+        aria-hidden='true'
+        className={`backend-scene-intro${sceneReady ? ' backend-scene-intro-ready' : ''}`}
+        style={{ backgroundColor: themeProgress.value === 1 ? '#ffffff' : '#000000' }}
+      />
     </div>
   )
 }

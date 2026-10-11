@@ -1,12 +1,12 @@
 <h1>Schema.Parse</h1>
-<p>The Parse(...) function returns the value if match, otherwise throw.</p>
+<p>The Parse(...) function returns the value if it matches the schema; otherwise, it throws an error.</p>
 <h2>Example</h2>
 <pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
 
 // ------------------------------------------------------------------
 // Schema
 // ------------------------------------------------------------------
-const T = { 
+const T = {
   type: &#39;object&#39;,
   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
   properties: {

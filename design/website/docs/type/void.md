@@ -2,7 +2,7 @@
 
 Creates a Void type.
 
-> ⚠️ This is type is cannot be expressed with Json. Do not use if publishing types for other languages to consume.
+> ⚠️ This type cannot be expressed in standard JSON Schema. Do not use it if publishing types for other languages to consume.
 
 ## Example
 

@@ -1,10 +1,10 @@
 # Type.Index
 
-The Index function performs a indexed access lookup on a type.
+The Index function performs an indexed access lookup on a type.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const T = Type.Object({

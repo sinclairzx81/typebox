@@ -1,6 +1,6 @@
 # Type.Boolean
 
-Create a Boolean type.
+Creates a Boolean type.
 
 ## Example
 
@@ -19,4 +19,3 @@ Use the IsBoolean function to guard values of this type.
 ```typescript
 Type.IsBoolean(value)                               // value is TBoolean
 ```
-

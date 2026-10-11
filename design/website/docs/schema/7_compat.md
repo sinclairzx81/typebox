@@ -1,8 +1,8 @@
 # Schema.Compat
 
-TypeBox supports all versions of JSON Schema and is heavily tested against the official [Official JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). It prioritizes compatibility with modern specifications while also maintaining broad support for legacy versions provided their semantics are not in conflict with modern specifications.
+TypeBox supports all versions of JSON Schema and is heavily tested against the official [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). It has high compatibility with modern specifications while also offering broad support for legacy versions if their semantics are not in conflict with modern specifications.
 
-> ⚠️ TypeBox accepts schematics from any JSON Schema version, which means keywords from different versions can be mixed and matched freely. If an application needs to restrict schematics to a specific version, use Schema.Meta namespace to validate them against that version.
+> ⚠️ TypeBox accepts schemas from any JSON Schema version, which means keywords from different versions can be mixed and matched freely. If an application needs to restrict schemas to a specific version, use the Schema.Meta namespace to validate them against that version.
 
 ## Required Keywords
 

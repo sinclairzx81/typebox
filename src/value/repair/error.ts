@@ -29,12 +29,13 @@ THE SOFTWARE.
 import type { TProperties, TSchema } from '../../type/index.ts'
 
 export class RepairError extends Error {
-  constructor(
-    public readonly context: TProperties,
-    public readonly type: TSchema,
-    public readonly value: unknown,
-    message: string
-  ) {
+  public readonly context: TProperties
+  public readonly type: TSchema
+  public readonly value: unknown
+  constructor(context: TProperties, type: TSchema, value: unknown, message: string) {
     super(message)
+    this.context = context
+    this.type = type
+    this.value = value
   }
 }

@@ -12,7 +12,7 @@ import Value from 'typebox/value'
 
 ### Example
 
-The following uses the Value module to Parse a value. 
+The following uses the Value module to Parse a value.
 
 ```typescript
 const T = Type.Object({

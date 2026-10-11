@@ -26,19 +26,17 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Task } from 'tasksmith'
+import * as Task from '../task.ts'
 
-export async function Legacy(versions: string[]) {
+export async function legacy(versions: string[]) {
   for(const version of versions) {
     console.log('checking ...', version)
-    await Task.tsc(version)
-      .run('src/index.ts --target ES2020 --strict --noEmit --allowImportingTsExtensions')
+    await Task.tsc(version, 'src/index.ts --target ES2020 --strict --noEmit --allowImportingTsExtensions --skipLibCheck')
   }
 }
-export async function Modern(versions: string[]) {
+export async function modern(versions: string[]) {
   for(const version of versions) {
     console.log('checking ...', version)
-    await Task.tsc(version)
-      .run('src/index.ts --target ES2020 --strict --noEmit --allowImportingTsExtensions --ignoreConfig')
+    await Task.tsc(version, 'src/index.ts --target ES2020 --strict --noEmit --allowImportingTsExtensions --ignoreConfig --skipLibCheck')
   }
 }

@@ -23,8 +23,8 @@ type Prime = Type.Static&lt;typeof Prime&gt;      // type Prime = number
 
 const Prime = Type.Refine(Type.Number(),    // const Prime = {
   value =&gt; IsPrime(value),                  //   type: &quot;number&quot;,
-  value =&gt; `Value ${value} is not Prime`)   //   &quot;~refine&quot;: [{ 
-                                            //     check: (value) =&gt; {...}, 
+  value =&gt; `Value ${value} is not Prime`)   //   &quot;~refine&quot;: [{
+                                            //     check: (value) =&gt; {...},
                                             //     error: (value) =&gt; {...}
                                             //   }]
                                             // }

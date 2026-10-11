@@ -196,7 +196,7 @@ const result = Vector.Parse({ x: 1, y: 0, z: 0 })  // const result: {
 
 [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) | [JSON Schema Compliance Suite](https://github.com/sinclairzx81/json-schema-compliance-suite)
 
-TypeBox supports all versions of JSON Schema and is heavily tested against the official JSON Schema Test Suite. It prioritizes compatibility with modern specifications while also maintaining broad support for legacy versions provided their semantics are not in conflict with modern specifications.
+TypeBox supports all versions of JSON Schema and is heavily tested against the official JSON Schema Test Suite. It has high compatibility with modern specifications while also offering broad support for legacy versions if their semantics are not in conflict with modern specifications.
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|

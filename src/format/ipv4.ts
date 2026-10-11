@@ -29,8 +29,8 @@ THE SOFTWARE.
 const IPv4 = /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/
 
 /**
- * Returns true if the value is a IPV4 address
- * @specification http://tools.ietf.org/html/rfc2673#section-3.2
+ * Returns true if the value is an IPv4 address
+ * @specification https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2
  */
 export function IsIPv4(value: string): boolean {
   return IPv4.test(value)

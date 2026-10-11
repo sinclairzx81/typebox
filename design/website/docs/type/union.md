@@ -1,6 +1,6 @@
 # Type.Union
 
-Creates a Union type. 
+Creates a Union type.
 
 ## Example
 
@@ -15,7 +15,7 @@ const T = Type.Union([                              // const T = {
                                                     // }
 
 type T = Static<typeof T>                           // type T = string | number
-``` 
+```
 
 ## Guard
 

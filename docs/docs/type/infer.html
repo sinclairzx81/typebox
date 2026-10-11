@@ -4,7 +4,7 @@
 <p>⚠️ This function is a Script evaluation action.</p>
 </blockquote>
 <h2>Example</h2>
-<p>Example usage is shown below. </p>
+<p>Example usage is shown below.</p>
 <pre><code class="language-typescript">const T = Type.Object({
   x: Type.Literal(1),
   y: Type.Literal(2)
@@ -16,7 +16,7 @@ const S = Type.Conditional(T, Type.Object({         // const S: TTuple&lt;[
 }), Type.Tuple([                                    // ]&gt;
   Type.Ref(&#39;X&#39;),
   Type.Ref(&#39;Y&#39;)
-]), Type.Never())                                   
+]), Type.Never())
 </code></pre>
 <h2>Guard</h2>
 <p>Use the IsInfer function to guard values of this type.</p>

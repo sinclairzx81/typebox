@@ -4,10 +4,7 @@ import { Assert } from 'test'
 
 const Test = Assert.Context('Value.Repair.Enum')
 
-enum Foo {
-  A,
-  B
-}
+const Foo = { 0: 'A', 1: 'B', A: 0, B: 1 } as const
 const T = Type.Enum(Foo)
 const E = Foo.A
 Test('Should Repair 1', () => {

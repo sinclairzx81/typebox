@@ -1,6 +1,6 @@
 # Schema.Errors
 
-The Errors(...) function returns an array of gathered validation errors up to the configured `maxErrors` limit. If the value contains no errors, an empty array is returned.
+The Errors(...) function returns a tuple containing a boolean indicating whether the value is valid and an array of validation errors gathered up to the configured `maxErrors` limit. If the value is valid, the errors array is empty.
 
 > ⚠️ For performance, this function should only be called after a failed Check. The function performs an exhaustive check up to the `maxErrors` setting (the default is `8`). For additional performance, consider reducing `maxErrors` to `1`, which will terminate gathering on the first error.
 
@@ -12,7 +12,7 @@ import Schema from 'typebox/schema'
 // ------------------------------------------------------------------
 // Schema
 // ------------------------------------------------------------------
-const T = { 
+const T = {
   type: 'object',
   required: ['x', 'y', 'z'],
   properties: {
@@ -48,5 +48,5 @@ const E = Schema.Errors(T, { x: null })             // const E = [
                                                     //   ]
                                                     // ]
 
-console.log(errors)
+console.log(E)
 ```

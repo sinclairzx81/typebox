@@ -1,17 +1,17 @@
 <h1>System.Locale</h1>
-<p>TypeBox provides error message translation (i18n) support for over 40 languages. </p>
+<p>TypeBox provides error message translation (i18n) support for over 40 languages.</p>
 <h2>Example</h2>
 <p>TypeBox uses ISO 639-1 language region codes for each Locale. They can be set in the following way.</p>
-<pre><code class="language-typescript">import System from &#39;typebox/system&#39;
+<pre><code class="language-typescript">import System, { Locale } from &#39;typebox/system&#39;
 
 System.Locale.Set(Locale.en_US)                      // English - United States
 System.Locale.Set(Locale.ko_KR)                      // Korean  - South Korea
-System.Locate.Set(Locale.fr_FR)                      // French  - France
+System.Locale.Set(Locale.fr_FR)                      // French  - France
 System.Locale.Set(Locale.zh_Hant)                    // Chinese - Traditional
 </code></pre>
 <h2>Errors</h2>
 <p>Set the Locale immediately before calling Errors to generate messages for that locale.</p>
-<pre><code class="language-typescript">import System from &#39;typebox/system&#39;
+<pre><code class="language-typescript">import System, { Locale } from &#39;typebox/system&#39;
 import Schema from &#39;typebox/schema&#39;
 import Type from &#39;typebox&#39;
 

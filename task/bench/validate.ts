@@ -1,7 +1,7 @@
-import { TypeCompiler } from 'npm:@sinclair/typebox/compiler'
+import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Compile } from 'typebox/compile'
 import { Check } from 'typebox/value'
-import Ajv from 'npm:ajv'
+import Ajv from 'ajv'
 import { Benchmark } from './benchmark/index.ts'
 import { Tests } from './cases.ts'
 
@@ -30,4 +30,3 @@ export function ValidateTest() {
     formatResults: true
   })
 }
-

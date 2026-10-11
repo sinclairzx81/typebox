@@ -31,6 +31,7 @@ THE SOFTWARE.
 import './frontend.css'
 import * as React from 'react'
 import * as ReactRouter from 'react-router-dom'
+import { animateThemeProgress, themeProgress } from '../mode.ts'
 import { Docs } from './components/docs/docs.tsx'
 import { Home } from './components/home/home.tsx'
 import { GithubLink } from './components/icons/github.tsx'
@@ -38,34 +39,23 @@ import { LightSwitch } from './components/icons/lightswitch.tsx'
 
 
 const repositoryUrl = 'https://github.com/sinclairzx81/typebox'
+const initialLightMode = themeProgress.value === 1
 
 
 // ------------------------------------------------------------------
 // Header
 // ------------------------------------------------------------------
-function Header() {
-  const [isLightMode, setIsLightMode] = React.useState(() => {
-    const stored = localStorage.getItem('theme')
-    return stored === 'light'
-  })
-  // ----------------------------------------------------------------
-  // Setup
-  // ----------------------------------------------------------------
-  React.useEffect(() => { setup() }, [isLightMode])
-  function setup() {
-    if (isLightMode) {
-      document.body.classList.add('light-mode')
-      localStorage.setItem('theme', 'light')
-    } else {
-      document.body.classList.remove('light-mode')
-      localStorage.setItem('theme', 'dark')
-    }
-  }
-  // ----------------------------------------------------------------
-  // ToggleTheme
-  // ----------------------------------------------------------------
-  function toggleTheme() {
-    setIsLightMode(enabled => !enabled)
+interface HeaderProperties {
+  isLightMode: boolean
+  onToggleTheme: () => void
+}
+function Header({ isLightMode, onToggleTheme }: HeaderProperties) {
+  React.useEffect(() => animateThemeProgress(isLightMode ? 1 : 0), [isLightMode])
+
+  function handleThemeKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+    if (event.repeat || (event.key !== 'Enter' && event.key !== ' ')) return
+    event.preventDefault()
+    onToggleTheme()
   }
   return (
     <div className='header'>
@@ -74,7 +64,11 @@ function Header() {
       </div>
       <nav className='navigation'>
         <ReactRouter.Link to='/docs' className='navigation-link'>Docs</ReactRouter.Link>
-        {/* <LightSwitch onClick={toggleTheme} /> */}
+        <LightSwitch
+          isLightMode={isLightMode}
+          onMouseDown={onToggleTheme}
+          onKeyDown={handleThemeKeyDown}
+        />
         <GithubLink url={repositoryUrl} />
       </nav>
     </div>
@@ -83,11 +77,11 @@ function Header() {
 // ------------------------------------------------------------------
 // Body
 // ------------------------------------------------------------------
-function Body() {
+function Body({ mode }: { mode: 'light' | 'dark' }) {
   return (
     <div className='body'>
       <ReactRouter.Routes>
-        <ReactRouter.Route path='/' element={<Home />} />
+        <ReactRouter.Route path='/' element={<Home mode={mode} />} />
         <ReactRouter.Route path='/docs' element={<Docs src='manifest.json' />} />
         <ReactRouter.Route path='/docs/:section/:page' element={<Docs src='manifest.json' />} />
       </ReactRouter.Routes>
@@ -108,13 +102,19 @@ function Footer() {
 // Frontend
 // ------------------------------------------------------------------
 export function Frontend() {
+  const [isLightMode, setIsLightMode] = React.useState(() => themeProgress.value === 1)
+
+  function toggleTheme() {
+    const enabled = !isLightMode
+    localStorage.setItem('theme', enabled ? 'light' : 'dark')
+    setIsLightMode(enabled)
+  }
+
   return (
-    <ReactRouter.HashRouter>
-      <div className='frontend'>
-        <Header />
-        <Body />
-        <Footer />
-      </div>
-    </ReactRouter.HashRouter>
+    <div className={`frontend${initialLightMode ? ' frontend-light-startup' : ''}`}>
+      <Header isLightMode={isLightMode} onToggleTheme={toggleTheme} />
+      <Body mode={isLightMode ? 'light' : 'dark'} />
+      <Footer />
+    </div>
   )
 }

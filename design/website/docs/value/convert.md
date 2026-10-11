@@ -9,8 +9,8 @@ The Convert function will convert values to match the given type if a reasonable
 Example usage is shown below.
 
 ```typescript
-const T = Type.Object({ 
-  x: Type.Number() 
+const T = Type.Object({
+  x: Type.Number()
 })
 
 // ...

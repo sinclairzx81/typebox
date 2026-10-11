@@ -6,7 +6,7 @@ Creates an Infer instruction to extract types in conditional type expression.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const T = Type.Object({
@@ -20,7 +20,7 @@ const S = Type.Conditional(T, Type.Object({         // const S: TTuple<[
 }), Type.Tuple([                                    // ]>
   Type.Ref('X'),
   Type.Ref('Y')
-]), Type.Never())                                   
+]), Type.Never())
 ```
 
 ## Guard

@@ -6,24 +6,19 @@ Creates a Generic type. Generic types can be instantiated with Call.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const G = Type.Generic([Type.Parameter('T')],       // const G = {
   Type.Array(Type.Ref('T')))                        //   type: 'generic',
-                                                    //   parameters: [{ 
-                                                    //     name: 'T', 
-                                                    //     extends: {}, 
+                                                    //   parameters: [{
+                                                    //     name: 'T',
+                                                    //     extends: {},
                                                     //     equals: {}
-                                                    //   }], 
+                                                    //   }],
                                                     //   expression: {
-                                                    //     type: 'object', 
-                                                    //     required: ['x'],
-                                                    //     properties: { 
-                                                    //       x: { 
-                                                    //         '$ref': 'T' 
-                                                    //       } 
-                                                    //     },
+                                                    //     type: 'array',
+                                                    //     items: { '$ref': 'T' }
                                                     //   }
                                                     // }
 

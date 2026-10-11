@@ -1,6 +1,6 @@
 # Format.IsEmail
 
-Returns true if the string is an email
+Returns true if the string is an email address conforming to [RFC 5322](https://datatracker.ietf.org/doc/html/rfc5322).
 
 ## Function
 
@@ -12,7 +12,7 @@ import Format from 'typebox/format'
 const R = Format.IsEmail('user@example.com')
 ```
 
-## Schema 
+## Schema
 
 Test with format keyword
 

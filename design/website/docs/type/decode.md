@@ -14,7 +14,7 @@ const Hex = Type.Decode(Type.Number(),              // const T = {
                                                     //      decode: value => value.toString(16).toUpperCase() ,
                                                     //      encode: value => { throw Error('not implemented') },
                                                     //   }
-                                                    // } 
+                                                    // }
 
 // Use Value.Decode() to run Decode callbacks.
 
