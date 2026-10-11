@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 // deno-fmt-ignore-file
 
 import { IsMatch } from './match.ts'
@@ -77,4 +77,4 @@ export function Take<Variants extends string[], Input extends string>(variants: 
   }
   return [] as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

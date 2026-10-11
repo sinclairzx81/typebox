@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { Build, Check, Errors, Meta } from 'typebox/schema'
 import { Assert } from 'test'
 import { enumerateTests } from './enumerator.ts'
@@ -87,7 +88,7 @@ function assertResult(op: Operation): void {
 // ------------------------------------------------------------------
 // Remote
 // ------------------------------------------------------------------
-const remote = JSON.parse(Deno.readTextFileSync('./test/jsonschema/cases/remote.json'))
+const remote = JSON.parse(readFileSync('./test/jsonschema/cases/remote.json', 'utf8'))
 const context = { ...Meta, ...remote }
 
 // ------------------------------------------------------------------

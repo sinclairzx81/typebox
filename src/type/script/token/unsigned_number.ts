@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 // deno-fmt-ignore-file
 
 import { IsEqual } from './internal/guard.ts'
@@ -133,4 +133,4 @@ export type TUnsignedNumber<Input extends string> = (
 export function UnsignedNumber<Input extends string>(input: Input): TUnsignedNumber<Input> {
   return TakeUnsignedNumber(Trim(input)) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

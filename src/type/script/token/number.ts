@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 // deno-fmt-ignore-file
 
 import { Match } from './internal/match.ts'
@@ -73,4 +73,4 @@ export type TNumber<Input extends string> = (
 export function Number<Input extends string>(input: Input): TNumber<Input> {
   return TakeSignedNumber(Trim(input)) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 // deno-fmt-ignore-file
 
 // ------------------------------------------------------------------
@@ -82,4 +82,4 @@ export type TDot = typeof Dot
 export type TDollarSign = typeof DollarSign
 export type THyphen = typeof Hyphen
 
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

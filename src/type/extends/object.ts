@@ -102,7 +102,7 @@ function ExtendsProperty<Inferred extends TProperties, Left extends TSchema, Rig
 // TUnionToTuple to hold up obtaining Keys for the ExtractInferredProperties
 // routines.
 //
-// deno-coverage-ignore-start - symmetric unreachable | internal
+/* c8 ignore start */
 //
 // All Keys are assured to be in Properties. We should refactor this code
 // such that the runtime implementation more closely mirrors the type
@@ -130,7 +130,7 @@ function ExtractInferredProperties<Keys extends PropertyKey[], Properties extend
       : Unreachable() // result
   }, {}) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // ---
 type TExtendsPropertiesComparer<Inferred extends TProperties, Left extends TProperties, Right extends TProperties,
   Properties extends Record<PropertyKey, Result.TExtendsTrue | Result.TExtendsFalse> = {

@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import './backend.css'
-import * as Fiber from 'react-three/fiber'
+import * as Fiber from '@react-three/fiber'
 import { Camera } from './components/camera.tsx'
 import { Light } from './components/light.tsx'
 import { Ground } from './components/ground.tsx'

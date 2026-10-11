@@ -42,7 +42,7 @@ export type TParseTemplateIntoTypes<Template extends string,
     : TUnreachable // []
 > = Result
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start - symmetric unreachable
+/* c8 ignore start */
 //
 // Parser is parsing regular expression for strings and will return 
 // at least 1 TLiteral at a minumum.
@@ -56,4 +56,4 @@ export function ParseTemplateIntoTypes<Template extends string>(template: Templa
     : Unreachable() // []
   return result as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

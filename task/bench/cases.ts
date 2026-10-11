@@ -1,5 +1,5 @@
-import { Type, type TSchema } from 'npm:@sinclair/typebox'
-import { Value } from 'npm:@sinclair/typebox/value'
+import { Type, type TSchema } from '@sinclair/typebox'
+import { Value } from '@sinclair/typebox/value'
 
 export const Cases = {
   Boolean: () => Type.Boolean(),

@@ -42,7 +42,7 @@ import { type TEvaluateUnionFast, EvaluateUnionFast } from '../evaluate/evaluate
 // ------------------------------------------------------------------
 // Keys
 //
-// deno-coverage-ignore-start - symmetric unreachable | internal
+/* c8 ignore start */
 //
 // There isn't a scenario where this function will receive keys
 // that are not of type TLiteralValue. This is because keys are 
@@ -74,7 +74,7 @@ function FromPropertyKeys<Keys extends PropertyKey[]>(keys: [...Keys]): TFromPro
   }, [])
   return result as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // ------------------------------------------------------------------
 // FromObject
 // ------------------------------------------------------------------

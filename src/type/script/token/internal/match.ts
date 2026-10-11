@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 
 import { IsEqual } from './guard.ts'
 
@@ -40,4 +40,4 @@ export function IsMatch(value: TResult): value is [string, string] {
 export function Match(input: TResult, ok: (value: string, rest: string) => TResult, fail: () => TResult): TResult {
   return IsMatch(input) ? ok(input[0], input[1]) : fail()
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

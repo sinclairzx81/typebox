@@ -1,7 +1,7 @@
-import { Task } from 'tasksmith'
+import * as Task from '../task.ts'
 
 export async function Metrics() {
-  await Task.esbuild.metrics([
+  await Task.metrics([
     'task/metrics/all.ts',
     'task/metrics/compile_all.ts',
     'task/metrics/format.ts',

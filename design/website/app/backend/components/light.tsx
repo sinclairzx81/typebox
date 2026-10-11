@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as React from 'react'
-import * as Fibre from 'react-three/fiber'
+import * as Fibre from '@react-three/fiber'
 import * as Three from 'three'
 
 export interface LightProperties {

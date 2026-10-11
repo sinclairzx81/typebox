@@ -130,7 +130,7 @@ function ExtendsLiteralString<Inferred extends TProperties, Left extends string,
 // ----------------------------------------------------------------------------
 // ExtendsLiteral
 //
-// deno-coverage-ignore-start
+/* c8 ignore start */
 //
 // We assert that TLiteral is of TLiteralValue so we never reach fallthrough.
 // ----------------------------------------------------------------------------
@@ -152,4 +152,4 @@ export function ExtendsLiteral<Inferred extends TProperties, Left extends TLiter
     Unreachable() // ExtendsRight(inferred, left, right)
   ) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

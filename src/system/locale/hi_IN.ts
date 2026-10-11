@@ -27,7 +27,8 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-coverage-ignore-start
+
+/* c8 ignore start */
 
 import { type TValidationError } from '../../error/index.ts'
 
@@ -68,4 +69,4 @@ export function hi_IN(error: TValidationError): string {
     default: return 'एक अज्ञात सत्यापन त्रुटि हुई'
   }
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

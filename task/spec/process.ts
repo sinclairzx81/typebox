@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { JSONSchemaTestFile, JSONSchemaTestGroup, JSONSchemaTestSuite } from './types.ts'
+import * as Task from '../task.ts'
 
 export type ProcessCallback = (draft: string, schema: Record<string, unknown> | boolean, value: unknown) => boolean | null
 
@@ -45,8 +46,8 @@ interface JSONTestSource {
 // ------------------------------------------------------------------
 function collectJsonPaths(directory: string): string[] {
   const results: string[] = []
-  for (const entry of Deno.readDirSync(directory)) {
-    const full = `${directory}/${entry.name}`
+  for (const entry of Task.entriesSync(directory)) {
+    const full = Task.Path.join(directory, entry.name)
     if (entry.isDirectory) results.push(...collectJsonPaths(full))
     else if (entry.isFile && entry.name.endsWith('.json')) results.push(full)
   }
@@ -71,7 +72,7 @@ function collectJSONTests(directory: string): JSONTestSource[] {
     const resolved = resolveDraftAndKeyword(sourcePath, directory)
     if (resolved === null) continue
     const { draft, keyword } = resolved
-    const groups = JSON.parse(Deno.readTextFileSync(sourcePath)) as JSONSchemaTestGroup[]
+    const groups = JSON.parse(Task.readSync(sourcePath)) as JSONSchemaTestGroup[]
     results.push({ sourcePath, draft, keyword, groups })
   }
   return results

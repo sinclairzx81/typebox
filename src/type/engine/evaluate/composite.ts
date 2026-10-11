@@ -110,7 +110,7 @@ function CompositeProperty<Left extends TSchema, Right extends TSchema>(left: Le
 // ----------------------------------------------------------------------------
 // CompositePropertyKey
 //
-// deno-coverage-ignore-start - symmetric unreachable
+/* c8 ignore start */
 //
 // CompositePropertyKey is assured a Key in Left or Right, but we retain 
 // checks on fall-through to remain symmetric with the type.
@@ -130,7 +130,7 @@ function CompositePropertyKey<Left extends TProperties, Right extends TPropertie
       : key in right ? right[key] : Never()
   ) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // ----------------------------------------------------------------------------
 // CompositeProperties
 // ----------------------------------------------------------------------------

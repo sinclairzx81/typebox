@@ -27,7 +27,8 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-coverage-ignore-start
+
+/* c8 ignore start */
 
 import { type TValidationError } from '../../error/index.ts'
 
@@ -68,4 +69,4 @@ export function uk_UA(error: TValidationError): string {
     default: return 'виникла невідома помилка валідації'
   }
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

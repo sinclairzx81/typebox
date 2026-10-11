@@ -1,13 +1,14 @@
 import * as assert from 'node:assert'
+import { test, type TestContext } from 'node:test'
 
 // ------------------------------------------------------------------
 // Runtime
 // ------------------------------------------------------------------
-export type Test = (name: string, callback: (context: Deno.TestContext) => void) => any
+export type Test = (name: string, callback: (context: TestContext) => void) => void
 
 export function Context(context: string): Test {
-  return (name: string, callback: (context: Deno.TestContext) => void) => {
-    Deno.test(`${context}: ${name}`, callback)
+  return (name: string, callback: (context: TestContext) => void) => {
+    test(`${context}: ${name}`, callback)
   }
 }
 // ------------------------------------------------------------------

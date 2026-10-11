@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 // deno-fmt-ignore-file
 
 import { Match } from './match.ts'
@@ -44,4 +44,4 @@ export function Optional<Value extends string, Input extends string>(value: Valu
     [Optional, Rest],
     () => ['', input]) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

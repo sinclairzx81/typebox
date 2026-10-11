@@ -27,7 +27,8 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-coverage-ignore-start
+
+/* c8 ignore start */
 
 import { type TValidationError } from '../../error/index.ts'
 
@@ -68,4 +69,4 @@ export function zh_Hans(error: TValidationError): string {
     default: return '发生未知验证错误'
   }
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

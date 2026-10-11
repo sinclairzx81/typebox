@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 // deno-fmt-ignore-file
 
 import { IsEqual } from './internal/guard.ts'
@@ -68,4 +68,4 @@ export function Const<Const extends string, Input extends string>(const_: Const,
     )
   ) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

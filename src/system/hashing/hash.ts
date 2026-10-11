@@ -217,7 +217,7 @@ function FromUndefined(_value: undefined): void {
 // ------------------------------------------------------------------
 // Hash
 //
-// deno-coverage-ignore-start - unreachable
+/* c8 ignore start */
 //
 // This function should all JavaScript values so we can't reach the
 // fall-through. We use Unreachable to assert that no values pass
@@ -246,7 +246,7 @@ function FromValue(value: unknown): void {
     Unreachable()
   )
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // ------------------------------------------------------------------
 // Hash
 // ------------------------------------------------------------------

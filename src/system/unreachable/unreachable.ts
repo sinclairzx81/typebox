@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - unreachable by definition
+/* c8 ignore start */
 
 export type TUnreachable = never
 
@@ -34,4 +34,4 @@ export type TUnreachable = never
 export function Unreachable(): TUnreachable {
   throw new Error('Unreachable')
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

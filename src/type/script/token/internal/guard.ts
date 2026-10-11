@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 
 export { IsArray, IsEqual, IsString, ShiftLeft } from '../../../../guard/guard.ts'
 
@@ -42,4 +42,4 @@ export { IsArray, IsEqual, IsString, ShiftLeft } from '../../../../guard/guard.t
 // export function IsEqual(left: unknown, right: unknown): boolean {
 //   return left === right
 // }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

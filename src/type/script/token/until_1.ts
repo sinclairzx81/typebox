@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 // deno-fmt-ignore-file
 
 import { IsEqual } from './internal/guard.ts'
@@ -52,4 +52,4 @@ export function Until_1<End extends string[], Input extends string>(end: [...End
       : [Until, UntilRest],
     () => []) as never // fail: did not match Until
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

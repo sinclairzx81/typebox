@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import React from 'react'
-import * as Fiber from 'react-three/fiber'
+import * as Fiber from '@react-three/fiber'
 import * as Three from 'three'
 
 export function Camera() {

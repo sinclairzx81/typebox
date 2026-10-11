@@ -85,7 +85,7 @@ type TFromType<Variants extends string[], Type extends TSchema,
 > = Result
 
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start - symmetric unreachable | internal
+/* c8 ignore start */
 // 
 // Parsed TemplateLiteral patterns only yield Literal or Union but
 // we keep the fall-through to assert that no other types can reach 
@@ -100,7 +100,7 @@ function FromType<Variants extends string[], Type extends TSchema>(variants: [..
   )
   return result as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 
 // ------------------------------------------------------------------
 // FromSpan
@@ -151,7 +151,7 @@ type TDecodeTypes<Types extends TSchema[],
 > = Result
 
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start - internal
+/* c8 ignore start */
 // 
 // Cannot invoke the 0-length condition as the TemplateLiteral 
 // parsers always return at least 1 TLiteral or TUnion. We would 
@@ -166,7 +166,7 @@ function DecodeTypes<Types extends TSchema[]>(types: [...Types]): TDecodeTypes<T
     DecodeTypesAsUnion(types)
   ) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // ------------------------------------------------------------------
 // TemplateLiteralDecodeUnsafe
 // ------------------------------------------------------------------

@@ -1,7 +1,7 @@
-import { TypeCompiler } from 'npm:@sinclair/typebox/compiler'
-import { type TSchema } from 'npm:@sinclair/typebox'
+import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { type TSchema } from '@sinclair/typebox'
 import { Compile } from 'typebox/compile'
-import Ajv from 'npm:ajv'
+import Ajv from 'ajv'
 
 import { Benchmark } from './benchmark/index.ts'
 import { Cases } from './cases.ts'
@@ -24,4 +24,3 @@ export function CompileTest() {
     formatResults: true
   })
 }
-

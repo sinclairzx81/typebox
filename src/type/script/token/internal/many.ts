@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 // deno-fmt-ignore-file
 
 import { Match } from './match.ts'
@@ -66,4 +66,4 @@ export function Many<Allowed extends string[], Discard extends string[], Input e
       : Many(allowed, discard, Rest, `${result}${Char}`), 
     () => [result, input]) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 
-import { Runtime } from 'parsebox'
+import { Runtime } from '@sinclair/parsebox'
 
 // ------------------------------------------------------------------
 // Pattern Literals: Rebuild on Change

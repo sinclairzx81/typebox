@@ -71,7 +71,7 @@ function ReduceVariants<Types extends TSchema[], Result extends TProperties>
 // ------------------------------------------------------------------
 // FromUnion
 //
-// deno-coverage-ignore-start - symmetric unreachable
+/* c8 ignore start */
 //
 // Interesting case where we need to destructure the first element as
 // an initializer for TReduceVariants. These cases are quite rare.
@@ -89,4 +89,4 @@ export function FromUnion<Types extends TSchema[]>
     ReduceVariants(right, FromType(left)),
     () => Unreachable()) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

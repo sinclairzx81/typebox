@@ -27,11 +27,11 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { SyntaxModule } from '../../design/syntax/syntax.ts'
-import { Build } from 'parsebox'
-import { Task } from 'tasksmith'
+import { Build } from '@sinclair/parsebox'
+import * as Task from '../task.ts'
 
 export async function Syntax() {
   const project = Build.Project(SyntaxModule)
-  await Task.file('target/syntax/mapping.ts').write(project.mapping)
-  await Task.file('target/syntax/parser.ts').write(project.parser)
+  await Task.write('target/syntax/mapping.ts', project.mapping)
+  await Task.write('target/syntax/parser.ts', project.parser)
 }

@@ -86,7 +86,7 @@ export function IsInferable(value: unknown): value is TInferable {
 //
 // ----------------------------------------------------------------------------
 //
-// deno-coverage-ignore-start - symmetric unreachable
+/* c8 ignore start */
 //
 // The outer 'undefined' return arm is considered unreachable via Extends calls.  
 // As this function is only used by the Tuple Infer resolver, it may be possible 
@@ -117,7 +117,7 @@ export function TryRestInferable<Type extends TSchema>(type: Type): TTryRestInfe
       : undefined
   ) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // ----------------------------------------------------------------------------
 // TryInferable
 //

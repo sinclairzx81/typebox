@@ -9,18 +9,18 @@ jobs:
     timeout-minutes: 15
     strategy:
       matrix:
-        node: [20.x]
+        node: [22.x, 24.x]
         os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
-      # Deno
-      - name: Install Deno
-        uses: denoland/setup-deno@v2
+      - name: Install Node.js
+        uses: actions/setup-node@v4
         with:
-          deno-version: canary
-      # TypeScript Compiler Range
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Range
-        run: deno task range
-      # TypeScript Native Latest
-      - name: Range
-        run: deno task native
+        run: npm run range
+      - name: Native TypeScript Compiler
+        run: npm run native

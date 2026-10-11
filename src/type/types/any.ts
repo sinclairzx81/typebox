@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-lint-ignore-file 
+// deno-lint-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'

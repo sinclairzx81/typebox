@@ -1,0 +1,103 @@
+{
+  "name": "typebox",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "workspaces": [
+    "test/common"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./compile": {
+      "types": "./src/compile/index.ts",
+      "import": "./src/compile/index.ts",
+      "default": "./src/compile/index.ts"
+    },
+    "./error": {
+      "types": "./src/error/index.ts",
+      "import": "./src/error/index.ts",
+      "default": "./src/error/index.ts"
+    },
+    "./format": {
+      "types": "./src/format/index.ts",
+      "import": "./src/format/index.ts",
+      "default": "./src/format/index.ts"
+    },
+    "./guard": {
+      "types": "./src/guard/index.ts",
+      "import": "./src/guard/index.ts",
+      "default": "./src/guard/index.ts"
+    },
+    "./schema": {
+      "types": "./src/schema/index.ts",
+      "import": "./src/schema/index.ts",
+      "default": "./src/schema/index.ts"
+    },
+    "./system": {
+      "types": "./src/system/index.ts",
+      "import": "./src/system/index.ts",
+      "default": "./src/system/index.ts"
+    },
+    "./type": {
+      "types": "./src/type/index.ts",
+      "import": "./src/type/index.ts",
+      "default": "./src/type/index.ts"
+    },
+    "./value": {
+      "types": "./src/value/index.ts",
+      "import": "./src/value/index.ts",
+      "default": "./src/value/index.ts"
+    }
+  },
+  "scripts": {
+    "bench": "tsx tasks.ts bench",
+    "build": "tsx tasks.ts build",
+    "clean": "tsx tasks.ts clean",
+    "format": "tsx tasks.ts format",
+    "lint": "tsx tasks.ts lint",
+    "compliance": "tsx tasks.ts compliance",
+    "local": "tsx tasks.ts local",
+    "metrics": "tsx tasks.ts metrics",
+    "publish": "tsx tasks.ts publish",
+    "report": "tsx tasks.ts report",
+    "range": "tsx tasks.ts range",
+    "spec": "tsx tasks.ts spec",
+    "start": "tsx tasks.ts start",
+    "syntax": "tsx tasks.ts syntax",
+    "test": "tsx tasks.ts test",
+    "challenge": "tsx tasks.ts challenge",
+    "turing": "tsx tasks.ts turing",
+    "automata": "tsx tasks.ts automata",
+    "website": "tsx tasks.ts website",
+    "typecheck": "tsc --project tsconfig.json"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@react-three/fiber": "9.3.0",
+    "@sinclair/parsebox": "0.11.6",
+    "@sinclair/typebox": "0.34.52",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "0.186.0",
+    "ajv": "8.20.0",
+    "c8": "12.0.0",
+    "deno": "2.9.6",
+    "esbuild": "0.28.2",
+    "execa": "^9.6.0",
+    "marked": "16.2.1",
+    "prismjs": "1.30.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "react-router-dom": "7.18.4",
+    "three": "0.180.0",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}

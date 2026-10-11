@@ -38,11 +38,11 @@ function TryEvaluate(): boolean {
   try {
     Evaluate('null')()
     return true
-  } // deno-coverage-ignore-start - unreachable in test-suite
+  } /* c8 ignore start */
   catch {
     return false
   }
-  // deno-coverage-ignore-stop
+  /* c8 ignore stop */
 }
 // ------------------------------------------------------------------
 // CanEvaluate

@@ -51,7 +51,7 @@ export type TToIndexable<Type extends TSchema,
       : TUnreachable
   )
 > = Result
-// deno-coverage-ignore-start - symmetric unreachable
+/* c8 ignore start */
 /** Transforms a type into a TProperties used for indexing operations */
 export function ToIndexable<Type extends TSchema>(type: Type): TToIndexable<Type> {
   const collapsed = CollapseToObject(type)
@@ -60,4 +60,4 @@ export function ToIndexable<Type extends TSchema>(type: Type): TToIndexable<Type
     : Unreachable()
   return result as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

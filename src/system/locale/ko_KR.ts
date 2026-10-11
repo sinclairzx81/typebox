@@ -27,7 +27,8 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-coverage-ignore-start
+
+/* c8 ignore start */
 
 import { type TValidationError } from '../../error/index.ts'
 
@@ -68,4 +69,4 @@ export function ko_KR(error: TValidationError): string {
     default: return '알 수 없는 유효성 검사 오류가 발생했습니다'
   }
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

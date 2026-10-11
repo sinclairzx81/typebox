@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-coverage-ignore-start - parsebox tested
+/* c8 ignore start */
 // deno-fmt-ignore-file
 
 import { IsEqual } from './guard.ts'
@@ -122,4 +122,4 @@ export function Trim<Input extends string>(input: Input): TTrim<Input> {
     trimmed
   ) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

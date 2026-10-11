@@ -26,19 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Task } from 'tasksmith'
+import * as Task from '../task.ts'
 
 export async function Legacy(versions: string[]) {
+  const typeRoots = Task.Path.resolve('target/range-types')
+  await Task.createDir(typeRoots)
   for(const version of versions) {
     console.log('checking ...', version)
-    await Task.tsc(version)
-      .run('src/index.ts --target ES2020 --strict --noEmit --allowImportingTsExtensions')
+    await Task.compiler(version, ['src/index.ts', '--target', 'ES2020', '--strict', '--noEmit', '--allowImportingTsExtensions', '--typeRoots', typeRoots])
   }
 }
 export async function Modern(versions: string[]) {
+  const typeRoots = Task.Path.resolve('target/range-types')
+  await Task.createDir(typeRoots)
   for(const version of versions) {
     console.log('checking ...', version)
-    await Task.tsc(version)
-      .run('src/index.ts --target ES2020 --strict --noEmit --allowImportingTsExtensions --ignoreConfig')
+    await Task.compiler(version, ['src/index.ts', '--target', 'ES2020', '--strict', '--noEmit', '--allowImportingTsExtensions', '--ignoreConfig', '--typeRoots', typeRoots])
   }
 }

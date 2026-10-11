@@ -2,42 +2,36 @@
 
 import { Turing, Automata } from './task/engine/index.ts'
 import { Syntax } from './task/syntax/index.ts'
-import { Website } from './task/website/index.ts'
+import * as Website from './task/website/website.ts'
 import { Bench } from './task/bench/index.ts'
 import { Range } from './task/range/index.ts'
 import { Metrics } from './task/metrics/index.ts'
 import { Spec } from './task/spec/index.ts'
-import { Task } from 'tasksmith'
+import * as Task from './task/task.ts'
 
 const Version = '1.3.36'
 
 // ------------------------------------------------------------------
-// Build
+// PackageMetadata
 // ------------------------------------------------------------------
-const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', {
-  outdir: target,
-  compiler: '7.0.2',
-  additional: ['license', 'readme.md'],
-  packageJson: {
-    name: 'typebox',
-    description: 'Json Schema Type Builder with Static Type Resolution for TypeScript',
-    version: Version,
-    keywords: ['typescript', 'jsonschema'],
-    license: 'MIT',
-    author: 'sinclairzx81',
-    repository: {
-      type: 'git',
-      url: 'https://github.com/sinclairzx81/typebox'
-    }
-  },
-})
+const PackageMetadata = {
+  name: 'typebox',
+  description: 'Json Schema Type Builder with Static Type Resolution for TypeScript',
+  version: Version,
+  keywords: ['typescript', 'jsonschema'],
+  license: 'MIT',
+  author: 'sinclairzx81',
+  repository: {
+    type: 'git',
+    url: 'https://github.com/sinclairzx81/typebox'
+  }
+}
+const TestRoots = ['test/jsonschema', 'test/typebox']
 // ------------------------------------------------------------------
-// Publish
+// Bench
 // ------------------------------------------------------------------
-const PublishPackage = async (target: string = `target/build`) => {
-  const { version } = JSON.parse(await Task.file(`${target}/package.json`).read())
-  await Task.shell(`git tag ${version}`)
-  await Task.shell(`git push origin ${version}`)
+async function build(target: string = 'target/build'): Promise<void> {
+  await Task.buildPackage('src', target, PackageMetadata)
 }
 // ------------------------------------------------------------------
 // Bench
@@ -46,31 +40,35 @@ Task.run('bench', () => Bench.Run())
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-Task.run('build', (target: string = `target/build`) => BuildPackage(target))
+Task.run('build', (target: string = 'target/build') => build(target))
 // ------------------------------------------------------------------
 // Clean
 // ------------------------------------------------------------------
-Task.run('clean', () => Task.folder('target').delete())
+Task.run('clean', () => Task.remove('target'))
 // ------------------------------------------------------------------
 // Compliance
 // ------------------------------------------------------------------
-Task.run('compliance', (target: string = `../json-schema-compliance-suite/node_modules/typebox`) => BuildPackage(target))
+Task.run('compliance', (target: string = '../json-schema-compliance-suite/node_modules/typebox') => build(target))
 // ------------------------------------------------------------------
 // Local
 // ------------------------------------------------------------------
-Task.run('local', (target: string = `../build-test/node_modules/typebox`) => BuildPackage(target))
+Task.run('local', (target: string = '../build-test/node_modules/typebox') => build(target))
 // ------------------------------------------------------------------
 // Publish
 // ------------------------------------------------------------------
-Task.run('publish', (target: string = `target/build`) => PublishPackage(target))
+Task.run('publish', async (target: string = 'target/build') => {
+  const { version } = JSON.parse(await Task.read(Task.Path.join(target, 'package.json')))
+  await Task.shell('git', ['tag', version])
+  await Task.shell('git', ['push', 'origin', version])
+})
 // ------------------------------------------------------------------
-// Format
+// Metrics
 // ------------------------------------------------------------------
-Task.run('format', () => Task.shell('deno fmt src test/typebox task/spec'))
+Task.run('format', () => Task.shell('npm', ['exec', '--', 'deno', 'fmt', 'src', 'test/typebox', 'task/spec']))
 // ------------------------------------------------------------------
 // Lint
 // ------------------------------------------------------------------
-Task.run('lint', () => Task.shell('deno lint src'))
+Task.run('lint', () => Task.shell('npm', ['exec', '--', 'deno', 'lint', 'src']))
 // ------------------------------------------------------------------
 // Spec
 // ------------------------------------------------------------------
@@ -82,28 +80,26 @@ Task.run('syntax', () => Syntax())
 // ------------------------------------------------------------------
 // Start
 // ------------------------------------------------------------------
-Task.run('start', () => Task.shell('deno run -A --watch --no-check example/index.ts'))
+Task.run('start', () => Task.shell(process.execPath, ['--experimental-transform-types', '--watch', 'example/index.ts']))
 // ------------------------------------------------------------------
 // Test
 // ------------------------------------------------------------------
-Task.run('test', async (filter: string = '') =>
-  Task.shell('deno lint src').catch(() => null).then(() =>
-    Task.test.run(['test/jsonschema', 'test/typebox'], { filter }))
-)
+Task.run('test', async (filter: string = '') => {
+  await Task.shell('npm', ['run', 'lint'])
+  await Task.test(TestRoots, { filter })
+})
 // ------------------------------------------------------------------
 // Challenge
 // ------------------------------------------------------------------
-Task.run('challenge', async (filter: string = '') =>
-  Task.test.run(['test/typescript'], { filter })
-)
-// ------------------------------------------------------------------
-// Fast
-// ------------------------------------------------------------------
-Task.run('fast', (filter: string = '') => Task.test.run(['test/jsonschema', 'test/typebox'], { watch: true, noCheck: true, filter }))
+Task.run('challenge', (filter: string = '') => Task.test(['test/typescript'], { filter }))
 // ------------------------------------------------------------------
 // Website
 // ------------------------------------------------------------------
-Task.run('website', () => Website('docs'))
+Task.run('website', (port: string = '5000') => {
+  const value = Number(port)
+  if (!Number.isInteger(value) || value < 0 || value > 65535) throw new Error(`Invalid website port '${port}'`)
+  return Website.Website('design/website', 'docs', value)
+})
 // ------------------------------------------------------------------
 // Turing
 // ------------------------------------------------------------------
@@ -115,16 +111,11 @@ Task.run('automata', () => Automata.Debug())
 // ------------------------------------------------------------------
 // Report
 // ------------------------------------------------------------------
-Task.run('report', () => Task.test.report(['test/jsonschema', 'test/typebox']))
+Task.run('report', () => Task.report(TestRoots))
 // ------------------------------------------------------------------
 // Metrics
 // ------------------------------------------------------------------
 Task.run('metrics', () => Metrics())
-// ------------------------------------------------------------------
-// Native
-// ------------------------------------------------------------------
-Task.run('native', (target: string = `target/build`) => Task.tsgo('beta')
-  .run('src/index.ts --target ESNext --module ESNext --strict --noEmit --ignoreConfig --allowImportingTsExtensions'))
 // ------------------------------------------------------------------
 // Range
 // ------------------------------------------------------------------
@@ -132,12 +123,10 @@ Task.run('range', async () => {
   await Range.Legacy([
     '5.0.4', '5.1.3', '5.1.6', '5.2.2', '5.3.2', '5.3.3',
     '5.4.3', '5.4.5', '5.5.2', '5.5.3', '5.5.4', '5.6.2',
-    '5.6.3', '5.7.2', '5.7.3', '5.9.2', '5.9.3',
+    '5.6.3', '5.7.2', '5.7.3', '5.9.2', '5.9.3'
   ])
-  await Range.Modern([
-    '6.0.2', '6.0.3',
-  ])
-  await Range.Modern([
-    '7.0.2', 'next', 'latest'
-  ])
+  await Range.Modern(['6.0.2', '6.0.3'])
+  await Range.Modern(['7.0.2', 'next', 'latest'])
 })
+
+await Task.execute()

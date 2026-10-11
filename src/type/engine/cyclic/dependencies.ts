@@ -47,7 +47,7 @@ import { type TInterfaceDeferred, IsInterfaceDeferred } from '../../action/inter
 // ------------------------------------------------------------------
 // Ref
 //
-// deno-coverage-ignore-start - symmetric unreachable | internal
+/* c8 ignore start */
 //
 // This function will always receive keys in Context.
 // ------------------------------------------------------------------
@@ -68,7 +68,7 @@ function FromRef<Context extends TProperties, Ref extends string, Dependencies e
         : Unreachable()
   ) as never
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // ------------------------------------------------------------------
 // Properties
 // ------------------------------------------------------------------

@@ -27,7 +27,8 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-coverage-ignore-start
+
+/* c8 ignore start */
 
 import { type TValidationError } from '../../error/index.ts'
 
@@ -69,4 +70,4 @@ export function ur_PK(error: TValidationError): string {
     default: return 'تصدیق میں ایک نامعلوم خرابی پیش آئی'
   }
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

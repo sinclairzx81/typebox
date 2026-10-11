@@ -62,7 +62,7 @@ type TIntrinsicOrCall<Target extends string, Parameters extends T.TSchema[]> = (
   T.TCallConstruct<T.TRef<Target>, Parameters>
 )
 function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref: Ref, parameters: [...Parameters]): TIntrinsicOrCall<Ref, Parameters> {
-  // deno-coverage-ignore-start
+  /* c8 ignore start */
   //
   // Have extensively tested but reports show no Omit coverage (review)
   return (
@@ -89,16 +89,16 @@ function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref
     Guard.IsEqual(ref, 'Uppercase') ? S.UppercaseDeferred(parameters[0]) :
     T.CallConstruct(T.Ref(ref), parameters)
   ) as never
-  // deno-coverage-ignore-stop
+  /* c8 ignore stop */
 }
 // ------------------------------------------------------------------
 // Unreachable
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start
+/* c8 ignore start */
 function Unreachable(): never {
   throw Error('Unreachable')
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // ------------------------------------------------------------------
 //
 // Delimited
@@ -560,7 +560,7 @@ export type TFactorMapping<Input extends [unknown, unknown, unknown, unknown, un
       , WithClause>
     : never
 )
-// deno-coverage-ignore-start
+/* c8 ignore start */
 function FactorIndexArray(Type: T.TSchema, indexArray: unknown[]): T.TSchema {
   return indexArray.reduce<T.TSchema>((result, left) => {
     const _left = left as T.TSchema[]
@@ -571,7 +571,7 @@ function FactorIndexArray(Type: T.TSchema, indexArray: unknown[]): T.TSchema {
     )
   }, Type)
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 function FactorExtends(type: T.TSchema, extend: T.TSchema[]): T.TSchema {
   return Guard.IsEqual(extend.length, 3)
     ? S.ConditionalDeferred(type, extend[0], extend[1], extend[2])
@@ -615,7 +615,7 @@ type TExprBinaryMapping<Left extends T.TSchema, Rest extends unknown[]> = (
     ) : never
   ) : Left
 )
-// deno-coverage-ignore-start
+/* c8 ignore start */
 function ExprBinaryMapping(left: T.TSchema, rest: unknown[]): T.TSchema {
   return (
     Guard.IsEqual(rest.length, 3) ? (() => {
@@ -635,7 +635,7 @@ function ExprBinaryMapping(left: T.TSchema, rest: unknown[]): T.TSchema {
     })() : left
   )
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // -------------------------------------------------------------------
 // ExprTermTail: ['&', Factor, ExprTermTail] | []
 // -------------------------------------------------------------------
@@ -719,7 +719,7 @@ export type TInferTypeMapping<Input extends [unknown, unknown, unknown, unknown]
   Input extends ['infer', infer Name extends string] ? T.TInfer<Name, T.TUnknown> :
   never
 )
-// deno-coverage-ignore-start
+/* c8 ignore start */
 export function InferTypeMapping(input: [unknown, unknown, unknown, unknown] | [unknown, unknown]): unknown {
   return (
     Guard.IsEqual(input.length, 4) ? T.Infer(input[1] as string, input[3] as T.TSchema) :
@@ -727,7 +727,7 @@ export function InferTypeMapping(input: [unknown, unknown, unknown, unknown] | [
     Unreachable()
   )
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // -------------------------------------------------------------------
 // Type: InferType | ExprPipe | ExprReadonly | Expr
 // -------------------------------------------------------------------
@@ -774,7 +774,7 @@ export type TPropertyKeyIndexMapping<Input extends [unknown, unknown, unknown, u
   Input extends ['[', string, ':', T.TSymbol, ']'] ? T.TStringKey :
   never
 )
-// deno-coverage-ignore-start
+/* c8 ignore start */
 export function PropertyKeyIndexMapping(input: [unknown, unknown, unknown, unknown, unknown]): unknown {
   return (
     T.IsInteger(input[3]) ? T.IntegerKey :
@@ -784,7 +784,7 @@ export function PropertyKeyIndexMapping(input: [unknown, unknown, unknown, unkno
     Unreachable()
   )
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // -------------------------------------------------------------------
 // PropertyKey: PropertyKeyNumber | PropertyKeyIdent | PropertyKeyQuoted | PropertyKeyIndex
 // -------------------------------------------------------------------
@@ -925,7 +925,7 @@ export type TElementNamedMapping<Input extends [unknown, unknown, unknown, unkno
   Input extends [string, /**/ ':', /*      */  infer Type extends T.TSchema] ? Type :
   never
 )
-// deno-coverage-ignore-start
+/* c8 ignore start */
 export function ElementNamedMapping(input: [unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown] | [unknown, unknown, unknown]): unknown {
   return (
     Guard.IsEqual(input.length, 5) ? S.AddReadonlyDeferred(S.AddOptionalDeferred(input[4] as T.TSchema)) :
@@ -934,7 +934,7 @@ export function ElementNamedMapping(input: [unknown, unknown, unknown, unknown, 
     Unreachable()
   )
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // -------------------------------------------------------------------
 // ElementBase: ElementNamed | [Readonly, Type, Optional]
 // -------------------------------------------------------------------
@@ -964,7 +964,7 @@ export type TElementMapping<Input extends [unknown, unknown] | [unknown]> = (
   Input extends [infer Type extends T.TSchema] ? Type :
   never
 )
-// deno-coverage-ignore-start
+/* c8 ignore start */
 export function ElementMapping(input: [unknown, unknown] | [unknown]): unknown {
   return (
     Guard.IsEqual(input.length, 2) ? T.Rest(input[1] as T.TSchema) :
@@ -972,7 +972,7 @@ export function ElementMapping(input: [unknown, unknown] | [unknown]): unknown {
     Unreachable()
   )
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // -------------------------------------------------------------------
 // ElementList: [Element, [',', Element][], ','?] | []
 // -------------------------------------------------------------------
@@ -1044,7 +1044,7 @@ export type TParameterMapping<Input extends [unknown, unknown] | [unknown]> = (
   Input extends [infer Type extends T.TSchema] ? Type :
   never
 )
-// deno-coverage-ignore-start
+/* c8 ignore start */
 export function ParameterMapping(input: [unknown, unknown] | [unknown]): unknown {
   return (
     Guard.IsEqual(input.length, 2) ? T.Rest(input[1] as T.TSchema) :
@@ -1052,7 +1052,7 @@ export function ParameterMapping(input: [unknown, unknown] | [unknown]): unknown
     Unreachable()
   )
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */
 // -------------------------------------------------------------------
 // ParameterList: [Parameter, [',', Parameter][], ','?] | []
 // -------------------------------------------------------------------

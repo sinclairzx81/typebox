@@ -61,7 +61,7 @@ function FromLiteralString(_context: TProperties, type: TLiteral<string>, value:
   const result = Try.TryString(value)
   return Try.IsOk(result) && Guard.IsEqual(type.const, result.value) ? result.value : value
 }
-// deno-coverage-ignore-start - unreachable | guarded
+/* c8 ignore start */
 export function FromLiteral(context: TProperties, type: TLiteral, value: unknown): unknown {
   if(Guard.IsEqual(type.const, value)) return value
   return (
@@ -72,4 +72,4 @@ export function FromLiteral(context: TProperties, type: TLiteral, value: unknown
     Unreachable()
   )
 }
-// deno-coverage-ignore-stop
+/* c8 ignore stop */

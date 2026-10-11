@@ -1,82 +1,96 @@
-/*--------------------------------------------------------------------------
-
-TypeBox
-
-The MIT License (MIT)
-
-Copyright (c) 2017-2026 Haydn Paterson
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
----------------------------------------------------------------------------*/
-
+import { watch } from 'node:fs'
+import { resolve } from 'node:path'
+import { context as esbuildContext, type BuildContext } from 'esbuild'
 import { marked } from 'marked'
-import { Task } from 'tasksmith'
+import * as Task from '../task.ts'
 
 interface Manifest {
-  [dir: string]: { [file: string]: string };
+  [dir: string]: { [file: string]: string }
 }
-export async function BuildDocs(srcDirectory: string, targetDirectory: string): Promise<void> {
-  const manifest: Manifest = {};
-  async function processDir(srcDir: string, tgtDir: string) {
-    const entries = [...Deno.readDirSync(srcDir)].sort((a, b) => {
-      return a.name.localeCompare(b.name)
-    })
-    for await (const entry of entries) {
-      const srcPath = Task.path.join(srcDir, entry.name);
-      const targetPath = Task.path.join(tgtDir, entry.name);
-      if (entry.isDirectory) {
-        await processDir(srcPath, Task.path.join(tgtDir, entry.name));
-      } else if (entry.isFile && entry.name.endsWith('.md')) {
-        const markdown = await Deno.readTextFile(srcPath)
-        const html = await marked(markdown, { gfm: true })
-        await Deno.mkdir(Task.path.dirname(targetPath), { recursive: true });
-        const targetHtmlPath = targetPath.replace(/\.md$/, '.html');
-        await Deno.writeTextFile(targetHtmlPath, html);
-        // update manifest
-        const dirName = Task.path.relative(srcDirectory, Task.path.dirname(srcPath))
-        const fileName = Task.path.basename(entry.name).replace(/\.md$/, '')
-        const htmlPath = Task.path.join(dirName, `${fileName}.html`).replaceAll('\\', '/')
-        const sectionName = Task.path.basename(dirName)
-        const documentName = Task.path.basename(htmlPath).replace(/\.html$/, '')
-        manifest[sectionName] = manifest[sectionName] || {}
-        manifest[sectionName][documentName] = htmlPath
-      }
+
+async function processDir(srcRoot: string, srcDir: string, targetDir: string, manifest: Manifest): Promise<void> {
+  const contents = (await Task.entries(srcDir)).sort((a, b) => a.name.localeCompare(b.name))
+  for (const entry of contents) {
+    const srcPath = entry.path
+    if (entry.isDirectory) {
+      await processDir(srcRoot, srcPath, targetDir, manifest)
+    } else if (entry.isFile && entry.name.endsWith('.md')) {
+      const html = await marked(await Task.read(srcPath), { gfm: true })
+      const dirName = Task.Path.relative(srcRoot, Task.Path.dirname(srcPath))
+      const fileName = Task.Path.basename(entry.name).replace(/\.md$/, '')
+      const htmlPath = Task.Path.join(dirName, `${fileName}.html`).replaceAll('\\', '/')
+      const targetPath = Task.Path.join(targetDir, htmlPath)
+      const sectionName = Task.Path.basename(dirName)
+      const documentName = Task.Path.basename(htmlPath).replace(/\.html$/, '')
+      manifest[sectionName] ??= {}
+      manifest[sectionName][documentName] = htmlPath
+      await Task.write(targetPath, html)
     }
   }
-  await processDir(srcDirectory, targetDirectory);
-  const manifestPath = Task.path.join(targetDirectory, 'manifest.json');
-  await Deno.writeTextFile(manifestPath, JSON.stringify(manifest, null, 2));
 }
-export async function WatchDocs(srcDirectory: string, targetDirectory: string) {
-  for await(const event of Deno.watchFs(srcDirectory, { recursive: true })) {
-    await BuildDocs(srcDirectory, targetDirectory)
+
+export async function BuildDocs(
+  srcDirectory: string = 'design/website',
+  targetDirectory: string = 'docs'
+): Promise<void> {
+  await Task.remove(Task.Path.join(targetDirectory, 'docs'))
+  await Task.remove(Task.Path.join(targetDirectory, 'resources'))
+  await Task.remove(Task.Path.join(targetDirectory, 'manifest.json'))
+  await Task.copy(Task.Path.join(srcDirectory, 'resources'), Task.Path.join(targetDirectory, 'resources'))
+  const manifest: Manifest = {}
+  await processDir(srcDirectory, Task.Path.join(srcDirectory, 'docs'), targetDirectory, manifest)
+  await Task.write(Task.Path.join(targetDirectory, 'manifest.json'), JSON.stringify(manifest, null, 2))
+}
+
+async function createBundle(srcDirectory: string, targetDirectory: string): Promise<BuildContext> {
+  const context = await esbuildContext({
+    entryPoints: [resolve(srcDirectory, 'app/index.tsx')],
+    bundle: true,
+    minify: true,
+    platform: 'browser',
+    format: 'esm',
+    outfile: resolve(targetDirectory, 'index.js')
+  })
+  try {
+    await context.rebuild()
+    return context
+  } catch (error) {
+    await context.dispose()
+    throw error
   }
 }
-export async function Website(target: string) {
-  await Task.folder(target).delete()
-  await Task.folder(target).add('design/website/index.html')
-  await Task.folder(target).add('design/website/resources')
-  await BuildDocs('design/website', target)
-  const watch = WatchDocs('design/website', target)
-  const serve = Task.serve(target)
-  const bundle = Task.shell(`deno bundle --platform browser --watch --minify --output ${target}/index.js design/website/app/index.tsx`)
-  const browser = Task.browser.open('http://localhost:5000')
-  return Promise.all([watch, serve, bundle, browser])
+
+async function prepareWebsite(srcDirectory: string, targetDirectory: string): Promise<BuildContext> {
+  await Task.remove(targetDirectory)
+  await Task.createDir(targetDirectory)
+  await BuildDocs(srcDirectory, targetDirectory)
+  await Task.copy(Task.Path.join(srcDirectory, 'index.html'), Task.Path.join(targetDirectory, 'index.html'))
+  return await createBundle(srcDirectory, targetDirectory)
+}
+
+export async function Website(
+  srcDirectory: string = 'design/website',
+  targetDirectory: string = 'docs',
+  port: number = 5000
+): Promise<void> {
+  const context = await prepareWebsite(srcDirectory, targetDirectory)
+  let rebuildTimer: ReturnType<typeof setTimeout> | undefined
+  let rebuildChain = Promise.resolve()
+  const watcher = watch(srcDirectory, { recursive: true }, () => {
+    if (rebuildTimer !== undefined) clearTimeout(rebuildTimer)
+    rebuildTimer = setTimeout(() => {
+      rebuildChain = rebuildChain.then(async () => {
+        await BuildDocs(srcDirectory, targetDirectory)
+        await Task.copy(Task.Path.join(srcDirectory, 'index.html'), Task.Path.join(targetDirectory, 'index.html'))
+      }).catch((error: unknown) => console.error('Website rebuild error:', error))
+    }, 100)
+  })
+  try {
+    await context.watch()
+    await Task.serve(targetDirectory, port)
+  } finally {
+    if (rebuildTimer !== undefined) clearTimeout(rebuildTimer)
+    watcher.close()
+    await context.dispose()
+  }
 }

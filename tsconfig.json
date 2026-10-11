@@ -1,24 +1,40 @@
-// ------------------------------------------------------------------
-// TypeScript-7: Strict Required
-// ------------------------------------------------------------------
 {
   "compilerOptions": {
     "strict": true,
     "target": "ES2020",
-    "module": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node", "react", "react-dom", "three"],
     "paths": {
       "typebox/compile": ["./src/compile/index.ts"],
-      "typebox/errors": ["./src/errors/index.ts"],
+      "typebox/error": ["./src/error/index.ts"],
       "typebox/format": ["./src/format/index.ts"],
       "typebox/guard": ["./src/guard/index.ts"],
       "typebox/schema": ["./src/schema/index.ts"],
       "typebox/system": ["./src/system/index.ts"],
       "typebox/type": ["./src/type/index.ts"],
       "typebox/value": ["./src/value/index.ts"],
-      "typebox": ["./src/index.ts"]
+      "typebox": ["./src/index.ts"],
+      "test": ["./test/common/index.ts"]
     }
-  }
+  },
+  "include": [
+    "src/**/*.ts",
+    "task/**/*.ts",
+    "test/common/**/*.ts",
+    "test/jsonschema/**/*.ts",
+    "test/typebox/**/*.ts",
+    "tasks.ts",
+    "design/syntax/**/*.ts",
+    "design/website/**/*.ts",
+    "vite.config.ts"
+  ],
+  "exclude": ["node_modules", "target", "docs"]
 }

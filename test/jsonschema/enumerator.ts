@@ -1,32 +1,33 @@
 import * as Path from 'node:path'
+import { readFileSync, readdirSync, statSync } from 'node:fs'
 
 // ------------------------------------------------------------------
 // EnumerateJson
 // ------------------------------------------------------------------
 export function* enumerateJson(path: string): Generator<[string, unknown]> {
   try {
-    const fileInfo = Deno.statSync(path)
-    if (fileInfo.isFile) {
+    const fileInfo = statSync(path)
+    if (fileInfo.isFile()) {
       if (path.endsWith('.json') && !Path.basename(path).startsWith('_')) {
         try {
-          const content = Deno.readTextFileSync(path)
+          const content = readFileSync(path, 'utf8')
           yield [path, JSON.parse(content)]
         } catch (error) {
           console.error(`Failed to read or parse ${path}:`, error)
         }
       }
-    } else if (fileInfo.isDirectory) {
-      for (const entry of Deno.readDirSync(path)) {
+    } else if (fileInfo.isDirectory()) {
+      for (const entry of readdirSync(path, { withFileTypes: true })) {
         if (entry.name.startsWith('_')) continue
         const filePath = Path.join(path, entry.name)
-        if (entry.isFile && entry.name.endsWith('.json')) {
+        if (entry.isFile() && entry.name.endsWith('.json')) {
           try {
-            const content = Deno.readTextFileSync(filePath)
+            const content = readFileSync(filePath, 'utf8')
             yield [filePath, JSON.parse(content)]
           } catch (error) {
             console.error(`Failed to read or parse ${filePath}:`, error)
           }
-        } else if (entry.isDirectory) {
+        } else if (entry.isDirectory()) {
           yield* enumerateJson(filePath)
         }
       }

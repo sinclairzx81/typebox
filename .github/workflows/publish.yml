@@ -17,27 +17,15 @@ jobs:
       # Checkout
       - uses: actions/checkout@v4
 
-      # Node
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-
-      # Deno
-      - name: Install Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: 2.9.1
-
-      # Update
-      - name: Update
-        run: npm install npm -g
-
-      # Build
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Build
-        run: deno task build
-
-      # Publish
+        run: npm run build
       - name: Publish
         run: npm publish typebox-*.tgz --provenance --access public
         working-directory: target/build
