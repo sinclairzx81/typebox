@@ -1,4 +1,4 @@
-## Type.Options
+# Type.Options
 
 Options can be passed on the last argument of any given type.
 

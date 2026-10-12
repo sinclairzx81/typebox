@@ -1,6 +1,6 @@
 # Type.Constructor
 
-Creates a Constructor type. 
+Creates a Constructor type.
 
 > ⚠️ This type is used for interface definitions and cannot be validated.
 
@@ -25,10 +25,10 @@ const T = Type.Constructor([                        // const T = {
                                                     // }
 
 type T = Static<typeof T>                           // type T = new (
-                                                    //   args_0: string, 
+                                                    //   args_0: string,
                                                     //   args_1: boolean
-                                                    // ) => { 
-                                                    //   x: number 
+                                                    // ) => {
+                                                    //   x: number
                                                     // }
 ```
 ## Guard

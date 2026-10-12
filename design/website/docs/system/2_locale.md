@@ -1,17 +1,17 @@
 # System.Locale
 
-TypeBox provides error message translation (i18n) support for over 40 languages. 
+TypeBox provides error message translation (i18n) support for over 40 languages.
 
 ## Example
 
 TypeBox uses ISO 639-1 language region codes for each Locale. They can be set in the following way.
 
 ```typescript
-import System from 'typebox/system'
+import System, { Locale } from 'typebox/system'
 
 System.Locale.Set(Locale.en_US)                      // English - United States
 System.Locale.Set(Locale.ko_KR)                      // Korean  - South Korea
-System.Locate.Set(Locale.fr_FR)                      // French  - France
+System.Locale.Set(Locale.fr_FR)                      // French  - France
 System.Locale.Set(Locale.zh_Hant)                    // Chinese - Traditional
 ```
 
@@ -21,7 +21,7 @@ System.Locale.Set(Locale.zh_Hant)                    // Chinese - Traditional
 Set the Locale immediately before calling Errors to generate messages for that locale.
 
 ```typescript
-import System from 'typebox/system'
+import System, { Locale } from 'typebox/system'
 import Schema from 'typebox/schema'
 import Type from 'typebox'
 

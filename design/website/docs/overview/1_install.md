@@ -1,6 +1,6 @@
 # Install
 
-TypeBox can be installed via Npm
+TypeBox can be installed via npm.
 
 ## Latest
 
@@ -17,4 +17,3 @@ Pre-1.0 versions can be installed with the following.
 ```typescript
 $ npm install @sinclair/typebox --save
 ```
-

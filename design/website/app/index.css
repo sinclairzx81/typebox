@@ -32,51 +32,72 @@ Variables
 -----------------------------------------------------------------
 */
 :root {
+  --theme-progress: 0%;
+  --home-logo-shadow-strength: 33%;
+  --home-logo-shadow-blur: 4px;
+  --home-text-shadow-strength: 33%;
+  --home-text-shadow-blur: 4px;
+  --home-shadow-base-color: #000000;
   /* App */
   --app-font-family-standard: system-ui, -apple-system, sans-serif;
   --app-font-family-advanced: 'conthrax', sans-serif;
-  --app-head-background: #0a0c0fdd;
-  --app-foot-background: #0a0c0fdd;
+  --app-head-background: #0a0c0f;
+  --app-foot-background: #0a0c0f;
+  --app-frame-edge-color: #313741;
   --app-navigation-color: #ffffff;
-  --app-scrollbar-thumb-color: #867450;
-  --app-scrollbar-track-color: #0d121a;
-  --app-scrollbar-border-color: #0d121a;
-  --app-edge-color: #313741;
-  --app-background: #070a0e;
-  --app-color: #ffffff;
+  --app-scrollbar-thumb-color: color-mix(in srgb, #626a72 calc(100% - var(--theme-progress)), #8c979f);
+  --app-scrollbar-track-color: color-mix(in srgb, #14181c calc(100% - var(--theme-progress)), #e4e8eb);
+  --app-scrollbar-border-color: color-mix(in srgb, #0a0c0f calc(100% - var(--theme-progress)), #f4f6f7);
+  --app-edge-color: color-mix(in srgb, #343a40 calc(100% - var(--theme-progress)), #c5cdd3);
+  --app-background: color-mix(in srgb, #0b0d10 calc(100% - var(--theme-progress)), #f4f6f7);
+  --app-color: color-mix(in srgb, #f2f4f6 calc(100% - var(--theme-progress)), #202a32);
   --app-blur: blur(0px);
   /* Home */
   --home-text-color: #ffffff;
-  --home-text-shadow-color: #000000;
+  --home-text-shadow-color: color-mix(in srgb, #000000 calc(100% - var(--theme-progress)), #64748b66);
   --home-text-shadow-metrics: 0 0 12px var(--home-text-shadow-color);
-  --home-button-background: #0a0c0fdd;
-  --home-button-color: #ffffff;
-  --home-button-hover-background: #313741;
-  --home-button-hover-color: #e0c285;
+  --home-shadow-offset: 2px;
+  --home-hero-tint-color: #a7afbe;
+  --home-hero-tint-opacity: 0%;
+  --home-button-background: color-mix(in srgb, #0a0c0fdd calc(100% - var(--theme-progress)), #f8fafc);
+  --home-button-color: color-mix(in srgb, #ffffff calc(100% - var(--theme-progress)), #1f2937);
+  --home-cta-color: color-mix(in srgb, #91a4b8 calc(100% - var(--theme-progress)), #1f2937);
+  --home-button-hover-background: color-mix(in srgb, #313741 calc(100% - var(--theme-progress)), #e2e8f0);
+  --home-button-hover-color: var(--docs-link-color);
   /* Docs */
-  --docs-head-background-color: #171c25dd;
-  --docs-menu-background-color-select: #121822;
-  --docs-menu-background-color: #070a0e;
-  --docs-body-background-color: #070a0e;
-  --docs-code-background-color: #0f141c;
-  --docs-code-text-color: #ffffff;
-  --docs-code-string-color: #e0c285; 
-  --docs-code-comment-color: #6a7fa2;
-  --docs-code-keyword-color: #7384a1;
-  --docs-code-function-color: #e0c285;
-  --docs-search-background: #040404;
-  --docs-search-border-color: #485979;
-  --docs-search-placeholder-color: #485979;
-  --docs-blockquote-border-color: #485979;
-  --docs-blockquote-background:  #0f141c; 
-  --docs-blockquote-color: #e0c285;
-  --docs-head-color: #e0c285;
-  --docs-text-color: #fff;
-  --docs-text-color-muted: #ccc;
-  --docs-text-color-select: #e0c285;
-  --docs-link-color: #e0c285; 
+  --docs-head-background-color: color-mix(in srgb, #11161b calc(100% - var(--theme-progress)), #f3f5f6);
+  --docs-menu-background-color-select: color-mix(in srgb, #252d34 calc(100% - var(--theme-progress)), #d8e0e5);
+  --docs-menu-background-color: color-mix(in srgb, #0e1216 calc(100% - var(--theme-progress)), #e8edf0);
+  --docs-body-background-color: color-mix(in srgb, #0b0d10 calc(100% - var(--theme-progress)), #f7f8f9);
+  --docs-code-background-color: color-mix(in srgb, #0d1117 calc(100% - var(--theme-progress)), #f6f8fa);
+  --docs-code-text-color: color-mix(in srgb, #e6edf3 calc(100% - var(--theme-progress)), #1f2328);
+  --docs-code-string-color: color-mix(in srgb, #a5d6ff calc(100% - var(--theme-progress)), #0a3069);
+  --docs-code-comment-color: color-mix(in srgb, #8b949e calc(100% - var(--theme-progress)), #6e7781);
+  --docs-code-keyword-color: color-mix(in srgb, #ff7b72 calc(100% - var(--theme-progress)), #cf222e);
+  --docs-code-function-color: color-mix(in srgb, #d2a8ff calc(100% - var(--theme-progress)), #8250df);
+  --docs-search-background: color-mix(in srgb, #090c0f calc(100% - var(--theme-progress)), #ffffff);
+  --docs-search-border-color: color-mix(in srgb, #3c454d calc(100% - var(--theme-progress)), #9ba7af);
+  --docs-search-placeholder-color: color-mix(in srgb, #9ca6ae calc(100% - var(--theme-progress)), #586671);
+  --docs-blockquote-border-color: color-mix(in srgb, #59636c calc(100% - var(--theme-progress)), #6e7b87);
+  --docs-blockquote-background: color-mix(in srgb, #14191e calc(100% - var(--theme-progress)), #e8edf0);
+  --docs-blockquote-color: color-mix(in srgb, #e5e9ec calc(100% - var(--theme-progress)), #26323b);
+  --docs-head-color: color-mix(in srgb, #91a4b8 calc(100% - var(--theme-progress)), #26323b);
+  --docs-text-color: color-mix(in srgb, #edf0f2 calc(100% - var(--theme-progress)), #222c34);
+  --docs-text-color-muted: color-mix(in srgb, #a7b0b7 calc(100% - var(--theme-progress)), #586671);
+  --docs-text-color-select: color-mix(in srgb, #f1f3f5 calc(100% - var(--theme-progress)), #394853);
+  --docs-link-color: color-mix(in srgb, #c6d0d7 calc(100% - var(--theme-progress)), #40515d);
+  --docs-menu-scrollbar-color: color-mix(in srgb, #3d464e calc(100% - var(--theme-progress)), #aab4bb);
+  --docs-menu-scrollbar-hover-color: color-mix(in srgb, #69747d calc(100% - var(--theme-progress)), #687680);
+  --docs-token-keyword-color: color-mix(in srgb, #ff7b72 calc(100% - var(--theme-progress)), #cf222e);
+  --docs-token-string-color: color-mix(in srgb, #a5d6ff calc(100% - var(--theme-progress)), #0a3069);
+  --docs-token-literal-color: color-mix(in srgb, #79c0ff calc(100% - var(--theme-progress)), #0550ae);
+  --docs-token-function-color: color-mix(in srgb, #d2a8ff calc(100% - var(--theme-progress)), #8250df);
+  --docs-token-comment-color: color-mix(in srgb, #8b949e calc(100% - var(--theme-progress)), #6e7781);
+  --docs-token-class-color: color-mix(in srgb, #ffa657 calc(100% - var(--theme-progress)), #953800);
+  --docs-token-selector-color: color-mix(in srgb, #7ee787 calc(100% - var(--theme-progress)), #116329);
+  --docs-token-punctuation-color: color-mix(in srgb, #c9d1d9 calc(100% - var(--theme-progress)), #24292f);
 }
-/* Ensure .content snaps instantly (removes any inherited transitions) */
+/* Scrollbars */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -98,9 +119,9 @@ html, body {
   color: var(--app-color);
   width: 100%;
   height: 100%;
-  margin: 0px;
-  padding: 0px;
-  scrollbar-color: var(--app-scrollbar-thumb-color) var(--app-scrollbar-track-color); 
+  margin: 0;
+  padding: 0;
+  scrollbar-color: var(--app-scrollbar-thumb-color) var(--app-scrollbar-track-color);
   scrollbar-width: thin;
 }
 /* ------------------------------------------------------------------

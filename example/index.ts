@@ -16,7 +16,7 @@ System.Settings.Set({ enumerableKind: false })
 // Guard
 // ------------------------------------------------------------------
 
-const A = Guard.GraphemeCount('type-📦')      // 6
+const A = Guard.GraphemeCount('type-📦') // 6
 const B = Guard.HasPropertyKey({ x: 1 }, 'x') // true
 
 // ------------------------------------------------------------------
@@ -35,9 +35,12 @@ const T = Type.Object({
 
 const U = Type.Script(`string with { format: 'email' }`)
 
-const S = Type.Script({ T }, `{
+const S = Type.Script(
+  { T },
+  `{
   [K in keyof T]: T[K] | null
-}`)
+}`
+)
 
 // ------------------------------------------------------------------
 // Infer

@@ -9,7 +9,7 @@ The following shows general usage
 ```typescript
 import System from 'typebox/system'
 
-// Apply freeze to schematics on create
+// Apply freeze to schemas on creation
 System.Settings.Set({ immutableTypes: true })
 
 Type.String().format = 'email' // Error:  Cannot add property format, object is not extensible
@@ -42,11 +42,11 @@ export interface TSettings {
   maxErrors: number
 
   /**
-   * Specifies the maximum number of errors to gather for failed Parse operations. TypeBox will 
-   * automatically run an error-gathering pass on failed Parses to attach diagnostics to the 
+   * Specifies the maximum number of errors to gather for failed Parse operations. TypeBox will
+   * automatically run an error-gathering pass on failed Parses to attach diagnostics to the
    * thrown exception. This setting controls the number of errors gathered in that pass. Higher
-   * values will reduce throughput on failure cases, so a maximum of 4 is recommended if more 
-   * errors are needed. The default setting of 1 will terminate on the first error, while a 
+   * values will reduce throughput on failure cases, so a maximum of 4 is recommended if more
+   * errors are needed. The default setting of 1 will terminate on the first error, while a
    * setting of 0 will skip error gathering entirely.
    *
    * @default 1

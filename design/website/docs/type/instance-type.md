@@ -4,7 +4,7 @@ Extracts the InstanceType from a Constructor type.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const T = Type.Constructor([Type.String()], Type.Object({

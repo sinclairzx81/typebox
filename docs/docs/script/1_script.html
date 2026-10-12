@@ -35,7 +35,7 @@ const T12 = Type.Script(&#39;null&#39;)                         // TNull
 // JsonSchema Extensions
 // ------------------------------------------------------------------
 const T13 = Type.Script(&#39;bigint&#39;)                        // TBigInt
-const T14 = Type.Script(&#39;symbol&#39;)                        // TSymbol 
+const T14 = Type.Script(&#39;symbol&#39;)                        // TSymbol
 const T15 = Type.Script(&#39;undefined&#39;)                     // TUndefined
 const T16 = Type.Script(&#39;void&#39;)                          // TVoid
 
@@ -80,7 +80,7 @@ const T22 = Type.Script(`(a: number, b: number) =&gt; number`)
 // ------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------
-const T23 = Type.Script(`new (a: number, b: number) =&gt; { 
+const T23 = Type.Script(`new (a: number, b: number) =&gt; {
   foo: (x: string) =&gt; void
   bar: (x: string) =&gt; void
   baz: (x: string) =&gt; void
@@ -164,13 +164,13 @@ const T11 = Type.Script(`{
                                                          //   TObject&lt;{
                                                          //     x: TNumber,
                                                          //     y: TNumber,
-                                                         //   }&gt;, 
+                                                         //   }&gt;,
                                                          //   TDependent&lt;
                                                          //     TObject&lt;{
                                                          //       x: TLiteral&lt;1&gt;,
                                                          //     }&gt;,
                                                          //     TObject&lt;{
-                                                         //       y: TLiteral&lt;2&gt;,
+                                                         //       y: TLiteral&lt;1&gt;,
                                                          //     }&gt;,
                                                          //     TUnknown
                                                          //   &gt;
@@ -179,18 +179,18 @@ const T11 = Type.Script(`{
 <h2>Type Augmentation</h2>
 <p>Script supports extended syntax to augment types with constraints and annotations.</p>
 <pre><code class="language-typescript">// ------------------------------------------------------------------
-// With Types 
+// With Types
 // ------------------------------------------------------------------
 const T0 = Type.Script(`string with {
   format: &#39;email&#39;
-  description: &#39;An email address&#39; 
+  description: &#39;An email address&#39;
 }`)                                                      // TWith&lt;TString, {
                                                          //   format: &#39;email&#39;,
                                                          //   description: &#39;An email address&#39;,
                                                          // }&gt;
 
 
-const T1 = Type.Script(`{ 
+const T1 = Type.Script(`{
   x: number with { minimum: 0, maximum: 1 },
   y: number with { minimum: 0, maximum: 1 },
   z: number with { minimum: 0, maximum: 1 },
@@ -214,7 +214,7 @@ const T1 = Type.Script(`{
 <h2>Built In Types</h2>
 <p>Script includes support for most TypeScript utility types and intrinsics.</p>
 <pre><code class="language-typescript">// ------------------------------------------------------------------
-// Utility Types 
+// Utility Types
 // ------------------------------------------------------------------
 const T0  = Type.Script(`Partial&lt;{ x: number }&gt;`)
 const T1  = Type.Script(`Required&lt;{ x: number }&gt;`)
@@ -227,7 +227,7 @@ const T7  = Type.Script(&#39;Extract&lt;1 | 2 | 3, 1 | 2&gt;&#39;)
 const T8  = Type.Script(&#39;ConstructorParameters&lt;new (x: number) =&gt; {}&gt;&#39;)
 const T9  = Type.Script(&#39;Parameters&lt;(x: number) =&gt; number&gt;&#39;)
 const T10 = Type.Script(&#39;ReturnType&lt;(x: number) =&gt; number&gt;&#39;)
-const T11 = Type.Script(&#39;InstanceType&lt;(x: number) =&gt; number&gt;&#39;)
+const T11 = Type.Script(&#39;InstanceType&lt;new (x: number) =&gt; {}&gt;&#39;)
 
 // ------------------------------------------------------------------
 // Intrinsic String Manipulation
@@ -245,7 +245,7 @@ const T16 = Type.Script(&#39;Evaluate&lt;{ x: number } &amp; { y: number }&gt;&#
 <h2>Type Modules</h2>
 <p>The Script function also accepts <code>type</code> and <code>interface</code> declarations. The return value will be an object containing all embedded declarations.</p>
 <pre><code class="language-typescript">const { Expression, ConstDeclaration, BinaryExpression, ConstExpression } = Type.Script(`
-  type Expression = 
+  type Expression =
     | ConstDeclaration
     | BinaryExpression
     | ConstExpression
@@ -277,6 +277,6 @@ const T16 = Type.Script(&#39;Evaluate&lt;{ x: number } &amp; { y: number }&gt;&#
 <h3>Embedded Function with Generic Type Parameter</h3>
 <p>Script does not support embedded function types with generic type parameters.</p>
 <pre><code class="language-typescript">type Foo = { x: &lt;T&gt;(value: T) =&gt; string }
-//              ^ 
+//              ^
 //              Embedded generic function not supported
 </code></pre>

@@ -27,6 +27,8 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { JSONSchemaTestFile, JSONSchemaTestGroup, JSONSchemaTestSuite } from './types.ts'
+import * as Fs from 'node:fs'
+import * as Path from 'node:path'
 
 export type ProcessCallback = (draft: string, schema: Record<string, unknown> | boolean, value: unknown) => boolean | null
 
@@ -39,20 +41,18 @@ interface JSONTestSource {
   keyword: string
   groups: JSONSchemaTestGroup[]
 }
-
 // ------------------------------------------------------------------
 // CollectJsonPaths: Load all test files from disk into memory
 // ------------------------------------------------------------------
 function collectJsonPaths(directory: string): string[] {
   const results: string[] = []
-  for (const entry of Deno.readDirSync(directory)) {
-    const full = `${directory}/${entry.name}`
-    if (entry.isDirectory) results.push(...collectJsonPaths(full))
-    else if (entry.isFile && entry.name.endsWith('.json')) results.push(full)
+  for (const entry of Fs.readdirSync(directory, { withFileTypes: true })) {
+    const full = Path.join(directory, entry.name)
+    if (entry.isDirectory()) results.push(...collectJsonPaths(full))
+    else if (entry.isFile() && entry.name.endsWith('.json')) results.push(full)
   }
   return results
 }
-
 function resolveDraftAndKeyword(sourcePath: string, rootDirectory: string): { draft: string; keyword: string } | null {
   const root = rootDirectory.replace(/\\/g, '/').replace(/\/$/, '')
   const normalized = sourcePath.replace(/\\/g, '/')
@@ -64,19 +64,17 @@ function resolveDraftAndKeyword(sourcePath: string, rootDirectory: string): { dr
   const keyword = relative.slice(slashIndex + 1).replace(/\.json$/, '')
   return { draft, keyword }
 }
-
 function collectJSONTests(directory: string): JSONTestSource[] {
   const results: JSONTestSource[] = []
   for (const sourcePath of collectJsonPaths(directory)) {
     const resolved = resolveDraftAndKeyword(sourcePath, directory)
     if (resolved === null) continue
     const { draft, keyword } = resolved
-    const groups = JSON.parse(Deno.readTextFileSync(sourcePath)) as JSONSchemaTestGroup[]
+    const groups = JSON.parse(Fs.readFileSync(sourcePath, 'utf8')) as JSONSchemaTestGroup[]
     results.push({ sourcePath, draft, keyword, groups })
   }
   return results
 }
-
 // ------------------------------------------------------------------
 // RunTest
 // ------------------------------------------------------------------
@@ -87,7 +85,6 @@ function runTest(callback: ProcessCallback, draft: string, schema: Record<string
     return null
   }
 }
-
 function createAccumulator(input: JSONSchemaTestGroup[]): JSONSchemaTestGroup[] {
   return input.map((group) => ({ ...group, tests: [] }))
 }
@@ -95,7 +92,6 @@ function createAccumulator(input: JSONSchemaTestGroup[]): JSONSchemaTestGroup[] 
 function resolveFailingPath(relativePath: string): string {
   return relativePath.replace(/\\/g, '/').split('/').map((s, i, a) => i === a.length - 1 ? '_' + s : s).join('/')
 }
-
 // ------------------------------------------------------------------
 // AssertCounts
 // ------------------------------------------------------------------
@@ -109,7 +105,6 @@ function assertCounts(sources: JSONTestSource[], suite: JSONSchemaTestSuite): vo
     throw new Error(`Test count mismatch: loaded ${sourceTotal} tests from disk but segmented ${segmentedTotal}`)
   }
 }
-
 // ------------------------------------------------------------------
 // Process: Run all tests and split into passing/failing files
 // ------------------------------------------------------------------

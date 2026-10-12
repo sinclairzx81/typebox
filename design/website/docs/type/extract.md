@@ -4,7 +4,7 @@ The Extract function will extract types from Left that extend Right.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const L = Type.Union([

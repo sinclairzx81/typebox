@@ -4,7 +4,7 @@ JSON Schema is JSON like any other, and can be validated the same way. TypeBox i
 
 > ⚠️ TypeBox only includes meta schemas for published JSON Schema versions it tests against. Auxiliary schemas, such as OpenAPI or OpenRPC, can be passed to TypeBox but must be sourced separately.
 
-### Meta Schema Definitions
+## Meta Schema Definitions
 
 TypeBox provides inline definitions for the following JSON Schema draft meta schemas, also available at these URLs:
 
@@ -15,7 +15,7 @@ TypeBox provides inline definitions for the following JSON Schema draft meta sch
 - [Draft 4](http://json-schema.org/draft-04/schema#)
 - [Draft 3](http://json-schema.org/draft-03/schema#)
 
-### Usage
+## Usage
 
 The example below parses a schema as Draft 2020-12, then validates a value against it. The meta schema is selected by its `$schema` identifier.
 

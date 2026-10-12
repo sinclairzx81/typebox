@@ -173,11 +173,7 @@ Test('Should validate infinite pattern 6', () => {
   Fail(T, 'X')
 })
 Test('Should validate enum (implicit)', () => {
-  enum E {
-    A,
-    B,
-    C
-  }
+  const E = { 0: 'A', 1: 'B', 2: 'C', A: 0, B: 1, C: 2 } as const
   const T = Type.TemplateLiteral([Type.Literal('hello'), Type.Enum(E)])
   Ok(T, 'hello0')
   Ok(T, 'hello1')
@@ -185,11 +181,7 @@ Test('Should validate enum (implicit)', () => {
   Fail(T, 'hello3')
 })
 Test('Should validate enum (explicit)', () => {
-  enum E {
-    A,
-    B = 'B',
-    C = 'C'
-  }
+  const E = { 0: 'A', A: 0, B: 'B', C: 'C' } as const
   const T = Type.TemplateLiteral([Type.Literal('hello'), Type.Enum(E)])
   Ok(T, 'hello0')
   Ok(T, 'helloB')

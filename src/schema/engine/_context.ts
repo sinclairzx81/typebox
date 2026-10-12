@@ -60,7 +60,10 @@ export function HasUnevaluated(context: Record<PropertyKey, unknown>, schema: un
 // BuildContext
 // ------------------------------------------------------------------
 export class BuildContext {
-  constructor(private readonly hasUnevaluated: boolean) { }
+  private readonly hasUnevaluated: boolean
+  constructor(hasUnevaluated: boolean) {
+    this.hasUnevaluated = hasUnevaluated
+  }
   public UseUnevaluated(): boolean {
     return this.hasUnevaluated
   }

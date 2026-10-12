@@ -6,7 +6,7 @@ Creates a named Identifier.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const T = Type.Identifier('A')                      // const T = {

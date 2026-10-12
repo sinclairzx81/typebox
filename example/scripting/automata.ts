@@ -65,7 +65,7 @@ const Program = Type.Script(`
 // ------------------------------------------------------------------
 // Debug
 // ------------------------------------------------------------------
-export function Debug(rule: number = 30, steps: number = 40): void {
+export function Run(rule: number = 30, steps: number = 40): void {
   const half = steps
   const zeros = Array(half).fill(0).join(', ')
   let State: Type.TSchema = Type.Script(`[${zeros}, 1, ${zeros}]`)
@@ -334,5 +334,5 @@ const Rules = [
   Type.Script(`[1, 1, 1, 1, 1, 1, 0, 0]`), // Rule 252
   Type.Script(`[1, 1, 1, 1, 1, 1, 0, 1]`), // Rule 253
   Type.Script(`[1, 1, 1, 1, 1, 1, 1, 0]`), // Rule 254
-  Type.Script(`[1, 1, 1, 1, 1, 1, 1, 1]`)  // Rule 255
-];
+  Type.Script(`[1, 1, 1, 1, 1, 1, 1, 1]`) // Rule 255
+]

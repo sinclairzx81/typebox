@@ -1,9 +1,8 @@
 <h1>TypeBox</h1>
 <p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
 <h2>Overview</h2>
-<p>TypeBox is a runtime type system that creates in-memory JSON Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript and validated at runtime using standard JSON Schema.</p>
+<p>TypeBox is a runtime type system that creates in-memory JSON Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript and runtime checked using standard JSON Schema validation.</p>
 <p>This library is designed to allow JSON Schema to compose similar to how types compose within TypeScript&#39;s type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.</p>
-<h2>Features</h2>
 <h2>Type</h2>
 <p>The Type namespace creates JSON Schema.</p>
 <pre><code class="language-typescript">import Type from &#39;typebox&#39;
@@ -34,7 +33,7 @@ const T = Type.Script(`{
   z: number
 }`)
 
-type T = Static&lt;typeof T&gt;                           // type T = {
+type T = Type.Static&lt;typeof T&gt;                      // type T = {
                                                     //   x: number,
                                                     //   y: number,
                                                     //   z: number
@@ -50,11 +49,12 @@ type S = Type.Static&lt;typeof S&gt;                      // type S = {
                                                     //   z: number | null
                                                     // }
 </code></pre>
-<h2>Compile</h2>
-<p>The Compile module compiles high-performance validators.</p>
-<pre><code class="language-typescript">import { Compile } from &#39;typebox/compile&#39;
+<h2>Schema</h2>
+<p>The Schema module compiles schematics into high-performance validators.</p>
+<pre><code class="language-typescript">import Type from &#39;typebox&#39;
+import Schema from &#39;typebox/schema&#39;
 
-const C = Compile(Type.Script(`{
+const C = Schema.Compile(Type.Script(`{
   x: number
   y: number
   z: number

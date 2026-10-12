@@ -1,18 +1,18 @@
 # Value.Repair
 
-The Repair function will repair a value to match the provided type. If the value already matches, no action is taken. This function will try to retain as much information as possible from the original value. 
+The Repair function will repair a value to match the provided type. If the value already matches, no action is taken. This function will try to retain as much information as possible from the original value.
 
 ## Example
 
 Example usage is shown below.
 
 ```typescript
-const T = Type.Object({ 
-  x: Type.Number(), 
-  y: Type.Number() 
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number()
 }, { additionalProperties: false })                 // Tip: Use additionalProperties: false if you want
                                                     // Repair to remove excess properties. By default,
-                                                    // the Repair function retain excess properties to 
+                                                    // the Repair function retain excess properties to
                                                     // avoid data loss.
 
 // ...

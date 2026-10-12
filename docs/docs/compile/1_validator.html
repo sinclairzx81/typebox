@@ -1,7 +1,7 @@
 <h1>Compile.Validator</h1>
 <p>Validators provide optimized implementations of the functions available in the Value submodule.</p>
 <h2>Example</h2>
-<p>The following compiles a Validator and calls Check. </p>
+<p>The following compiles a Validator and calls Check.</p>
 <pre><code class="language-typescript">import { Compile, Validator } from &#39;typebox/compile&#39;
 
 const T = Compile(Type.Object({                     // const T: Validator&lt;{}, TObject&lt;{
@@ -20,7 +20,7 @@ const R = T.Check({ x: 1, y: 2, z: 3 })             // const R: boolean = true
 <pre><code class="language-typescript">const R = C.Check(value)                            // const R: boolean
 </code></pre>
 <h2>Errors</h2>
-<p>Returns a errors for the value or empty if no error.</p>
+<p>Returns the errors for the value, or an empty array if there are none.</p>
 <pre><code class="language-typescript">const R = C.Errors(value)                          // const R: ValidationError[]
 </code></pre>
 <h2>Clean</h2>
@@ -51,7 +51,7 @@ const R = T.Check({ x: 1, y: 2, z: 3 })             // const R: boolean = true
 <p>Encodes a value, running any Encode callbacks if available.</p>
 <pre><code class="language-typescript">const R = C.Encode(value)                       // const R: ...
 </code></pre>
-<h2>IsEvaluated</h2>
+<h2>IsAccelerated</h2>
 <p>Returns true if the Validator is using evaluated optimizations.</p>
 <pre><code class="language-typescript">const R = C.IsAccelerated()                      // const R: boolean
 </code></pre>

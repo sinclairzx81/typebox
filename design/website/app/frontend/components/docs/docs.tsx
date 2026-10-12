@@ -102,18 +102,23 @@ export const Docs: React.FC<DocsProperties> = (props: DocsProperties) => {
   // ----------------------------------------------------------------
   React.useEffect(() => {
     if (!currentPage) return
+    const controller = new AbortController()
     const loadContent = async () => {
       try {
         const baseUrl = new URL(props.src, window.location.href)
         const pageUrl = new URL(currentPage, baseUrl)
-        const resp = await fetch(pageUrl.toString())
+        const resp = await fetch(pageUrl.toString(), { signal: controller.signal })
+        if (!resp.ok) throw new Error(`HTTP ${resp.status} loading ${pageUrl}`)
         const html = await resp.text()
         setContent(html)
       } catch (err) {
-        setContent(`<p>Error loading ${currentPage}</p>`)
+        if (controller.signal.aborted) return
+        console.error(`Failed to load documentation page ${currentPage}:`, err)
+        setContent('<p>Unable to load this documentation page.</p>')
       }
     }
     loadContent()
+    return () => controller.abort()
   }, [currentPage, props.src])
   if (!manifest) return null
   const sections = TOP_LEVEL_ORDER.filter((key) => key in manifest)

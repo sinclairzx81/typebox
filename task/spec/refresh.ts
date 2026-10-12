@@ -28,10 +28,11 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Task } from 'tasksmith'
 import * as Schema from 'typebox/schema'
 import * as Process from './process.ts'
 import * as Report from './report.ts'
+import * as Path from 'node:path'
+import * as Task from '../task.ts'
 import type { JSONSchemaTestSuite } from './types.ts'
 
 // ------------------------------------------------------------------
@@ -43,27 +44,27 @@ const CLONE_DIRECTORY = 'spec-clone-directory'
 // Clone
 // ------------------------------------------------------------------
 async function clone() {
-  await Task.folder(CLONE_DIRECTORY).delete()
-  await Task.folder(CLONE_DIRECTORY).create()
-  await Task.shell(`cd ${CLONE_DIRECTORY} && git clone git@github.com:json-schema-org/JSON-Schema-Test-Suite.git`)
+  await Task.remove(CLONE_DIRECTORY)
+  await Task.createDir(CLONE_DIRECTORY)
+  await Task.shell(`git clone https://github.com/json-schema-org/JSON-Schema-Test-Suite.git "${Path.join(CLONE_DIRECTORY, 'JSON-Schema-Test-Suite')}"`)
 }
 // ------------------------------------------------------------------
 // Remote
 // ------------------------------------------------------------------
-function collect_remote(current: string, relativePrefix: string, result: Record<string, Schema.XSchema>): void {
-  for (const entry of Deno.readDirSync(`${current}/${relativePrefix}`)) {
+async function collect_remote(current: string, relativePrefix: string, result: Record<string, Schema.XSchema>): Promise<void> {
+  for (const entry of await Task.readDirectory(Path.join(current, relativePrefix))) {
     const relative = relativePrefix ? `${relativePrefix}/${entry.name}` : entry.name
     if (entry.isDirectory) {
-      collect_remote(current, relative, result)
+      await collect_remote(current, relative, result)
     } else if (entry.isFile && entry.name.endsWith('.json')) {
-      result[`http://localhost:1234/${relative}`] = JSON.parse(Deno.readTextFileSync(`${current}/${relative}`))
+      result[`http://localhost:1234/${relative}`] = JSON.parse(await Task.read(Path.join(current, relative)))
     }
   }
 }
-function remotes(): Record<string, Schema.XSchema> {
+async function remotes(): Promise<Record<string, Schema.XSchema>> {
   const directory = `${CLONE_DIRECTORY}/JSON-Schema-Test-Suite/remotes`
   const result: Record<string, Schema.XSchema> = {}
-  collect_remote(directory, '', result)
+  await collect_remote(directory, '', result)
   return result
 }
 // ------------------------------------------------------------------
@@ -102,16 +103,16 @@ function report(suite: JSONSchemaTestSuite): void {
 // Write
 // ------------------------------------------------------------------
 async function write(directory: string, remotes: Record<string, Schema.XSchema>, suite: JSONSchemaTestSuite): Promise<void> {
-  await Task.folder(directory).delete()
-  await Task.file(`${directory}/remote.json`).write(JSON.stringify(remotes, null, 2))
+  await Task.remove(directory)
+  await Task.write(Path.join(directory, 'remote.json'), JSON.stringify(remotes, null, 2))
   for(const file of suite.files) {
-    const path = `${directory}/${file.path}`
+    const path = Path.join(directory, file.path)
     const content = JSON.stringify(file.groups, null, 2)
-    await Task.file(path).write(content)
+    await Task.write(path, content)
   }
 }
 async function cleanup(): Promise<void> {
-  await Task.folder(CLONE_DIRECTORY).delete()
+  await Task.remove(CLONE_DIRECTORY)
 }
 // ------------------------------------------------------------------
 // Refresh
@@ -119,14 +120,9 @@ async function cleanup(): Promise<void> {
 /** Refresh the test suite with the latest cases */
 export async function refresh(directory: string): Promise<void> {
   await clone()
-  const context = { ...Schema.Meta, ...remotes() }
+  const context = { ...Schema.Meta, ...await remotes() }
   const suite = process(context)
   await report(suite)
   await write(directory, context, suite)
   await cleanup()
 }
-
-
-
-
-

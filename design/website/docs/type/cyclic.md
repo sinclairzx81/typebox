@@ -1,6 +1,6 @@
 # Type.Cyclic
 
-Creates a Cyclic type. 
+Creates a Cyclic type.
 
 ## Example
 
@@ -12,13 +12,13 @@ const T = Type.Cyclic({                             // const T = {
     x: Type.Array(Type.Ref('A')),                   //     A: {
   }),                                               //       type: 'object',
 }, 'A')                                             //       required: ['x'],
-                                                    //       properties: { 
-                                                    //         x: { 
-                                                    //           type: 'array', 
-                                                    //           items: { 
-                                                    //             $ref: 'A' 
-                                                    //           } 
-                                                    //         } 
+                                                    //       properties: {
+                                                    //         x: {
+                                                    //           type: 'array',
+                                                    //           items: {
+                                                    //             $ref: 'A'
+                                                    //           }
+                                                    //         }
                                                     //       },
                                                     //       '$id': 'A'
                                                     //     }

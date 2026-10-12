@@ -1,6 +1,6 @@
 # Format.IsHostname
 
-Returns true if the string is a [RFC 1123](https://www.rfc-editor.org/rfc/rfc1123.html) hostname
+Returns true if the string is a hostname conforming to [RFC 1123](https://www.rfc-editor.org/rfc/rfc1123.html), with internationalized domain names supported by [RFC 5891](https://datatracker.ietf.org/doc/html/rfc5891) and [RFC 5892](https://datatracker.ietf.org/doc/html/rfc5892).
 
 ## Function
 

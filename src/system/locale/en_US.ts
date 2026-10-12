@@ -64,7 +64,8 @@ export function en_US(error: TValidationError): string {
     case 'unevaluatedProperties': return 'must not have unevaluated properties'
     case 'uniqueItems': return `must not have duplicate items`
     case '~refine': return error.params.message
-    // deno-coverage-ignore - unreachable
+    // deno-coverage-ignore-start - unreachable
     default: return 'an unknown validation error occurred'
+    // deno-coverage-ignore-stop
   }
 }

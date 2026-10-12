@@ -1,6 +1,6 @@
 # Schema.Compile
 
-The Compile(...) function to compile JSON Schema into a high performance Validator. 
+The Compile(...) function to compile JSON Schema into a high performance Validator.
 
 ## Example
 
@@ -10,7 +10,7 @@ import Schema from 'typebox/schema'
 // ------------------------------------------------------------------
 // Schema + Compile
 // ------------------------------------------------------------------
-const C = Schema.Compile({ 
+const C = Schema.Compile({
   type: 'object',
   required: ['x', 'y', 'z'],
   properties: {
@@ -23,11 +23,7 @@ const C = Schema.Compile({
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-const R = C.Check({ x: 1, y: 2, z: 3 })             // const R: value is {
-                                                    //   x: number,
-                                                    //   y: number,
-                                                    //   z: number
-                                                    // } = ...
+const R = C.Check({ x: 1, y: 2, z: 3 })             // const R: boolean = true
 
 // ------------------------------------------------------------------
 // Parse
@@ -41,7 +37,7 @@ const S = C.Parse({ x: 1, y: 2, z: 3 })             // const S: {
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------
-const E = C.Errors(T, { x: null })                  // const E = [
+const E = C.Errors({ x: null })                     // const E = [
                                                     //   false,
                                                     //   [
                                                     //     {

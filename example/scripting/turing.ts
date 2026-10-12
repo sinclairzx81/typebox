@@ -238,18 +238,18 @@ type DecrementMap = [
 ]` as never) as never as Type.TProperties
 
 // --------------------------------------------------------------------------
-// MemoryUsage
-// --------------------------------------------------------------------------
-export function MemoryUsage() {
-  const toMB = (bytes: number) => (bytes / 1024 / 1024).toFixed(2) + ' MB'
-  return Object.fromEntries(Object.entries(process.memoryUsage()).map(([k, v]) => [k, toMB(v)]))
-}
-// --------------------------------------------------------------------------
 // Compile
 // --------------------------------------------------------------------------
 function Compile(input: string): Type.TTuple<Type.TLiteral[]> {
   const literals = input.replace(/[^\+\-\[\]<>.,]/g, '').split('').map((value) => Type.Literal(value))
   return Type.Tuple(literals)
+}
+// --------------------------------------------------------------------------
+// MemoryUsage
+// --------------------------------------------------------------------------
+function MemoryUsage() {
+  const toMB = (bytes: number) => (bytes / 1024 / 1024).toFixed(2) + ' MB'
+  return Object.fromEntries(Object.entries(process.memoryUsage()).map(([k, v]) => [k, toMB(v)]))
 }
 // --------------------------------------------------------------------------
 // Run
@@ -267,7 +267,6 @@ export function Run(): void {
   const output = program.properties.output.properties.items.items.map((item: any) => String.fromCharCode(item.const)).join('')
   console.log({ output })
 }
-
 // --------------------------------------------------------------------------
 // Debug
 // --------------------------------------------------------------------------

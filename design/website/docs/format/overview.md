@@ -14,3 +14,4 @@ The Format module is available via a submodule import.
 import Format from 'typebox/format'
 
 const A = Format.IsEmail('user@domain.com')     // true
+```

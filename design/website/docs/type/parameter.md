@@ -17,7 +17,7 @@ const T = Type.Parameter('A',                       // const T = {
                                                     // }
 
 type T = Static<typeof T>                           // type T = unknown
-``` 
+```
 
 ## Guard
 

@@ -29,18 +29,27 @@ THE SOFTWARE.
 
 import './index.css'
 import ReactDom from 'react-dom/client'
+import * as ReactRouter from 'react-router-dom'
 import { FontLoader } from './loader/font.tsx'
 import { Frontend } from './frontend/frontend.tsx'
 import { Backend } from './backend/backend.tsx'
 
-export function App() {
+function AppContent() {
+  const location = ReactRouter.useLocation()
   return (
     <div className='app'>
       <FontLoader fontSrc='./resources/font/conthrax.ttf' fontName='conthrax'>
-        <Backend />
+        <Backend active={location.pathname === '/'} />
         <Frontend />
       </FontLoader>
     </div>
+  )
+}
+export function App() {
+  return (
+    <ReactRouter.HashRouter>
+      <AppContent />
+    </ReactRouter.HashRouter>
   )
 }
 const container = document.getElementById('container')!

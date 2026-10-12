@@ -32,6 +32,7 @@ const IdnEmail =
 /**
  * Returns true if the value is an IdnEmail
  * @specification https://datatracker.ietf.org/doc/html/rfc4952
+ * @specification https://datatracker.ietf.org/doc/html/rfc6531
  */
 export function IsIdnEmail(value: string): boolean {
   return IdnEmail.test(value.normalize('NFC'))

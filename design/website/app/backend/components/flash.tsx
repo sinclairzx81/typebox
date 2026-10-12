@@ -28,14 +28,14 @@ THE SOFTWARE.
 
 
 import * as React from 'react'
-import * as Fibre from 'react-three/fiber'
+import * as Fibre from '@react-three/fiber'
 import * as Three from 'three'
+import { themeProgress, themeSettings, type ThemeMode } from '../../mode.ts'
 
-export interface FlashLightProperties {
-  color?: string
+interface FlashLightProperties {
+  mode: ThemeMode
   minInterval?: number
   maxInterval?: number
-  peakIntensity?: number
   mapSize?: number
 }
 
@@ -91,23 +91,30 @@ function sampleFlicker(f: Flicker, now: number): number {
 }
 
 export function Flash({
-  color = '#ccd8ff',
+  mode,
   minInterval = 2,
   maxInterval = 8,
-  peakIntensity = 120,
   mapSize = 256,
 }: FlashLightProperties) {
   const lightRef = React.useRef<Three.DirectionalLight>(null)
-  const nextStrikeRef = React.useRef(performance.now() / 1000 + randomBetween(minInterval, maxInterval))
+  const elapsedRef = React.useRef(0)
+  const nextStrikeRef = React.useRef(randomBetween(minInterval, maxInterval))
   const flickersRef = React.useRef<Flicker[]>([])
 
-  Fibre.useFrame(() => {
+  Fibre.useFrame((_, delta) => {
     if (!lightRef.current) return
 
-    const now = performance.now() / 1000
+    const now = elapsedRef.current += delta
+    const progress = themeProgress.value
+    const flash = themeSettings[mode].flash
+    const visibility = mode === 'dark' ? 1 - progress : progress
+    const peakIntensity = flash.enabled ? flash.intensity * visibility : 0
+
+    lightRef.current.castShadow = peakIntensity > 0
+    lightRef.current.color.set(flash.color)
 
     // Schedule a new strike once all flickers have fully decayed
-    if (flickersRef.current.length === 0 && now >= nextStrikeRef.current) {
+    if (peakIntensity > 0 && flickersRef.current.length === 0 && now >= nextStrikeRef.current) {
       // Randomize X and Z position on every new strike, keeping Y height constant (64)
       lightRef.current.position.set(
         randomBetween(-100, 100),
@@ -135,7 +142,6 @@ export function Flash({
   return (
     <directionalLight
       ref={lightRef}
-      color={color}
       intensity={0}
       position={[0, 64, 32]}
       castShadow

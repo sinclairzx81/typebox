@@ -8,7 +8,7 @@ TypeBox types are JSON Schema fragments that compose into more complex types. Th
 
 ### Example
 
-The following creates a User type and infers with Static.
+The following creates a `User` type and infers its TypeScript type with `Static`.
 
 ```typescript
 import Type from 'typebox'
@@ -16,16 +16,16 @@ import Type from 'typebox'
 const User = Type.Object({                       // const User = {
   id: Type.String(),                             //   type: 'object',
   name: Type.String(),                           //   required: [
-  email: Type.String({ format: 'email' })        //     'id', 
-})                                               //     'name', 
+  email: Type.String({ format: 'email' })        //     'id',
+})                                               //     'name',
                                                  //     'email'
                                                  //   ],
                                                  //   properties: {
                                                  //     id: { type: 'string' },
                                                  //     name: { type: 'string' },
-                                                 //     email: { 
-                                                 //       type: 'string', 
-                                                 //       format: 'email' 
+                                                 //     email: {
+                                                 //       type: 'string',
+                                                 //       format: 'email'
                                                  //     }
                                                  //   }
                                                  // }

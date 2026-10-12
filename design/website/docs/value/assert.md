@@ -1,6 +1,6 @@
 # Value.Assert
 
-The Assert function throws AssertError if the value does not match the type.
+The Assert function throws an AssertError if the value does not match the type.
 
 ## Example
 

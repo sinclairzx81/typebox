@@ -4,7 +4,7 @@ Extracts the ReturnType from a Function.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const T = Type.Function([Type.String()], Type.Object({

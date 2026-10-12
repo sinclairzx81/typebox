@@ -13,10 +13,10 @@ import Type from 'typebox'
 // -------------------------------------------------------
 // Pipeline: Definition
 //
-// The following is a custom Parse pre-processing pipeline 
+// The following is a custom Parse pre-processing pipeline
 // that runs a sequence of operations on a value before
 // attempting to Parse. These operations can be run in
-// any order. User defined pre-processing logic can 
+// any order. User defined pre-processing logic can
 // also be added as pipeline stages if necessary.
 //
 // -------------------------------------------------------
@@ -30,15 +30,15 @@ const ParsePipeline = Pipeline([
 // -------------------------------------------------------
 // Pipeline: Inference
 //
-// Pipelines return type `unknown` as it is not possible to 
+// Pipelines return type `unknown` as it is not possible to
 // determine the last operation of the pipeline returned a
 // correct value. As we know the Parse operation will assert
 // the value, we can wrap calls to pipeline in a function
-// which provides type type inference for the pipeline.
+// which provides type inference for the pipeline.
 //
 // -------------------------------------------------------
-export function Parse<Type extends Type.TSchema>(type: Type, value: unknown): Type.Static<Type> {
-  return ParsePipeline(type, value) as never
+export function Parse<TSchema extends Type.TSchema>(schema: TSchema, value: unknown): Type.Static<TSchema> {
+  return ParsePipeline(schema, value) as never
 }
 
 // -------------------------------------------------------
@@ -48,4 +48,3 @@ const result = Parse(Type.String(), 1234)
 
 console.log(result)
 ```
-

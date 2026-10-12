@@ -5,10 +5,10 @@
 <pre><code class="language-typescript">const Timestamp = Type.Codec(Type.Integer())        // const Timestamp = {
   .Decode(value =&gt; new Date(value))                 //   type: &#39;integer&#39;,
   .Encode(value =&gt; value.getTime())                 //   &#39;~codec&#39;: {
-                                                    //      decode: value =&gt; new Date(), 
+                                                    //      decode: value =&gt; new Date(),
                                                     //      encode: value =&gt; value.getTime()
                                                     //   }
-                                                    // } 
+                                                    // }
 
 // Use Value.Decode() and Value.Encode() to run Decode and Encode callbacks.
 

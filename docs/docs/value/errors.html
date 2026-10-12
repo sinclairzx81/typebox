@@ -5,9 +5,9 @@
 </blockquote>
 <h2>Example</h2>
 <p>Example usage is shown below.</p>
-<pre><code class="language-typescript">const T = Type.Object({ 
-  x: Type.Number(), 
-  y: Type.Number() 
+<pre><code class="language-typescript">const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number()
 })
 
 const value = { x: &#39;not-a-number&#39; }
@@ -30,13 +30,13 @@ const errors = Value.Errors(T, value)               // const errors = [{
 //
 // Optional
 //
-// Use Value.Pointer.Get to access invalid values via `instancePath` 
+// Use Value.Pointer.Get to access invalid values via `instancePath`
 //
 // ------------------------------------------------------------------
 
 const errorsWithValue = errors.map(error =&gt; {
-  return { ...error, 
-    value: Value.Pointer.Get(value, error.instancePath) 
+  return { ...error,
+    value: Value.Pointer.Get(value, error.instancePath)
   }
 })
 </code></pre>

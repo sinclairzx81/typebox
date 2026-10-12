@@ -1,10 +1,10 @@
 # Type.Module
 
-The Module function is an advanced compositing system for referential types. It performs several normalization passes, including reference inlining, cyclic type resolution, and dead code elimination for unused definitions. Conceptually, Module mirrors how TypeScript handles type references within the context of a TypeScript module.
+The Module function is an advanced composition system for referential types. It performs several normalization passes, including reference inlining, cyclic type resolution, and dead code elimination for unused definitions. Conceptually, Module mirrors how TypeScript handles type references within the context of a TypeScript module.
 
-### Referencing
+## Referencing
 
-Module is written in support of order independent type referencing. Consider the following where type `A` references type `B` type before definition.
+Module is written in support of order-independent type referencing. Consider the following, where type `A` references type `B` before it is defined.
 
 ```typescript
 type A = 1 | B                                     // type A = 1 | 2
@@ -21,15 +21,15 @@ const B = Type.Literal(2)
 Module offers a scoping mechanism that facilitates order independent referencing.
 
 ```typescript
-const M = Type.Module({                     
+const M = Type.Module({
   A: Type.Union([
-    Type.Literal(1), 
+    Type.Literal(1),
     Type.Ref('B')                                  // Referenced before definition.
-  ]), 
+  ]),
   B: Type.Literal(2)
 })
 
-M.A                                                // const A: TUnion<TLiteral<1>, TLIteral<2>>
+M.A                                                // const A: TUnion<TLiteral<1>, TLiteral<2>>
 M.B                                                // const B: TLiteral<2>
 ```
 
@@ -41,7 +41,7 @@ The Module function will automatically inline referenced types. Inlining means t
 const { A, B, C } = Type.Module({                   // const A: TNumber
   A: Type.Number(),                                 //
   B: Type.String(),                                 // const B: TString
-  C: Type.Object({                                  // 
+  C: Type.Object({                                  //
     a: Type.Ref('A'),                               // const C: TObject<{
     b: Type.Ref('B')                                //   a: TNumber,  // <-- inlined
   })                                                //   b: TString   // <-- inlined
@@ -77,6 +77,6 @@ const { A } = Type.Module({                         // const A: TCyclic<{
     a: Type.Ref('A')                                //     a: TRef<'A'>
   }),                                               //   }>
   C: Type.String()                                  // }, 'A'>
-})                                                  
+})
 
 ```

@@ -1,10 +1,10 @@
 # Type.ReadonlyObject
 
-This type is an alias for TypeScript's `Readonly<T>` utility type. It will make all properties of a TObject readonly or marks an TArray or TTuple as immutable `readonly T[]`.
+This type is an alias for TypeScript's `Readonly<T>` utility type. It makes all properties of a `TObject` readonly, or marks a `TArray` or `TTuple` as immutable (`readonly T[]`).
 
 ## Example
 
-When applied to a Object, each property of the Object will be marked as `TReadonly<T>`
+When applied to a `TObject`, each property is marked as `TReadonly<T>`.
 
 ```typescript
 const T = Type.Object({                             // const T = TObject<{
@@ -31,7 +31,7 @@ const T = Type.Tuple([                              // const T = TImmutable<TTup
 const S = Type.ReadonlyObject(T)                    // const S: TImmutable<TTuple<[
                                                     //   TNumber,
                                                     //   TString
-                                                    // }>>
+                                                    // ]>>
 
 type S = Type.Static<typeof S>                      // type S = readonly [number, string]
 ```

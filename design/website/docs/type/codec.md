@@ -10,10 +10,10 @@ The following creates a Codec that transforms a timestamp into a Date object.
 const Timestamp = Type.Codec(Type.Integer())        // const Timestamp = {
   .Decode(value => new Date(value))                 //   type: 'integer',
   .Encode(value => value.getTime())                 //   '~codec': {
-                                                    //      decode: value => new Date(), 
+                                                    //      decode: value => new Date(),
                                                     //      encode: value => value.getTime()
                                                     //   }
-                                                    // } 
+                                                    // }
 
 // Use Value.Decode() and Value.Encode() to run Decode and Encode callbacks.
 

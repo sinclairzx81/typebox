@@ -14,6 +14,7 @@ const T = Type.Record(Type.String(), Type.Number()) // const T = {
                                                     //        type: 'number'
                                                     //     }
                                                     //   }
+                                                    // }
 
 type T = Static<typeof T>                           // type T = {
                                                     //   [x: string]: number

@@ -12,7 +12,7 @@ import { Code } from 'typebox/compile'
 const result = Code(Type.String())
 
 console.log(result.Code)                           // export function SetExternal(external) { ... }
-                                                   // 
+                                                   //
                                                    // export function Check(value) { ... }
 
 console.log(result.External)                       // { identifier: '...', variables: [...] }

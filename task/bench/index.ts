@@ -1,1 +1,1 @@
-export * as Bench from './run.ts'
+export * from './run.ts'

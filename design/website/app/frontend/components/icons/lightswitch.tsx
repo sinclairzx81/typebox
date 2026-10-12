@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import * as React from 'react'
+
 function LightIcon () {
   return <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" fill='none'>
     <circle cx="12" cy="12" r="5" />
@@ -45,10 +47,19 @@ function LightIcon () {
 // LightSwitch
 // ------------------------------------------------------------------
 export interface LightSwitchProperties {
-  onClick: React.MouseEventHandler<HTMLButtonElement>
+  isLightMode: boolean
+  onMouseDown: React.MouseEventHandler<HTMLButtonElement>
+  onKeyDown: React.KeyboardEventHandler<HTMLButtonElement>
 }
 export function LightSwitch(props: LightSwitchProperties) {
-  return <button onMouseDown={props.onClick} className='theme-toggle' aria-label='light dark mode'>
+  return <button
+    type='button'
+    onMouseDown={props.onMouseDown}
+    onKeyDown={props.onKeyDown}
+    className='theme-toggle'
+    aria-label={props.isLightMode ? 'Switch to dark mode' : 'Switch to light mode'}
+    aria-pressed={props.isLightMode}
+  >
     <LightIcon />
   </button>
 }

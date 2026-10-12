@@ -9,7 +9,7 @@ Example usage is shown below.
 ```typescript
 const R = Value.Parse(Type.String(), 'hello')      // const R: string = "hello"
 
-const E = Value.Parse(Type.String(), 12345)        // throws ParseError 
+const E = Value.Parse(Type.String(), 12345)        // throws ParseError
 ```
 
 ## Corrective Parse

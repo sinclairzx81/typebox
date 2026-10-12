@@ -4,7 +4,7 @@ The Interface function creates an Object with Heritage.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const A = Type.Interface([], {                      // const A: TObject<{

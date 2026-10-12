@@ -1,6 +1,6 @@
 # System.Memory
 
-The Memory namespace is used to allocate schematics with enumerable and non-enumerable properties as well as track of allocations made by the type system. 
+The Memory namespace is used to allocate schemas with enumerable and non-enumerable properties, as well as track allocations made by the type system.
 
 ## Metrics
 
@@ -8,12 +8,13 @@ The Memory namespace includes a Metrics property that tracks allocations created
 
 ```typescript
 import System from 'typebox/system'
+import Type from 'typebox'
 
 // --------------------------------------------------------
 // Computed Type
 // --------------------------------------------------------
 const Reverse = Type.Script(`<T, Result extends unknown[] = []> = (
-  T extends [infer L, ...infer R] 
+  T extends [infer L, ...infer R]
     ? Reverse<R, [L, ...Result]>
     : Result
 )`)
@@ -24,18 +25,18 @@ const Result = Type.Script({ Reverse }, `Reverse<[
                                               //   TLiteral<8>,
                                               //   TLiteral<7>,
                                               //   ...
-                                              //   TLiteral<0>
+                                              //   TLiteral<1>
                                               // ]>
 
 // --------------------------------------------------------
 // Inspect
 // --------------------------------------------------------
 
-console.log(System.Memory.Metrics)            // { 
-                                              //   assign: 42, 
-                                              //   create: 459, 
-                                              //   clone: 108, 
-                                              //   discard: 97, 
-                                              //   update: 11 
+console.log(System.Memory.Metrics)            // {
+                                              //   assign: 42,
+                                              //   create: 459,
+                                              //   clone: 108,
+                                              //   discard: 97,
+                                              //   update: 11
                                               // }
 ```

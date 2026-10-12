@@ -1,7 +1,7 @@
 <h1>Script.Parameters</h1>
-<p>Script can accept exterior types using a leading context argument.</p>
-<h3>Parameters</h3>
-<p>The following creates a nullable string by passing an exterior string into the Script.</p>
+<p>Script can accept external types using a leading context argument.</p>
+<h2>Parameters</h2>
+<p>The following creates a nullable string by passing an external string into the Script.</p>
 <pre><code class="language-typescript">const T = Type.String()
 
 const S = Type.Script({ T }, `T | null`)            // const S: TUnion&lt;[
@@ -9,7 +9,7 @@ const S = Type.Script({ T }, `T | null`)            // const S: TUnion&lt;[
                                                     //   TNull
                                                     // ]&gt;
 </code></pre>
-<p>Multiple exterior types can be passed via the context object.</p>
+<p>Multiple external types can be passed via the context object.</p>
 <pre><code class="language-typescript">const A = Type.Literal(1)
 const B = Type.Literal(2)
 const C = Type.Literal(3)
@@ -20,7 +20,7 @@ const T = Type.Script({ A, B, C }, `[A, B, C]`)     // const T: TTuple&lt;[
                                                     //   TLiteral&lt;3&gt;
                                                     // ]&gt;
 </code></pre>
-<h3>Module Dependencies</h3>
+<h2>Module Dependencies</h2>
 <p>Script modules can be passed as the context for other modules, allowing type definitions to be shared across dependent modules.</p>
 <pre><code class="language-typescript">import Type from &#39;typebox&#39;
 

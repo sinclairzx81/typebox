@@ -1,6 +1,6 @@
 # Format.IsDateTime
 
-Returns true if the string is a [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) datetime
+Returns true if the string is an [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) date-time.
 
 ## Function
 

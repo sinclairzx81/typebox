@@ -1,5 +1,5 @@
 <h1>Type.Cyclic</h1>
-<p>Creates a Cyclic type. </p>
+<p>Creates a Cyclic type.</p>
 <h2>Example</h2>
 <p>Example usage is shown below.</p>
 <pre><code class="language-typescript">const T = Type.Cyclic({                             // const T = {
@@ -7,13 +7,13 @@
     x: Type.Array(Type.Ref(&#39;A&#39;)),                   //     A: {
   }),                                               //       type: &#39;object&#39;,
 }, &#39;A&#39;)                                             //       required: [&#39;x&#39;],
-                                                    //       properties: { 
-                                                    //         x: { 
-                                                    //           type: &#39;array&#39;, 
-                                                    //           items: { 
-                                                    //             $ref: &#39;A&#39; 
-                                                    //           } 
-                                                    //         } 
+                                                    //       properties: {
+                                                    //         x: {
+                                                    //           type: &#39;array&#39;,
+                                                    //           items: {
+                                                    //             $ref: &#39;A&#39;
+                                                    //           }
+                                                    //         }
                                                     //       },
                                                     //       &#39;$id&#39;: &#39;A&#39;
                                                     //     }

@@ -1,7 +1,7 @@
 <h1>Type.Module</h1>
-<p>The Module function is an advanced compositing system for referential types. It performs several normalization passes, including reference inlining, cyclic type resolution, and dead code elimination for unused definitions. Conceptually, Module mirrors how TypeScript handles type references within the context of a TypeScript module.</p>
-<h3>Referencing</h3>
-<p>Module is written in support of order independent type referencing. Consider the following where type <code>A</code> references type <code>B</code> type before definition.</p>
+<p>The Module function is an advanced composition system for referential types. It performs several normalization passes, including reference inlining, cyclic type resolution, and dead code elimination for unused definitions. Conceptually, Module mirrors how TypeScript handles type references within the context of a TypeScript module.</p>
+<h2>Referencing</h2>
+<p>Module is written in support of order-independent type referencing. Consider the following, where type <code>A</code> references type <code>B</code> before it is defined.</p>
 <pre><code class="language-typescript">type A = 1 | B                                     // type A = 1 | 2
 type B = 2                                         // type B = 2
 </code></pre>
@@ -10,15 +10,15 @@ type B = 2                                         // type B = 2
 const B = Type.Literal(2)
 </code></pre>
 <p>Module offers a scoping mechanism that facilitates order independent referencing.</p>
-<pre><code class="language-typescript">const M = Type.Module({                     
+<pre><code class="language-typescript">const M = Type.Module({
   A: Type.Union([
-    Type.Literal(1), 
+    Type.Literal(1),
     Type.Ref(&#39;B&#39;)                                  // Referenced before definition.
-  ]), 
+  ]),
   B: Type.Literal(2)
 })
 
-M.A                                                // const A: TUnion&lt;TLiteral&lt;1&gt;, TLIteral&lt;2&gt;&gt;
+M.A                                                // const A: TUnion&lt;TLiteral&lt;1&gt;, TLiteral&lt;2&gt;&gt;
 M.B                                                // const B: TLiteral&lt;2&gt;
 </code></pre>
 <h2>Inline</h2>
@@ -26,7 +26,7 @@ M.B                                                // const B: TLiteral&lt;2&gt;
 <pre><code class="language-typescript">const { A, B, C } = Type.Module({                   // const A: TNumber
   A: Type.Number(),                                 //
   B: Type.String(),                                 // const B: TString
-  C: Type.Object({                                  // 
+  C: Type.Object({                                  //
     a: Type.Ref(&#39;A&#39;),                               // const C: TObject&lt;{
     b: Type.Ref(&#39;B&#39;)                                //   a: TNumber,  // &lt;-- inlined
   })                                                //   b: TString   // &lt;-- inlined
@@ -53,5 +53,5 @@ M.B                                                // const B: TLiteral&lt;2&gt;
     a: Type.Ref(&#39;A&#39;)                                //     a: TRef&lt;&#39;A&#39;&gt;
   }),                                               //   }&gt;
   C: Type.String()                                  // }, &#39;A&#39;&gt;
-})                                                  
+})
 </code></pre>

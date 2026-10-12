@@ -1,12 +1,12 @@
 # Type.Function
 
-Creates a Function type. 
+Creates a Function type.
 
 > ⚠️ This type is used for interface definitions and cannot be validated.
 
 ## Example
 
-Example usage is shown below. 
+Example usage is shown below.
 
 ```typescript
 const T = Type.Function([                           // const T = {
@@ -25,10 +25,10 @@ const T = Type.Function([                           // const T = {
                                                     // }
 
 type T = Static<typeof T>                           // type T = (
-                                                    //   args_0: string, 
+                                                    //   args_0: string,
                                                     //   args_1: boolean
-                                                    // ) => { 
-                                                    //   x: number 
+                                                    // ) => {
+                                                    //   x: number
                                                     // }
 ```
 

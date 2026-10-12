@@ -1,6 +1,6 @@
 # Format.IsRelativeJsonPointer
 
-Returns true if the string is a relative [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) Json Pointer
+Returns true if the string is a relative JSON Pointer as described in the [IETF draft](https://datatracker.ietf.org/doc/draft-handrews-relative-json-pointer/).
 
 ## Function
 

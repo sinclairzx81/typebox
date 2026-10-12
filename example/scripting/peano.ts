@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,11 +37,14 @@ THE SOFTWARE.
 import System from 'typebox/system'
 import Type from 'typebox'
 
-System.Settings.Set({ maxInstantiationCount: 2048 })
-
-console.time()
-console.log('Solving ... Please Wait')
-const { Result } = Type.Script(`
+// ------------------------------------------------------------------
+// Run
+// ------------------------------------------------------------------
+export function Run(): void {
+  System.Settings.Set({ maxInstantiationCount: 2048 })
+  console.time()
+  console.log('Solving ... Please Wait')
+  const { Result } = Type.Script(`
 
   // --------------------------------------------------------------
   // Peano encoding
@@ -279,6 +282,7 @@ const { Result } = Type.Script(`
 
   type Result = All extends true ? "QED" : never
 
-` as never) as never
-console.log({ Result })      // { type: "string", const: "QED" }
-console.timeEnd()
+  ` as never) as never
+  console.log({ Result })
+  console.timeEnd()
+}

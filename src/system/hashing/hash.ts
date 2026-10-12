@@ -69,22 +69,22 @@ function IsIEEE754(value: unknown): value is number {
 // ------------------------------------------------------------------
 // ByteMarker
 // ------------------------------------------------------------------
-enum ByteMarker {
-  Array = 0x0,
-  BigInt = 0x1,
-  Boolean = 0x2,
-  Date = 0x3,
-  Constructor = 0x4,
-  Function = 0x5,
-  Null = 0x6,
-  Number = 0x7,
-  Object = 0x8,
-  RegExp = 0x9,
-  String = 0xA,
-  Symbol = 0xB,
-  TypeArray = 0xC,
-  Undefined = 0xD,
-}
+const ByteMarker = {
+  Array: 0x0,
+  BigInt: 0x1,
+  Boolean: 0x2,
+  Date: 0x3,
+  Constructor: 0x4,
+  Function: 0x5,
+  Null: 0x6,
+  Number: 0x7,
+  Object: 0x8,
+  RegExp: 0x9,
+  String: 0xA,
+  Symbol: 0xB,
+  TypeArray: 0xC,
+  Undefined: 0xD,
+} as const
 // ------------------------------------------------------------------
 // State
 // ------------------------------------------------------------------
