@@ -358,3 +358,21 @@ Test('Should CodePointCount 1', () => {
 Test('Should GraphemeCount 1', () => {
   Assert.IsEqual(Guard.GraphemeCount('type-📦'), 6)
 })
+// ------------------------------------------------------------------
+// UnsafePropertyKey
+// ------------------------------------------------------------------
+Test('Should Guard Unsafe HasPropertyKey (Inherited)', () => {
+  const obj = {}
+  Assert.IsEqual(Guard.HasPropertyKey(obj, '__proto__'), false)
+  Assert.IsEqual(Guard.HasPropertyKey(obj, 'constructor'), false)
+  Assert.IsEqual(Guard.HasPropertyKey(obj, 'prototype'), false)
+})
+Test('Should Guard Unsafe HasPropertyKey (Own)', () => {
+  const obj: Record<PropertyKey, unknown> = {}
+  Object.defineProperty(obj, '__proto__', { value: 'own' })
+  Object.defineProperty(obj, 'constructor', { value: 'own' })
+  Object.defineProperty(obj, 'prototype', { value: 'own' })
+  Assert.IsEqual(Guard.HasPropertyKey(obj, '__proto__'), true)
+  Assert.IsEqual(Guard.HasPropertyKey(obj, 'constructor'), true)
+  Assert.IsEqual(Guard.HasPropertyKey(obj, 'prototype'), true)
+})

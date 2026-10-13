@@ -70,7 +70,7 @@ Task.run('publish', async (target: string = 'target/build') => {
 // ------------------------------------------------------------------
 // Format
 // ------------------------------------------------------------------
-Task.run('format', () => Format.format(['src', 'test/typebox', 'task/spec']))
+Task.run('format', () => Format.format(['src', 'test/typebox', 'task/spec', 'example/index.ts']))
 // ------------------------------------------------------------------
 // Lint
 // ------------------------------------------------------------------

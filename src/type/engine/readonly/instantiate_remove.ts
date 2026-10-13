@@ -35,7 +35,7 @@ import { type TReadonly } from '../../types/_readonly.ts'
 import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Operation
+// Operation (Recursive Unwrap)
 // ------------------------------------------------------------------
 type TRemoveReadonlyOperation<Type extends TSchema,
   Result extends TSchema = Type extends TReadonly<infer Type extends TSchema> 

@@ -31,7 +31,7 @@ THE SOFTWARE.
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
 import { Reducer } from './_reducer.ts'
-import { Unique } from './_unique.ts'
+import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
@@ -43,7 +43,7 @@ function BuildOneOfStandard(stack: Stack.XStack, context: BuildContext, schema: 
   return Reducer(stack, context, schema.oneOf, value, E.IsEqual(E.Member('results', 'length'), E.Constant(1)))
 }
 function BuildOneOfFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
-  const [result] = [Unique()]
+  const [result] = [Unique.CreateUnique()]
   const results = E.ArrayLiteral(schema.oneOf.map((schema) => BuildSchema(stack, context, schema, value)))
   const count = E.Counted(results, [result, '_'], E.IsEqual(result, E.Constant(true)))
   return E.IsEqual(count, E.Constant(1))

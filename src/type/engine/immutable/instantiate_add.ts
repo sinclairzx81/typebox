@@ -35,22 +35,13 @@ import { type TImmutable } from '../../types/_immutable.ts'
 import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Operation
-// ------------------------------------------------------------------
-type TAddImmutableOperation<Type extends TSchema,
-  Result extends TSchema = '~immutable' extends keyof Type ? Type : TImmutable<Type>
-> = Result
-function AddImmutableOperation<Type extends TSchema>(type: Type): TAddImmutableOperation<Type> {
-  return Memory.Update(type, { '~immutable': true }, { }) as never
-}
-// ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
 export type TAddImmutableAction<Type extends TSchema,
-  Result extends TSchema = TAddImmutableOperation<Type>
+  Result extends TSchema = '~immutable' extends keyof Type ? Type : TImmutable<Type>
 > = Result
 export function AddImmutableAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TAddImmutableAction<Type> {
-  const result = Memory.Update(AddImmutableOperation(type), {}, options)
+  const result = Memory.Update(type, { '~immutable': true }, options) as never
   return result as never
 }
 // ------------------------------------------------------------------

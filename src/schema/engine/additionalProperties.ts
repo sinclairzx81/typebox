@@ -30,9 +30,9 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
+import * as Unique from './_unique.ts'
 import * as Externals from './_externals.ts'
 import * as Pathing from './_pathing.ts'
-import { Unique } from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { UnicodeRegExp } from './_regexp.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
@@ -100,7 +100,7 @@ export function BuildAdditionalPropertiesFast(_context: BuildContext, schema: Sc
 // BuildAdditionalPropertiesStandard
 // ------------------------------------------------------------------
 export function BuildAdditionalPropertiesStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalProperties, value: string): string {
-  const [key, _index] = [Unique(), Unique()]
+  const [key, _index] = [Unique.CreateUnique(), Unique.CreateUnique()]
   const regexp = Externals.CreateVariable(UnicodeRegExp(GetPropertiesPattern(schema)))
   const isSchema = BuildSchemaPushStack(stack, context, schema.additionalProperties, `${value}[${key}]`)
   const isKey = E.Call(E.Member(regexp, 'test'), [key])

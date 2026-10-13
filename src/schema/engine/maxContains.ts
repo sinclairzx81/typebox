@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
-import { Unique } from './_unique.ts'
+import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema } from './schema.ts'
@@ -46,7 +46,7 @@ function IsValid(schema: Schema.XMaxContains): schema is Schema.XMaxContains & S
 // ------------------------------------------------------------------
 export function BuildMaxContains(stack: Stack.XStack, context: BuildContext, schema: Schema.XMaxContains, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
-  const [item] = [Unique()]
+  const [item] = [Unique.CreateUnique()]
   const count = E.Counted(value, [item, '_'], BuildSchema(stack, context, schema.contains, item))
   return E.IsLessEqualThan(count, E.Constant(schema.maxContains))
 }

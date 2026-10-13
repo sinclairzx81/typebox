@@ -30,16 +30,27 @@ export function NotHasPropertyKey<K extends PropertyKey>(value: unknown, key: K)
   throw new Error(`Expected value not to have property '${key as string}'`)
 }
 /** Property Exists and IS Enumerable */
-export function PropertyIsEnumerable<K extends PropertyKey>(value: unknown, key: K): asserts value is Record<K, unknown> {
+export function IsPropertyEnumerable<K extends PropertyKey>(value: unknown, key: K): asserts value is Record<K, unknown> {
   HasPropertyKey(value, key)
   if (globalThis.Object.getOwnPropertyDescriptor(value, key)?.enumerable ?? false) return
-  throw new Error(`Expected property to be enumerable '${key as string}'`)
+  throw new Error(`Expected property to be Enumerable '${key as string}'`)
 }
 /** Property Exists and IS-NOT Enumerable */
-export function NotPropertyIsEnumerable<K extends PropertyKey>(value: unknown, key: K): asserts value is Record<K, unknown> {
+export function IsPropertyNonEnumerable<K extends PropertyKey>(value: unknown, key: K): asserts value is Record<K, unknown> {
   HasPropertyKey(value, key)
   if (!(globalThis.Object.getOwnPropertyDescriptor(value, key)?.enumerable ?? false)) return
-  throw new Error(`Expected property to not be enumerable '${key as string}'`)
+  throw new Error(`Expected property to be NonEnumerable '${key as string}'`)
+}
+// ------------------------------------------------------------------
+// Frozen
+// ------------------------------------------------------------------
+/** Asserts a value IS-NOT frozen */
+export function IsNonFrozen(value: unknown): void {
+  assert.strictEqual(Object.isFrozen(value), false)
+}
+/** Asserts a value IS frozen. */
+export function IsFrozen(value: unknown): void {
+  assert.strictEqual(Object.isFrozen(value), true)
 }
 // ------------------------------------------------------------------
 // Logic
@@ -96,4 +107,3 @@ export function IsExtendsMutual<Left extends unknown, Right extends unknown>(_ex
 type TExtendsNever<Type extends unknown> = [Type] extends [never] ? true : false
 
 export function IsExtendsNever<Type extends unknown>(_expect: TExtendsNever<Type>) {}
- 

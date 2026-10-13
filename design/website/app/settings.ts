@@ -137,20 +137,20 @@ export const defaultSettings: ThemeConfiguration = {
       "intensity": 40
     },
     "camera": {
-      "speed": 2,
+      "speed": 1.78,
       "height": 23.17,
       "position": {
         "x": 24,
         "z": 32
       },
       "aim": {
-        "yaw": 82,
-        "pitch": -49,
+        "yaw": 76.46,
+        "pitch": -55.78,
         "distance": 81
       }
     },
     "cubeSetA": {
-      "range": 233.67,
+      "range": 241.21,
       "scale": 2.05,
       "height": 2.3,
       "color": "#58606a",
@@ -214,20 +214,20 @@ export const defaultSettings: ThemeConfiguration = {
       ]
     },
     "cubeSetB": {
-      "range": 211.57,
-      "scale": 1.88,
+      "range": 203.77,
+      "scale": 1.6,
       "color": "#e5f1ff",
       "distribution": "random",
-      "metalness": 0.15,
-      "shininess": 34.33,
-      "specularIntensity": 1,
-      "height": 8,
+      "metalness": 0.29,
+      "shininess": 25.28,
+      "specularIntensity": 0.69,
+      "height": 8.32,
       "elevation": 12.39
     },
     "ground": {
       "scale": 1,
-      "y": -15.32,
-      "color": "#c9cdd4"
+      "y": -12.53,
+      "color": "#000000"
     },
     "light": {
       "fogDensity": 0.01,

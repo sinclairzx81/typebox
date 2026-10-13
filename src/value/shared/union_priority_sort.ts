@@ -29,6 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import Guard from '../../guard/index.ts'
+import { Memory } from '../../system/memory/index.ts'
 import { type TSchema } from '../../type/index.ts'
 import { type TProperties } from '../../type/index.ts'
 import { Array as _Array_, ArrayOptions, IsArray } from '../../type/index.ts'
@@ -46,16 +47,14 @@ import { Priority } from '../../type/index.ts'
 //
 // Prioritized types lose `~modifier` properties and additional constraints
 // (e.g. additionalProperties) during the mapping phase and need to be
-// reassigned afterward. This is a fast mutable assignment to handle that,
-// but we should consider a more general solution. (review)
+// reassigned afterward. We previously used a mutable assignment on this
+// function, however `immutableTypes: true` caused errors. We use the 
+// Memory.Assign to ensure modifiers are retained and we preserve type
+// configurations (review)
 //
 // ------------------------------------------------------------------
 function Modifiers(type: TSchema, next: TSchema): TSchema {
-  for (const key of Guard.Keys(type as Record<PropertyKey, unknown>)) {
-    if (Guard.HasPropertyKey(next, key)) continue
-    next[key as keyof TSchema] = type[key as keyof TSchema]
-  }
-  return next
+   return Memory.Assign(type, next)
 }
 // ------------------------------------------------------------------
 // Properties

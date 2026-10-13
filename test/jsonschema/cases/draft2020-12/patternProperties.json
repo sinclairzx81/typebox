@@ -250,6 +250,13 @@
         "valid": true
       },
       {
+        "description": "Unicode letter property name matches but value type is incorrect",
+        "data": {
+          "π": "1"
+        },
+        "valid": false
+      },
+      {
         "description": "Non-letter property name does not match pattern",
         "data": {
           "123": 1
