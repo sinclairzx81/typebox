@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import { Guard } from '../../guard/index.ts'
 import * as Schema from '../types/index.ts'
+import { IsKind } from '../../type/types/schema.ts'
 
 // ------------------------------------------------------------------
 // DefaultUri
@@ -178,13 +179,14 @@ function NextLexicalSchema(stack: XStack, schema: Schema.XSchemaObject): Schema.
 // NextStack | HasStackKeywords (Optimization)
 //
 // HasStackKeywords narrows schema to an object and checks whether it
-// carries $id, $dynamicAnchor, a first-seen $recursiveAnchor, or a
-// resource-entry point. When none apply, NextStack skips the frame
+// carries $id, $dynamicAnchor, a first-seen $recursiveAnchor, Cyclic
+// definitions, or a resource-entry point. When none apply, NextStack skips the frame
 // rebuild and returns the parent stack as-is.
 // ------------------------------------------------------------------
 function HasStackKeywords(stack: XStack, schema: Schema.XSchema): schema is Schema.XSchemaObject {
   return Schema.IsSchemaObject(schema) && (
     Schema.IsId(schema) ||
+    (IsKind(schema, 'Cyclic') && Schema.IsDefs(schema) && Schema.IsRef(schema)) ||
     Schema.IsDynamicAnchor(schema) ||
     (Guard.IsUndefined(stack.recursiveAnchor) && Schema.IsRecursiveAnchorTrue(schema)) ||
     !Guard.IsUndefined(ResourceEntry(stack, schema))
@@ -194,6 +196,13 @@ export function NextStack(stack: XStack, schema: Schema.XSchema): XStack {
   return HasStackKeywords(stack, schema)
     ? {
       ...stack,
+      context: IsKind(schema, 'Cyclic') && Schema.IsDefs(schema) && Schema.IsRef(schema)
+        ? {
+          ...stack.context,
+          ...schema.$defs,
+          [schema.$ref]: Object.prototype.hasOwnProperty.call(schema.$defs, schema.$ref) ? schema.$defs[schema.$ref] : false
+        }
+        : stack.context,
       ids: NextIds(stack, schema),
       dynamicAnchors: NextDynamicAnchors(stack, schema),
       recursiveAnchor: NextRecursiveAnchor(stack, schema),
