@@ -2,6 +2,7 @@
   {
     "description": "propertyDependencies doesn't act on non-objects",
     "schema": {
+      "$schema": "https://json-schema.org/v1",
       "propertyDependencies": {
         "foo": {
           "bar": false
@@ -44,6 +45,7 @@
   {
     "description": "propertyDependencies doesn't act on non-string property values",
     "schema": {
+      "$schema": "https://json-schema.org/v1",
       "propertyDependencies": {
         "foo": {
           "bar": false
@@ -116,6 +118,7 @@
   {
     "description": "multiple options selects the right one",
     "schema": {
+      "$schema": "https://json-schema.org/v1",
       "propertyDependencies": {
         "foo": {
           "bar": {

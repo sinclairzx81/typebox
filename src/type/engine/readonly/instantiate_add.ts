@@ -35,22 +35,13 @@ import { type TReadonly } from '../../types/_readonly.ts'
 import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Operation
-// ------------------------------------------------------------------
-type TAddReadonlyOperation<Type extends TSchema,
-  Result extends TSchema = `~readonly` extends keyof Type ? Type : TReadonly<Type> 
-> = Result
-function AddReadonlyOperation<Type extends TSchema>(type: Type): TAddReadonlyOperation<Type> {
-  return Memory.Update(type, { '~readonly': true }, { }) as never
-}
-// ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
 export type TAddReadonlyAction<Type extends TSchema,
-  Result extends TSchema = TAddReadonlyOperation<Type>
+  Result extends TSchema = '~readonly' extends keyof Type ? Type : TReadonly<Type>
 > = Result
 export function AddReadonlyAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TAddReadonlyAction<Type> {
-  const result = Memory.Update(AddReadonlyOperation(type), {}, options)
+  const result = Memory.Update(type, { '~readonly': true }, options) as never
   return result as never
 }
 // ------------------------------------------------------------------

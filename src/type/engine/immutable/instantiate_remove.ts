@@ -35,7 +35,7 @@ import { type TImmutable } from '../../types/_immutable.ts'
 import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Operation
+// Operation (Recursive Unwrap)
 // ------------------------------------------------------------------
 type TRemoveImmutableOperation<Type extends TSchema,
   Result extends TSchema = Type extends TImmutable<infer Type extends TSchema> 

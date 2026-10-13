@@ -30,8 +30,8 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
+import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { Unique } from './_unique.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 
@@ -45,14 +45,14 @@ function IsValid(schema: Schema.XSchemaObject): schema is Schema.XItems & { item
 // Build
 // ------------------------------------------------------------------
 function BuildAdditionalItemsStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalItems & Schema.XItems & { items: Schema.XSchema[] }, value: string): string {
-  const [item, index] = [Unique(), Unique()]
+  const [item, index] = [Unique.CreateUnique(), Unique.CreateUnique()]
   const isSchema = BuildSchemaPushStack(stack, context, schema.additionalItems, item)
   const isLength = E.IsLessThan(index, E.Constant(schema.items.length))
   const addIndex = context.AddIndex(index)
   return E.Every(value, E.Constant(0), [item, index], E.Or(isLength, E.And(isSchema, addIndex)))
 }
 function BuildAdditionalItemsFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalItems & Schema.XItems & { items: Schema.XSchema[] }, value: string): string {
-  const [item, index] = [Unique(), Unique()]
+  const [item, index] = [Unique.CreateUnique(), Unique.CreateUnique()]
   const isSchema = BuildSchemaPushStack(stack, context, schema.additionalItems, item)
   const isLength = E.IsLessThan(index, E.Constant(schema.items.length))
   return E.Every(value, E.Constant(0), [item, index], E.Or(isLength, isSchema))

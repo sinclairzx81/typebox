@@ -36,6 +36,8 @@ import * as Manifest from './manifest.ts'
 // -------------------------------------------------------------------
 type BranchCoverage = {
   line: number
+  block: number
+  branch: number
   hits: number
 }
 type FunctionCoverage = {
@@ -87,9 +89,11 @@ function coverageFiles(lcov: string): FileCoverage[] {
       const [line, hits] = entry.slice(3).split(',')
       current.lines.set(Number(line), Number(hits))
     } else if (current !== undefined && entry.startsWith('BRDA:')) {
-      const [line, , , hits] = entry.slice(5).split(',')
+      const [line, block, branch, hits] = entry.slice(5).split(',')
       current.branches.push({
         line: Number(line),
+        block: Number(block),
+        branch: Number(branch),
         hits: hits === '-' ? 0 : Number(hits)
       })
     } else if (current !== undefined && entry.startsWith('FN:')) {
@@ -219,8 +223,9 @@ function coverageTree(files: FileCoverage[]): CoverageDirectory {
 // -------------------------------------------------------------------
 // Percentage
 // -------------------------------------------------------------------
-function percentage(covered: number, total: number): number {
-  return total === 0 ? 100 : covered / total * 100
+export function coveragePercentage(covered: number, total: number): number {
+  if (total === 0) return 100
+  return Math.floor(covered * 1000 / total) / 10
 }
 // -------------------------------------------------------------------
 // CoverageColor
@@ -307,7 +312,7 @@ function coverageMetrics(totals: CoverageTotals): string {
     { name: 'Branches', value: totals.branches },
     { name: 'Functions', value: totals.functions }
   ].map(({ name, value }) => {
-    const coverage = percentage(value.covered, value.total)
+    const coverage = coveragePercentage(value.covered, value.total)
     const color = name === 'Lines' ? ` style="color:${coverageColor(coverage)}"` : ''
     return `<div class="metric"><span class="metric-value"${color}>${coverage.toFixed(1)}%</span><span>${name} (${value.covered}/${value.total})</span></div>`
   }).join('')
@@ -322,10 +327,17 @@ function coverageCells(totals: CoverageTotals): string {
     { name: 'Functions', value: totals.functions }
   ]
   return values.map(({ name, value }) => {
-    const coverage = percentage(value.covered, value.total)
+    const coverage = coveragePercentage(value.covered, value.total)
     const color = name === 'Lines' ? ` style="color:${coverageColor(coverage)}"` : ''
     return `<td${color}>${coverageValue(coverage)}<span class="ratio">${value.covered}/${value.total}</span></td>`
   }).join('')
+}
+// -------------------------------------------------------------------
+// IsCoverageIncomplete
+// -------------------------------------------------------------------
+function isCoverageIncomplete(totals: CoverageTotals): boolean {
+  return totals.lines.covered < totals.lines.total
+    || totals.branches.covered < totals.branches.total
 }
 // -------------------------------------------------------------------
 // RelativeHref
@@ -423,6 +435,8 @@ thead { background: #171c25; color: #e0c285; font-size: .7rem; letter-spacing: .
 thead th:first-child, tbody th { text-align: left; }
 tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
 tbody tr:hover { background: #121822; }
+tbody tr.coverage-incomplete { background: #29191b; }
+tbody tr.coverage-incomplete:hover { background: #351f22; }
 tbody th { font-weight: 400; }
 .kind { display: inline-block; min-width: 3.25rem; margin-right: .75rem; color: #8f9bb0; font-size: .7rem; letter-spacing: .06em; }
 .ratio { display: block; margin-top: .15rem; color: #8f9bb0; font-size: .7rem; font-variant-numeric: tabular-nums; }
@@ -438,6 +452,7 @@ pre { margin: 0; padding: .75rem 0; color: #dfe2e6; font: 12px/1.55 ui-monospace
 .number { flex: 0 0 4.5rem; margin-right: 1rem; color: #666d76; text-align: right; user-select: none; }
 .line.missed .number { color: #e88990; }
 .line code { font: inherit; }
+.branch-missed { margin-left: 1rem; padding: 0 .3rem; border-radius: .2rem; background: #4a1e24; color: #ffd9dc; font-size: .75rem; }
 @media (max-width: 40rem) {
   body { padding: 1.25rem .75rem 2rem; }
   th, td { padding: .6rem .65rem; }
@@ -449,23 +464,28 @@ pre { margin: 0; padding: .75rem 0; color: #dfe2e6; font: 12px/1.55 ui-monospace
 // -------------------------------------------------------------------
 function renderSourceLines(file: FileCoverage): string {
   const source = file.source
-  const branchCounts = new Map<number, { covered: number; total: number }>()
+  const branchesByLine = new Map<number, BranchCoverage[]>()
   for (const branch of file.branches) {
     if (file.ignoredLines.has(branch.line)) continue
-    const current = branchCounts.get(branch.line) ?? { covered: 0, total: 0 }
-    current.total++
-    current.covered += Number(branch.hits > 0)
-    branchCounts.set(branch.line, current)
+    const current = branchesByLine.get(branch.line) ?? []
+    current.push(branch)
+    branchesByLine.set(branch.line, current)
   }
   const lines = source.map((text, offset) => {
     const lineNumber = offset + 1
     const hits = file.lines.get(lineNumber)
-    const branches = branchCounts.get(lineNumber)
+    const branches = branchesByLine.get(lineNumber)
+    const uncoveredBranches = branches?.filter((branch) => branch.hits === 0) ?? []
+    const coveredBranches = branches === undefined ? undefined : branches.length - uncoveredBranches.length
     const ignored = file.ignoredLines.has(lineNumber)
     const status = ignored ? 'ignored' : hits === undefined ? 'neutral' : hits > 0 ? 'covered' : 'missed'
-    const branchLabel = branches === undefined ? '' : `; branches ${branches.covered}/${branches.total}`
-    const lineLabel = ignored ? 'ignored by c8 directive' : `${hits ?? 'not counted'} hits${branchLabel}`
-    return `<span class="line ${status}" id="line-${lineNumber}" title="Line ${lineNumber}: ${lineLabel}"><span class="number">${lineNumber}</span><code>${escapeHtml(text) || ' '}</code></span>`
+    const branchLabel = branches === undefined ? '' : `; branches ${coveredBranches}/${branches.length}`
+    const uncoveredLabel = uncoveredBranches.length === 0 ? '' : `; not taken: ${uncoveredBranches.map(({ block, branch }) => `${block}.${branch}`).join(', ')}`
+    const lineLabel = ignored ? 'ignored by c8 directive' : `${hits ?? 'not counted'} hits${branchLabel}${uncoveredLabel}`
+    const branchMarkers = uncoveredBranches.map(({ block, branch }) =>
+      `<span class="branch-missed" title="LCOV block ${block}, branch ${branch} was not taken">branch ${block}.${branch} not taken</span>`
+    ).join('')
+    return `<span class="line ${status}" id="line-${lineNumber}" title="Line ${lineNumber}: ${lineLabel}"><span class="number">${lineNumber}</span><code>${escapeHtml(text) || ' '}</code>${branchMarkers}</span>`
   }).join('')
   return lines
 }
@@ -480,7 +500,8 @@ function renderDirectoryEntry(
   totals: CoverageTotals,
 ): string {
   const href = relativeHref(pagePath, targetPath)
-  return `<tr><th scope="row"><span class="kind">${kind}</span><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></th>${coverageCells(totals)}</tr>`
+  const status = isCoverageIncomplete(totals) ? ' class="coverage-incomplete"' : ''
+  return `<tr${status}><th scope="row"><span class="kind">${kind}</span><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></th>${coverageCells(totals)}</tr>`
 }
 // -------------------------------------------------------------------
 // RenderDirectoryPage
@@ -597,7 +618,7 @@ export async function report(roots: string[], options: { open?: boolean } = {}):
   await loadSources(files)
   const totals = coverageTotals(files)
   await writeHtmlReport(files, outputDirectory)
-  await Task.write(badgePath, coverageBadge(percentage(totals.lines.covered, totals.lines.total)))
+  await Task.write(badgePath, coverageBadge(coveragePercentage(totals.lines.covered, totals.lines.total)))
   await Task.remove(Path.resolve('design/coverage'))
   console.log(`HTML coverage site: ${Path.relative(process.cwd(), htmlPath)}`)
   console.log(`Coverage badge: ${Path.relative(process.cwd(), badgePath)}`)

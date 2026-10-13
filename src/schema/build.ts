@@ -159,6 +159,7 @@ export function Build(...args: unknown[]): BuildResult {
     2: (context, schema) => [context, schema],
     1: (schema) => [{}, schema]
   })
+  Engine.ResetUnique()
   Engine.ResetExternal()
   Engine.ResetFunctions()
   const stack = Engine.Stack(context, schema)

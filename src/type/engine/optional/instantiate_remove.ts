@@ -35,7 +35,7 @@ import { type TOptional } from '../../types/_optional.ts'
 import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Operation
+// Operation (Recursive Unwrap)
 // ------------------------------------------------------------------
 type TRemoveOptionalOperation<Type extends TSchema,
   Result extends TSchema = Type extends TOptional<infer Type extends TSchema> 

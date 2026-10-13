@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
+import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
@@ -76,14 +77,16 @@ function ErrorItemsSized(stack: Stack.XStack, context: ErrorContext, schemaPath:
 // ------------------------------------------------------------------
 function BuildItemsUnsizedStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XItemsUnsized, value: string): string {
   const offset = Schema.IsPrefixItems(schema) ? schema.prefixItems.length : 0
-  const isSchema = BuildSchemaPushStack(stack, context, schema.items, 'element')
+  const [item] = [Unique.CreateUnique()]
+  const isSchema = BuildSchemaPushStack(stack, context, schema.items, item)
   const addIndex = context.AddIndex('index')
-  return E.Every(value, E.Constant(offset), ['element', 'index'], E.And(isSchema, addIndex))
+  return E.Every(value, E.Constant(offset), [item, 'index'], E.And(isSchema, addIndex))
 }
 function BuildItemsUnsizedFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XItemsUnsized, value: string): string {
   const offset = Schema.IsPrefixItems(schema) ? schema.prefixItems.length : 0
-  const isSchema = BuildSchemaPushStack(stack, context, schema.items, 'element')
-  return E.Every(value, E.Constant(offset), ['element', 'index'], isSchema)
+  const [item] = [Unique.CreateUnique()]
+  const isSchema = BuildSchemaPushStack(stack, context, schema.items, item)
+  return E.Every(value, E.Constant(offset), [item, 'index'], isSchema)
 }
 function BuildItemsUnsized(stack: Stack.XStack, context: BuildContext, schema: Schema.XItemsUnsized, value: string): string {
   return context.UseUnevaluated()

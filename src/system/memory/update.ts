@@ -28,32 +28,45 @@ THE SOFTWARE.
 
 // deno-lint-ignore-file no-explicit-any
 
+import { Guard } from '../../guard/index.ts'
 import { Settings } from '../settings/index.ts'
 import { Metrics } from './metrics.ts'
-import { Freeze } from './freeze.ts'
-import { Clone } from './clone.ts'
+import { Finalize } from './finalize.ts'
+import { Keys } from './keys.ts'
 
 type ObjectLike = Record<PropertyKey, any>
 
-/**
- * Updates a value with new properties while preserving property enumerability. Use this function to modify
- * existing types without altering their configuration.
- */
-export function Update(current: ObjectLike, hidden: ObjectLike, enumerable: ObjectLike): ObjectLike {
-  Metrics.update += 1
-  const settings = Settings.Get()
-  const result = Clone(current)
-  // hidden
-  for (const key of Object.keys(hidden)) {
+// ------------------------------------------------------------------
+// WithCurrent
+// ------------------------------------------------------------------
+function WithCurrent(current: ObjectLike, hiddenKeys: PropertyKey[], enumerableKeys: PropertyKey[], result: ObjectLike): void {
+  for (const key of Keys(current)) {
+    if (Guard.IsUnsafePropertyKey(key) || hiddenKeys.includes(key) || enumerableKeys.includes(key)) continue // (ignore: prototype-pollution)
+    const descriptor = Object.getOwnPropertyDescriptor(current, key)! // safe-name!
+    Object.defineProperty(result, key, descriptor)
+  }
+}
+// ------------------------------------------------------------------
+// WithHidden
+// ------------------------------------------------------------------
+function WithHidden(hidden: ObjectLike, keys: PropertyKey[], result: ObjectLike): void {
+  const enumerableKind = Settings.Get().enumerableKind
+  for (const key of keys) {
+    if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
     Object.defineProperty(result, key, {
       configurable: true,
       writable: true,
-      enumerable: settings.enumerableKind,
+      enumerable: enumerableKind,
       value: hidden[key]
     })
   }
-  // enumerable
-  for (const key of Object.keys(enumerable)) {
+}
+// ------------------------------------------------------------------
+// WithEnumerable
+// ------------------------------------------------------------------
+function WithEnumerable(enumerable: ObjectLike, keys: PropertyKey[], result: ObjectLike): void {
+  for (const key of keys) {
+    if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
     Object.defineProperty(result, key, {
       configurable: true,
       enumerable: true,
@@ -61,5 +74,16 @@ export function Update(current: ObjectLike, hidden: ObjectLike, enumerable: Obje
       value: enumerable[key]
     })
   }
-  return Freeze(result)
+}
+// ------------------------------------------------------------------
+// Update
+// ------------------------------------------------------------------
+/** Updates an existing type with additional hidden and enumerable properties while preserving property configuration. */
+export function Update(current: ObjectLike, hidden: ObjectLike, enumerable: ObjectLike): ObjectLike {
+  Metrics.update += 1
+  const result = {}, hiddenKeys = Keys(hidden), enumerableKeys = Keys(enumerable)
+  WithCurrent(current, hiddenKeys, enumerableKeys, result)
+  WithHidden(hidden, hiddenKeys, result)
+  WithEnumerable(enumerable, enumerableKeys, result)
+  return Finalize(result)
 }

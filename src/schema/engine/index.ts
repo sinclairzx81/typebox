@@ -35,6 +35,7 @@ export * from './_functions.ts'
 export * from './_reducer.ts'
 export * from './_refine.ts'
 export * from './_stack.ts'
+export * from './_unique.ts'
 
 // ------------------------------------------------------------------
 // Schematics
