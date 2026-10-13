@@ -28,8 +28,7 @@ THE SOFTWARE.
 
 .backend {
   position: fixed;
-  width: 100%;
-  height: 100%;
+  inset: -8px;
   filter: blur(var(--backend-scene-blur, 4px));
 }
 

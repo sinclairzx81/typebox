@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
-import { Unique } from './_unique.ts'
+import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
@@ -39,7 +39,7 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // Build
 // ------------------------------------------------------------------
 export function BuildUnevaluatedProperties(stack: Stack.XStack, context: BuildContext, schema: Schema.XUnevaluatedProperties, value: string): string {
-  const [key, prop] = [Unique(), Unique()]
+  const [key, prop] = [Unique.CreateUnique(), Unique.CreateUnique()]
   const keys = E.Call(E.Member('context', 'GetKeys'), [])
   const hasKey = E.Call(E.Member('keys', 'has'), [key])
   const addKey = E.Call(E.Member('context', 'AddKey'), [key])

@@ -28,7 +28,11 @@ THE SOFTWARE.
 
 let index = 0
 
-/** Returns a Unique Variable Name */
-export function Unique(): string {
-  return `var_${index++}`
+/** Creates a unique variable name */
+export function CreateUnique(): string {
+  return `unique_${index++}`
+}
+/** Resets the unique variable name counter */
+export function ResetUnique(): void {
+  index = 0
 }

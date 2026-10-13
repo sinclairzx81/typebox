@@ -30,9 +30,9 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
+import * as Unique from './_unique.ts'
 import * as Externals from './_externals.ts'
 import * as Pathing from './_pathing.ts'
-import { Unique } from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { UnicodeRegExp } from './_regexp.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
@@ -72,35 +72,33 @@ function GetPropertiesPattern(schema: Schema.XSchemaObject): string {
   return G.IsEqual(patterns.length, 0) ? '(?!)' : `(${patterns.join('|')})`
 }
 // ------------------------------------------------------------------
-// BuildAdditionalPropertiesFast
+// BuildAdditionalPropertiesFast (AdditionalProperties False)
 //
-// Optimized logic for schemas with `additionalProperties: false`.
-//
-// This fast-path applies only when:
-// - `additionalProperties` is explicitly set to false,
-// - the schema uses only `properties` (no `patternProperties`),
-// - and all defined properties are required (i.e., no optional keys).
-//
-// This constraint is common when enforcing strict object shapes
-// with only known, fixed keys. When all these conditions are met,
-// we can generate a simplified and efficient runtime check.
+// - AdditionalProperties is explicitly set to false,
+// - The schema uses only Properties (no PatternProperties),
+// - Required contains exactly the keys in Properties.
 //
 // ------------------------------------------------------------------
-export function CanAdditionalPropertiesFast(_context: BuildContext, schema: Schema.XAdditionalProperties, _value: string): schema is Schema.XAdditionalProperties & Schema.XRequired {
+function HasExactRequiredProperties(schema: Schema.XRequired & Schema.XProperties): boolean {
+  const keys = G.Keys(schema.properties)
+  return G.IsEqual(keys.length, schema.required.length)
+    && G.Every(keys, 0, (key) => schema.required.includes(key))
+}
+function CanAdditionalPropertiesFast(_context: BuildContext, schema: Schema.XAdditionalProperties, _value: string): schema is Schema.XAdditionalProperties & Schema.XRequired {
   return Schema.IsRequired(schema)
     && Schema.IsProperties(schema)
     && !Schema.IsPatternProperties(schema)
     && G.IsEqual(schema.additionalProperties, false)
-    && G.IsEqual(G.Keys(schema.properties).length, schema.required.length)
+    && HasExactRequiredProperties(schema)
 }
-export function BuildAdditionalPropertiesFast(_context: BuildContext, schema: Schema.XAdditionalProperties & Schema.XRequired, value: string): string {
+function BuildAdditionalPropertiesFast(_context: BuildContext, schema: Schema.XAdditionalProperties & Schema.XRequired, value: string): string {
   return E.IsEqual(E.Member(E.Call(E.Member('Object', 'getOwnPropertyNames'), [value]), 'length'), E.Constant(schema.required.length))
 }
 // ------------------------------------------------------------------
 // BuildAdditionalPropertiesStandard
 // ------------------------------------------------------------------
-export function BuildAdditionalPropertiesStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalProperties, value: string): string {
-  const [key, _index] = [Unique(), Unique()]
+function BuildAdditionalPropertiesStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalProperties, value: string): string {
+  const [key, _index] = [Unique.CreateUnique(), Unique.CreateUnique()]
   const regexp = Externals.CreateVariable(UnicodeRegExp(GetPropertiesPattern(schema)))
   const isSchema = BuildSchemaPushStack(stack, context, schema.additionalProperties, `${value}[${key}]`)
   const isKey = E.Call(E.Member(regexp, 'test'), [key])

@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
-import { Unique } from './_unique.ts'
+import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema } from './schema.ts'
@@ -45,13 +45,13 @@ function IsValid(schema: Schema.XContains): boolean {
 // Build
 // ------------------------------------------------------------------
 function BuildContainsStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XContains, value: string): string {
-  const [item, index] = [Unique(), Unique()]
+  const [item, index] = [Unique.CreateUnique(), Unique.CreateUnique()]
   const isLength = E.Not(E.IsEqual(E.Member(value, 'length'), E.Constant(0)))
   const isSome = E.SomeAll(value, [item, index], E.And(BuildSchema(stack, context, schema.contains, item), context.AddIndex(index)))
   return E.And(isLength, isSome)
 }
 function BuildContainsFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XContains, value: string): string {
-  const [item] = [Unique()]
+  const [item] = [Unique.CreateUnique()]
   const isLength = E.Not(E.IsEqual(E.Member(value, 'length'), E.Constant(0)))
   const isSome = E.Some(value, [item, '_'], BuildSchema(stack, context, schema.contains, item))
   return E.And(isLength, isSome)

@@ -91,7 +91,7 @@ Test('Should Required 5', () => {
 // ------------------------------------------------------------------
 // Dependent
 // ------------------------------------------------------------------
-Test('Should Partial 6', () => {
+Test('Should Required 6', () => {
   const A = Type.Dependent(
     Type.Object({ x: Type.Optional(Type.Number()) }),
     Type.Dependent(

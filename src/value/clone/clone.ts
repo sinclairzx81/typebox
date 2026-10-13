@@ -28,15 +28,13 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Clone as SystemClone } from '../../system/memory/clone.ts'
+import { Deep } from '../../system/memory/deep.ts'
 
-// ------------------------------------------------------------------
-// Clone
-// ------------------------------------------------------------------
 /** 
- * Returns a Clone of the given value. This function is similar to structuredClone() 
- * but also supports deep cloning instances of Map, Set and TypeArray.
+ * Returns a deep Clone of the given value. This function is similar to `structuredClone()`,
+ * but also supports deep cloning `Map`, `Set`, and `TypeArray` instances. This function can also be used
+ * to clone TypeBox types while retaining their enumerable and non-enumerable properties.
  */
-export function Clone<Value extends unknown>(value: Value): Value {
-  return SystemClone(value) as Value
+export function Clone<Value extends unknown = unknown>(value: Value): Value {
+  return Deep(value)
 }
