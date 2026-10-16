@@ -3,6 +3,25 @@ import { Assert } from 'test'
 
 const Test = Assert.Context('System.Hashing')
 
+// ------------------------------------------------------------------
+// HashCode
+// ------------------------------------------------------------------
+Test('Should HashCode 1', () => {
+  Assert.IsEqual('bigint', typeof Hashing.HashCode(1))
+})
+Test('Should HashCode 2', () => {
+  const A = Hashing.HashCode('hello')
+  const B = Hashing.HashCode('world')
+  Assert.NotEqual(A, B)
+})
+Test('Should HashCode 3', () => {
+  const A = Hashing.HashCode('hello')
+  const B = Hashing.HashCode('hello')
+  Assert.IsEqual(A, B)
+})
+// ------------------------------------------------------------------
+// Hash
+// ------------------------------------------------------------------
 Test('Should hash number', () => {
   Assert.IsEqual('string', typeof Hashing.Hash(1))
   const A = Hashing.Hash(1)
@@ -323,4 +342,60 @@ Test('Should hash misc 4', () => {
   const A = Hashing.Hash(new Boolean(true))
   const B = Hashing.Hash(new Boolean(false))
   Assert.NotEqual(A, B)
+})
+// ----------------------------------------------------------------
+// Updated: Fast Hash Assert
+//
+// Ref: https://github.com/sinclairzx81/typebox/pull/1713
+// ----------------------------------------------------------------
+Test('Should Preserve 1', () => {
+  Assert.IsEqual(Hashing.Hash([1, 2, 3]), '2feaa6aae3cb8d3b')
+})
+Test('Should Preserve 2', () => {
+  Assert.IsEqual(Hashing.Hash(1n), '529a2ddc8ff5355f')
+})
+Test('Should Preserve 3', () => {
+  Assert.IsEqual(Hashing.Hash(true), '08395307b4f1348c')
+})
+Test('Should Preserve 4', () => {
+  Assert.IsEqual(Hashing.Hash(new Date(0)), '3cb728e86217f40f')
+})
+Test('Should Preserve 5', () => {
+  Assert.IsEqual(Hashing.Hash(null), 'af63bb4c8601b479')
+})
+Test('Should Preserve 6', () => {
+  Assert.IsEqual(Hashing.Hash(1), '2e887d21691806b7')
+})
+Test('Should Preserve 7', () => {
+  Assert.IsEqual(Hashing.Hash({ x: 1 }), '7acebb980eaf6d3f')
+})
+Test('Should Preserve 8', () => {
+  Assert.IsEqual(Hashing.Hash(/abc/), '0bc2b641b2cbf23a')
+})
+Test('Should Preserve 9', () => {
+  Assert.IsEqual(Hashing.Hash('hello'), '30a2d64c22476033')
+})
+Test('Should Preserve 10', () => {
+  Assert.IsEqual(Hashing.Hash('안녕'), '3278a4c33f1cb9d1')
+})
+Test('Should Preserve 11', () => {
+  Assert.IsEqual(Hashing.Hash(Symbol('example')), '894e05c505af23f9')
+})
+Test('Should Preserve 12', () => {
+  Assert.IsEqual(Hashing.Hash(new Uint8Array([0, 1, 2, 3])), '0ed52c83158758cf')
+})
+Test('Should Preserve 13', () => {
+  Assert.IsEqual(Hashing.Hash(undefined), 'af63c04c8601bcf8')
+})
+// ------------------------------------------------------------------
+// Updated: Fast HashCode Assert
+// ------------------------------------------------------------------
+Test('Should hash code number', () => {
+  Assert.IsEqual(Hashing.HashCode(1), 0x2e887d21691806b7n)
+})
+Test('Should hash code string', () => {
+  Assert.IsEqual(Hashing.HashCode('안녕'), 0x3278a4c33f1cb9d1n)
+})
+Test('Should hash code object', () => {
+  Assert.IsEqual(Hashing.HashCode({ x: 1 }), 0x7acebb980eaf6d3fn)
 })

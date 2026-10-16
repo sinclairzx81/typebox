@@ -29,18 +29,18 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Unreachable } from '../unreachable/index.ts'
-import { Guard, GlobalsGuard } from '../../guard/index.ts'
+import { GlobalsGuard, Guard } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // InstanceKeys
 //
-// Retrieves all enumerable and non-enumerable own property keys 
-// and inherited prototype keys (excluding symbols and the 'constructor') 
+// Retrieves all enumerable and non-enumerable own property keys
+// and inherited prototype keys (excluding symbols and the 'constructor')
 // from an object instance.
 //
-// This function is useful for differentiating between class instances 
-// based on their structural keys rather than relying on the 
-// constructor name. It provides a more reliable structural comparison 
+// This function is useful for differentiating between class instances
+// based on their structural keys rather than relying on the
+// constructor name. It provides a more reliable structural comparison
 // by capturing both own and prototype properties.
 //
 // ------------------------------------------------------------------
@@ -83,7 +83,7 @@ const ByteMarker = {
   String: 0xA,
   Symbol: 0xB,
   TypeArray: 0xC,
-  Undefined: 0xD,
+  Undefined: 0xD
 } as const
 // ------------------------------------------------------------------
 // State
@@ -95,19 +95,22 @@ const ByteMarker = {
 //
 // Offset: 14695981039346656037 (0xCBF29CE484222325)
 //
-let [A0, A1, A2, A3] = [0x2325, 0x8422, 0x9CE4, 0xCBF2]
+// ------------------------------------------------------------------
+let A0 = 0x2325, A1 = 0x8422, A2 = 0x9CE4, A3 = 0xCBF2
 const F64 = new Float64Array(1)
 const F64In = new DataView(F64.buffer)
 const F64Out = new Uint8Array(F64.buffer)
+
 // ------------------------------------------------------------------
 // Operation
-// ------------------------------------------------------------------
 //
 // Prime: 1099511628211 (0x100000001B3 = 2^40 + 0x1B3)
 //
-// The multiply is computed as (A * 0x1B3) + (A << 40) modulo 2^64, where
-// (A << 40) adds (A0 << 8) to the third limb and (A1 << 8) to the fourth.
+// The multiply is computed as (A * 0x1B3) + (A << 40) modulo 2^64, 
+// where (A << 40) adds (A0 << 8) to the third limb and (A1 << 8) 
+// to the fourth.
 //
+// ------------------------------------------------------------------
 function FNV1A64_OP(byte: number) {
   const L0 = A0 ^ byte
   const T0 = L0 * 0x1B3
@@ -205,7 +208,6 @@ function FromRegExp(value: RegExp): void {
 const encoder = new TextEncoder()
 function FromString(value: string): void {
   FNV1A64_OP(ByteMarker.String)
-  // ASCII characters are their own UTF-8 bytes, encode from the first non-ASCII character
   for (let i = 0; i < value.length; i++) {
     const code = value.charCodeAt(i)
     if (code > 0x7F) {
@@ -285,7 +287,7 @@ export function HashCode(value: unknown): bigint {
 }
 /** Generates a FNV1A-64 non cryptographic hash of the given value */
 export function Hash(value: unknown): string {
-  [A0, A1, A2, A3] = [0x2325, 0x8422, 0x9CE4, 0xCBF2]
+  A0 = 0x2325, A1 = 0x8422, A2 = 0x9CE4, A3 = 0xCBF2
   FromValue(value)
   return `${Hex(A3)}${Hex(A2)}${Hex(A1)}${Hex(A0)}`
 }
