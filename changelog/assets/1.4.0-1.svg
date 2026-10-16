@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="450" viewBox="0 0 960 450" role="img" aria-labelledby="title description">
+  <title id="title">Type.Optional schema copy behavior</title>
+  <desc id="description">The A and B TypeBox schemas are shown with separate nested property and number schemas in 1.3.37, and shared nested properties in 1.4.0.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="arrowhead" d="M 0 0 L 10 5 L 0 10 z"/>
+    </marker>
+    <style>
+      .text { font-family: ui-sans-serif, system-ui, sans-serif; fill: #252a30; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; fill: #252a30; }
+      .keyword { fill: #60666d; }
+      .variable { fill: #252a30; }
+      .builder { fill: #42484f; }
+      .property { fill: #727981; }
+      .background { fill: #ffffff; stroke: #cbd5e1; }
+      .code-panel { fill: #f3f4f6; }
+      .panel { fill: #f7f7f8; stroke: #c7cbd1; stroke-width: 1.5; }
+      .node { fill: #ffffff; stroke: #6b7280; stroke-width: 1.5; }
+      .shared { fill: #eceff1; stroke: #7c838a; stroke-width: 1.5; }
+      .edge { fill: none; stroke: #6b7280; stroke-width: 1.7; marker-end: url(#arrow); }
+      .arrowhead { fill: #6b7280; }
+      @media (prefers-color-scheme: dark) {
+        .text, .mono { fill: #e5e7eb; }
+        .keyword { fill: #b6bdc5; }
+        .variable { fill: #f3f4f6; }
+        .builder { fill: #d1d5db; }
+        .property { fill: #9ca3ab; }
+        .background { fill: #111315; stroke: #4b5056; }
+        .code-panel { fill: #202327; }
+        .panel { fill: #191c20; stroke: #3e4349; }
+        .node { fill: #23272b; stroke: #6c737a; }
+        .shared { fill: #30353a; stroke: #9299a1; }
+        .edge { stroke: #a7adb4; }
+        .arrowhead { fill: #a7adb4; }
+      }
+    </style>
+  </defs>
+
+  <rect class="background" x="1" y="1" width="958" height="448" rx="12"/>
+  <text class="text" x="28" y="30" font-size="15" font-weight="700">Example</text>
+  <rect class="code-panel" x="20" y="42" width="920" height="76" rx="7"/>
+  <text class="mono" xml:space="preserve" x="38" y="72" font-size="15"><tspan class="keyword">const</tspan><tspan> </tspan><tspan class="variable">A</tspan><tspan> = </tspan><tspan class="builder">Type.Object</tspan><tspan>({ </tspan><tspan class="property">x</tspan><tspan>: </tspan><tspan class="builder">Type.Number</tspan><tspan>() })</tspan></text>
+  <text class="mono" xml:space="preserve" x="38" y="99" font-size="15"><tspan class="keyword">const</tspan><tspan> </tspan><tspan class="variable">B</tspan><tspan> = </tspan><tspan class="builder">Type.Optional</tspan><tspan>(</tspan><tspan class="variable">A</tspan><tspan>)</tspan></text>
+
+  <rect class="panel" x="20" y="138" width="450" height="290" rx="9"/>
+  <text class="text" x="40" y="169" font-size="17" font-weight="700">1.3.37: deep copy</text>
+  <text class="text" x="40" y="191" font-size="12">A and B have separate nested schemas</text>
+
+  <rect class="node" x="42" y="215" width="74" height="38" rx="6"/>
+  <text class="mono" x="79" y="239" text-anchor="middle" font-size="14">A</text>
+  <path class="edge" d="M 116 234 H 151"/>
+  <rect class="node" x="154" y="204" width="142" height="60" rx="6"/>
+  <text class="text" x="225" y="229" text-anchor="middle" font-size="13" font-weight="600">A.properties</text>
+  <text class="mono" x="225" y="248" text-anchor="middle" font-size="11">x</text>
+  <path class="edge" d="M 296 234 H 328"/>
+  <rect class="node" x="331" y="215" width="119" height="38" rx="6"/>
+  <text class="mono" x="390" y="239" text-anchor="middle" font-size="12">Type.Number()</text>
+
+  <rect class="node" x="42" y="321" width="74" height="38" rx="6"/>
+  <text class="mono" x="79" y="345" text-anchor="middle" font-size="14">B</text>
+  <path class="edge" d="M 116 340 H 151"/>
+  <rect class="node" x="154" y="310" width="142" height="60" rx="6"/>
+  <text class="text" x="225" y="335" text-anchor="middle" font-size="13" font-weight="600">B.properties</text>
+  <text class="mono" x="225" y="354" text-anchor="middle" font-size="11">x</text>
+  <path class="edge" d="M 296 340 H 328"/>
+  <rect class="node" x="331" y="321" width="119" height="38" rx="6"/>
+  <text class="mono" x="390" y="345" text-anchor="middle" font-size="12">Type.Number()</text>
+  <text class="mono" x="40" y="402" font-size="12">A.properties === B.properties  // false</text>
+
+  <rect class="panel" x="490" y="138" width="450" height="290" rx="9"/>
+  <text class="text" x="510" y="169" font-size="17" font-weight="700">1.4.0: shallow copy</text>
+  <text class="text" x="510" y="191" font-size="12">A and B share their nested property schema</text>
+
+  <rect class="node" x="512" y="215" width="74" height="38" rx="6"/>
+  <text class="mono" x="549" y="239" text-anchor="middle" font-size="14">A</text>
+  <rect class="node" x="512" y="321" width="74" height="38" rx="6"/>
+  <text class="mono" x="549" y="345" text-anchor="middle" font-size="14">B</text>
+  <path class="edge" d="M 586 234 C 615 234 615 270 646 270"/>
+  <path class="edge" d="M 586 340 C 615 340 615 300 646 300"/>
+  <rect class="shared" x="650" y="253" width="150" height="64" rx="6"/>
+  <text class="text" x="725" y="278" text-anchor="middle" font-size="13" font-weight="600">shared properties</text>
+  <text class="mono" x="725" y="299" text-anchor="middle" font-size="11">x</text>
+  <path class="edge" d="M 800 285 H 821"/>
+  <rect class="node" x="824" y="266" width="104" height="38" rx="6"/>
+  <text class="mono" x="876" y="290" text-anchor="middle" font-size="11">Type.Number()</text>
+  <text class="mono" x="510" y="402" font-size="12">A.properties === B.properties  // true</text>
+</svg>

@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import System from 'typebox/system'
 import Type from 'typebox'
 
 // ------------------------------------------------------------------
@@ -74,6 +75,7 @@ export function Run(rule: number = 30, steps: number = 40): void {
     State = Type.Script({ ...Program, State, Rule: Rules[rule] }, 'Advance<State, Rule>')
     console.log(Render(State))
   }
+  console.log('Metrics', System.Memory.Metrics)
 }
 // ------------------------------------------------------------------
 // Rules

@@ -429,3 +429,69 @@ Test('Should Escape Property Keys 3', () => {
   const T = Type.Object({ foo: Type.String() }, { additionalProperties: false })
   Ok(T, { foo: 'abc' })
 })
+// ------------------------------------------------------------------
+// AdditionalProperties FastPath Mismatch
+//
+// Ref: https://github.com/sinclairzx81/typebox/issues/1710
+// ------------------------------------------------------------------
+Test('Should Additional Properties Fast Path 1', () => {
+  // Should reject required but undeclared y when additionalProperties is false.
+  // {
+  //   type: 'object',
+  //   required: ['y'],
+  //   properties: { x: { type: 'number' } },
+  //   additionalProperties: false
+  // }
+  const T = Type.Object({ x: Type.Number() }, { required: ['y'], additionalProperties: false })
+  Fail(T, { y: 1 })
+  Fail(T, { x: 1, y: 1 })
+  Fail(T, { y: undefined })
+})
+Test('Should Additional Properties Fast Path 2', () => {
+  // Should allow undeclared required properties by default.
+  // {
+  //   type: 'object',
+  //   required: ['y'],
+  //   properties: { x: { type: 'number' } }
+  // }
+  const T = Type.Object({ x: Type.Optional(Type.Number()) }, { required: ['y'] })
+  Ok(T, { y: 1 })
+  Ok(T, { x: 1, y: 1 })
+  Fail(T, { x: 1 })
+})
+Test('Should Additional Properties Fast Path 3', () => {
+  // Should validate the value of an undeclared required property.
+  // {
+  //   type: 'object',
+  //   required: ['y'],
+  //   properties: { x: { type: 'number' } },
+  //   additionalProperties: { type: 'number' }
+  // }
+  const T = Type.Object(
+    { x: Type.Optional(Type.Number()) },
+    { required: ['y'], additionalProperties: Type.Number() }
+  )
+  Ok(T, { y: 1 })
+  Ok(T, { x: 1, y: 1 })
+  Fail(T, { y: '1' })
+  Fail(T, { x: 1 })
+})
+Test('Should Additional Properties Fast Path 4', () => {
+  // Should allow y once it is declared while keeping it required and x optional.
+  // {
+  //   type: 'object',
+  //   required: ['y'],
+  //   properties: {
+  //     x: { type: 'number' },
+  //     y: { type: 'number' }
+  //   },
+  //   additionalProperties: false
+  // }
+  const T = Type.Object(
+    { x: Type.Optional(Type.Number()), y: Type.Number() },
+    { additionalProperties: false }
+  )
+  Ok(T, { y: 1 })
+  Ok(T, { x: 1, y: 1 })
+  Fail(T, { x: 1 })
+})

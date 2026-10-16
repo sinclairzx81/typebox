@@ -2,6 +2,7 @@
   {
     "description": "multiple options selects the right one",
     "schema": {
+      "$schema": "https://json-schema.org/v1",
       "propertyDependencies": {
         "foo": {
           "bar": {

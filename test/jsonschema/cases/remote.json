@@ -2259,7 +2259,7 @@
     }
   },
   "http://localhost:1234/draft7/ignore-dependentRequired.json": {
-    "$id": "http://localhost:1234/draft7/integer.json",
+    "$id": "http://localhost:1234/draft7/ignore-dependentRequired.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "dependentRequired": {
       "foo": [

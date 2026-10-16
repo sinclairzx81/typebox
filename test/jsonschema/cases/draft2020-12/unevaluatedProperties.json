@@ -1503,7 +1503,7 @@
     ]
   },
   {
-    "description": "dynamic evalation inside nested refs",
+    "description": "dynamic evaluation inside nested refs",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "$defs": {

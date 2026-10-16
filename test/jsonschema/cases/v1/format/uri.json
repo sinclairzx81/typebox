@@ -77,7 +77,7 @@
         "valid": true
       },
       {
-        "description": "a valid URL ",
+        "description": "a valid URL",
         "data": "ldap://[2001:db8::7]/c=GB?objectClass?one",
         "valid": true
       },

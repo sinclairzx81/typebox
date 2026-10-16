@@ -13,7 +13,7 @@ import * as Test from './task/test/index.ts'
 import * as Spec from './task/spec/index.ts'
 import * as Task from './task/task.ts'
 
-const Version = '1.3.37'
+const Version = '1.4.0'
 
 // ------------------------------------------------------------------
 // BuildTo
@@ -70,7 +70,7 @@ Task.run('publish', async (target: string = 'target/build') => {
 // ------------------------------------------------------------------
 // Format
 // ------------------------------------------------------------------
-Task.run('format', () => Format.format(['src', 'test/typebox', 'task/spec']))
+Task.run('format', () => Format.format(['src', 'test/typebox', 'task/spec', 'example/index.ts']))
 // ------------------------------------------------------------------
 // Lint
 // ------------------------------------------------------------------

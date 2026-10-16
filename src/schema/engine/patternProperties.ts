@@ -30,9 +30,9 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
+import * as Unique from './_unique.ts'
 import * as Externals from './_externals.ts'
 import * as Pathing from './_pathing.ts'
-import { Unique } from './_unique.ts'
 import { UnicodeRegExp } from './_regexp.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
@@ -43,7 +43,7 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 export function BuildPatternProperties(stack: Stack.XStack, context: BuildContext, schema: Schema.XPatternProperties, value: string): string {
   return E.ReduceAnd(G.Entries(schema.patternProperties).map(([pattern, schema]) => {
-    const [key, prop] = [Unique(), Unique()]
+    const [key, prop] = [Unique.CreateUnique(), Unique.CreateUnique()]
     const regexp = Externals.CreateVariable(UnicodeRegExp(pattern))
     const notKey = E.Not(E.Call(E.Member(regexp, 'test'), [key]))
     const isSchema = BuildSchemaPushStack(stack, context, schema, prop)

@@ -59,7 +59,7 @@ Variables
   --home-shadow-offset: 2px;
   --home-hero-tint-color: #a7afbe;
   --home-hero-tint-opacity: 0%;
-  --home-button-background: color-mix(in srgb, #0a0c0fdd calc(100% - var(--theme-progress)), #f8fafc);
+  --home-button-background: color-mix(in srgb, #0a0c0fdd calc(100% - var(--theme-progress)), #f8fafcdd);
   --home-button-color: color-mix(in srgb, #ffffff calc(100% - var(--theme-progress)), #1f2937);
   --home-cta-color: color-mix(in srgb, #91a4b8 calc(100% - var(--theme-progress)), #1f2937);
   --home-button-hover-background: color-mix(in srgb, #313741 calc(100% - var(--theme-progress)), #e2e8f0);

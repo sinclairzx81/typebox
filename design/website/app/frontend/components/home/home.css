@@ -455,7 +455,6 @@ THE SOFTWARE.
     min-height: 100%;
     padding: 1.5rem 1rem;
     box-sizing: border-box;
-    overflow: auto;
   }
   .home .home-card {
     width: 100%;
@@ -483,12 +482,16 @@ THE SOFTWARE.
     box-sizing: border-box;
   }
 }
-@media (min-width: 641px) and (max-height: 500px) {
+@media (max-height: 500px) {
   .home .home-card {
     --home-scale: 0.8;
   }
 }
-@media (min-width: 641px) and (max-height: 420px) {
+@media (max-height: 420px) {
+  .home {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
   .home .home-card {
     --home-scale: 0.7;
     --home-logo-scale: 0.75;
@@ -500,7 +503,7 @@ THE SOFTWARE.
     display: none;
   }
 }
-@media (min-width: 641px) and (max-height: 260px) {
+@media (max-height: 260px) {
   .home .home-card {
     --home-scale: 0.45;
     --home-logo-scale: 0.65;

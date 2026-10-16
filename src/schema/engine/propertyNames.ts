@@ -31,7 +31,7 @@ THE SOFTWARE.
 import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
 import * as Pathing from './_pathing.ts'
-import { Unique } from './_unique.ts'
+import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
@@ -40,7 +40,7 @@ import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 // Build
 // ------------------------------------------------------------------
 export function BuildPropertyNames(stack: Stack.XStack, context: BuildContext, schema: Schema.XPropertyNames, value: string): string {
-  const [key, _index] = [Unique(), Unique()]
+  const [key, _index] = [Unique.CreateUnique(), Unique.CreateUnique()]
   return E.Every(E.Keys(value), E.Constant(0), [key, _index], BuildSchema(stack, context, schema.propertyNames, key))
 }
 // ------------------------------------------------------------------

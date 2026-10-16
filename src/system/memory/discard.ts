@@ -28,22 +28,23 @@ THE SOFTWARE.
 
 // deno-lint-ignore-file no-explicit-any
 
-import { Guard } from '../../guard/index.ts'
 import { Metrics } from './metrics.ts'
-import { Freeze } from './freeze.ts'
-import { Clone } from './clone.ts'
+import { Finalize } from './finalize.ts'
+import { Keys } from './keys.ts'
 
 type ObjectLike = Record<PropertyKey, any>
 
-/** Discards multiple property keys from the given object value */
+// ------------------------------------------------------------------
+// Discard
+// ------------------------------------------------------------------
+/** Discards property keys from the given object. */
 export function Discard(value: ObjectLike, propertyKeys: PropertyKey[]): ObjectLike {
   Metrics.discard += 1
   const result: ObjectLike = {}
-  for (const key of Guard.Keys(value)) {
+  for (const key of Keys(value)) {
     if (propertyKeys.includes(key)) continue
-    const descriptor = Object.getOwnPropertyDescriptor(value, key)! // safe-name!
-    descriptor.value = Clone(descriptor.value)
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)!
     Object.defineProperty(result, key, descriptor)
   }
-  return Freeze(result)
+  return Finalize(result)
 }

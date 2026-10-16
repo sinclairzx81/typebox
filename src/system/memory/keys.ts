@@ -26,13 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file no-explicit-any
+import { Guard } from '../../guard/index.ts'
 
-import { Settings } from '../settings/index.ts'
-
-type ObjectLike = Record<PropertyKey, any>
-
-/** Conditionally freezes the value if `immutableTypes` is true, otherwise no action. */
-export function Freeze(value: ObjectLike): ObjectLike {
-  return Settings.Get().immutableTypes ? Object.freeze(value) : value
+// ------------------------------------------------------------------
+// Keys (alternatively, Reflect.ownKeys(...))
+// ------------------------------------------------------------------
+/** Returns the own string and symbol keys of the given object. */
+export function Keys(value: Record<PropertyKey, unknown>): PropertyKey[] {
+  return [...Guard.Keys(value), ...Guard.Symbols(value)]
 }

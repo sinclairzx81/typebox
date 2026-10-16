@@ -78,8 +78,9 @@ function Header({ isLightMode, onToggleTheme }: HeaderProperties) {
 // Body
 // ------------------------------------------------------------------
 function Body({ mode }: { mode: 'light' | 'dark' }) {
+  const isHome = ReactRouter.useLocation().pathname === '/'
   return (
-    <div className='body'>
+    <div className={`body${isHome ? ' body-home' : ''}`}>
       <ReactRouter.Routes>
         <ReactRouter.Route path='/' element={<Home mode={mode} />} />
         <ReactRouter.Route path='/docs' element={<Docs src='manifest.json' />} />

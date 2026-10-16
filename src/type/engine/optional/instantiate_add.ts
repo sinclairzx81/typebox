@@ -35,22 +35,13 @@ import { type TOptional } from '../../types/_optional.ts'
 import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Operation
-// ------------------------------------------------------------------
-type TAddOptionalOperation<Type extends TSchema,
-  Result extends TSchema = `~optional` extends keyof Type ? Type : TOptional<Type>
-> = Result
-function AddOptionalOperation<Type extends TSchema>(type: Type): TAddOptionalOperation<Type> {
-  return Memory.Update(type, { '~optional': true }, {}) as never
-}
-// ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
 export type TAddOptionalAction<Type extends TSchema,
-  Result extends TSchema = TAddOptionalOperation<Type>
+  Result extends TSchema = '~optional' extends keyof Type ? Type : TOptional<Type>
 > = Result
 export function AddOptionalAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TAddOptionalAction<Type> {
-  const result = Memory.Update(AddOptionalOperation(type), {}, options)
+  const result = Memory.Update(type, { '~optional': true }, options) as never
   return result as never
 }
 // ------------------------------------------------------------------
