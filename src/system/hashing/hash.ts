@@ -88,18 +88,36 @@ const ByteMarker = {
 // ------------------------------------------------------------------
 // State
 // ------------------------------------------------------------------
-let Accumulator = BigInt('14695981039346656037')
-const [Prime, Size] = [BigInt('1099511628211'), BigInt('18446744073709551616' /* 2 ^ 64 */)]
-const Bytes = Array.from({ length: 256 }).map((_, i) => BigInt(i))
+//
+// The 64-bit accumulator is held as four 16-bit limbs (A0 is the least
+// significant) so the FNV1A64 operation can be computed with number
+// arithmetic, avoiding a BigInt multiply and modulo for every byte.
+//
+// Offset: 14695981039346656037 (0xCBF29CE484222325)
+//
+let [A0, A1, A2, A3] = [0x2325, 0x8422, 0x9CE4, 0xCBF2]
 const F64 = new Float64Array(1)
 const F64In = new DataView(F64.buffer)
 const F64Out = new Uint8Array(F64.buffer)
 // ------------------------------------------------------------------
 // Operation
 // ------------------------------------------------------------------
+//
+// Prime: 1099511628211 (0x100000001B3 = 2^40 + 0x1B3)
+//
+// The multiply is computed as (A * 0x1B3) + (A << 40) modulo 2^64, where
+// (A << 40) adds (A0 << 8) to the third limb and (A1 << 8) to the fourth.
+//
 function FNV1A64_OP(byte: number) {
-  Accumulator = Accumulator ^ Bytes[byte]
-  Accumulator = (Accumulator * Prime) % Size
+  const L0 = A0 ^ byte
+  const T0 = L0 * 0x1B3
+  const T1 = A1 * 0x1B3 + (T0 >>> 16)
+  const T2 = A2 * 0x1B3 + (T1 >>> 16) + (L0 << 8)
+  const T3 = A3 * 0x1B3 + (T2 >>> 16) + (A1 << 8)
+  A0 = T0 & 0xFFFF
+  A1 = T1 & 0xFFFF
+  A2 = T2 & 0xFFFF
+  A3 = T3 & 0xFFFF
 }
 // ------------------------------------------------------------------
 // Array
@@ -187,8 +205,16 @@ function FromRegExp(value: RegExp): void {
 const encoder = new TextEncoder()
 function FromString(value: string): void {
   FNV1A64_OP(ByteMarker.String)
-  for (const byte of encoder.encode(value)) {
-    FNV1A64_OP(byte)
+  // ASCII characters are their own UTF-8 bytes, encode from the first non-ASCII character
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i)
+    if (code > 0x7F) {
+      for (const byte of encoder.encode(value.slice(i))) {
+        FNV1A64_OP(byte)
+      }
+      return
+    }
+    FNV1A64_OP(code)
   }
 }
 // ------------------------------------------------------------------
@@ -250,13 +276,16 @@ function FromValue(value: unknown): void {
 // ------------------------------------------------------------------
 // Hash
 // ------------------------------------------------------------------
+function Hex(limb: number): string {
+  return limb.toString(16).padStart(4, '0')
+}
 /** Generates a FNV1A-64 non cryptographic hash of the given value */
 export function HashCode(value: unknown): bigint {
-  Accumulator = BigInt('14695981039346656037')
-  FromValue(value)
-  return Accumulator
+  return BigInt(`0x${Hash(value)}`)
 }
 /** Generates a FNV1A-64 non cryptographic hash of the given value */
 export function Hash(value: unknown): string {
-  return HashCode(value).toString(16).padStart(16, '0')
+  [A0, A1, A2, A3] = [0x2325, 0x8422, 0x9CE4, 0xCBF2]
+  FromValue(value)
+  return `${Hex(A3)}${Hex(A2)}${Hex(A1)}${Hex(A0)}`
 }
