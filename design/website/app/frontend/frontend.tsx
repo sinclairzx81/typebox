@@ -39,7 +39,6 @@ import { LightSwitch } from './components/icons/lightswitch.tsx'
 
 
 const repositoryUrl = 'https://github.com/sinclairzx81/typebox'
-const initialLightMode = themeProgress.value === 1
 
 
 // ------------------------------------------------------------------
@@ -112,7 +111,7 @@ export function Frontend() {
   }
 
   return (
-    <div className={`frontend${initialLightMode ? ' frontend-light-startup' : ''}`}>
+    <div className='frontend'>
       <Header isLightMode={isLightMode} onToggleTheme={toggleTheme} />
       <Body mode={isLightMode ? 'light' : 'dark'} />
       <Footer />

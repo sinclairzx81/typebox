@@ -41,7 +41,7 @@ THE SOFTWARE.
 }
 
 .backend-scene-intro-ready {
-  animation: backend-scene-reveal 900ms ease-in-out forwards;
+  animation: backend-scene-reveal var(--scene-reveal-duration, 900ms) ease-in-out forwards;
 }
 
 @keyframes backend-scene-reveal {
@@ -50,11 +50,5 @@ THE SOFTWARE.
   }
   to {
     opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .backend-scene-intro {
-    animation-duration: 1ms;
   }
 }

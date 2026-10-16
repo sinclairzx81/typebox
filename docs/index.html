@@ -9,6 +9,15 @@
     <meta property="og:url" content="https://sinclairzx81.github.io/typebox">
     <meta property="og:type" content="https://sinclairzx81.github.io/typebox">
     <title>TypeBox</title>
+    <script>
+      const root = document.documentElement
+      const themeProgress = localStorage.getItem('theme') === 'light' ? '100%' : '0%'
+      root.style.setProperty('--theme-progress', themeProgress)
+      root.classList.add('theme-mode-startup')
+      root.addEventListener('animationend', (event) => {
+        if (event.target === root) root.classList.remove('theme-mode-startup')
+      })
+    </script>
     <link rel="icon" href="resources/image/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="./index.css">
     <script type="module" src="./index.js"></script>

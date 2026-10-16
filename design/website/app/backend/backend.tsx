@@ -85,7 +85,7 @@ export function Backend({ active }: { active: boolean }) {
       <div
         aria-hidden='true'
         className={`backend-scene-intro${sceneReady ? ' backend-scene-intro-ready' : ''}`}
-        style={{ backgroundColor: themeProgress.value === 1 ? '#ffffff' : '#000000' }}
+        style={{ backgroundColor: 'var(--theme-startup-background)' }}
       />
     </div>
   )

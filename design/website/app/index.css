@@ -33,6 +33,8 @@ Variables
 */
 :root {
   --theme-progress: 0%;
+  --theme-startup-background: color-mix(in srgb, #000000 calc(100% - var(--theme-progress)), #151b23);
+  --scene-reveal-duration: 900ms;
   --home-logo-shadow-strength: 33%;
   --home-logo-shadow-blur: 4px;
   --home-text-shadow-strength: 33%;
@@ -123,6 +125,28 @@ html, body {
   padding: 0;
   scrollbar-color: var(--app-scrollbar-thumb-color) var(--app-scrollbar-track-color);
   scrollbar-width: thin;
+}
+html.theme-mode-startup::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  background-color: var(--theme-startup-background);
+  pointer-events: none;
+  animation: theme-mode-startup-fade var(--scene-reveal-duration) ease-in-out forwards;
+}
+@keyframes theme-mode-startup-fade {
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --scene-reveal-duration: 1ms;
+  }
+  html.theme-mode-startup::before {
+    display: none;
+  }
 }
 /* ------------------------------------------------------------------
    Containers
