@@ -179,3 +179,40 @@ Test('Should Mapped 12', () => {
   Assert.IsTrue(Type.IsNumber(T.properties[0]))
   Assert.IsTrue(Type.IsString(T.properties[1]))
 })
+// ------------------------------------------------------------------
+// Retain Modifiers
+//
+// Ref: https://github.com/sinclairzx81/typebox/issues/1718
+// ------------------------------------------------------------------
+Test('Should Mapped 13', () => {
+  const A = Type.Intersect([
+    Type.Object({
+      x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() })))
+    }),
+    Type.Object({
+      x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() })))
+    })
+  ])
+  const K = Type.Identifier('K')
+  const B = Type.KeyOf(A)
+  const C = Type.Ref('K')
+  const D = Type.Index(A, Type.Ref('K'))
+  const T: Type.TObject<{
+    x: Type.TReadonly<
+      Type.TOptional<
+        Type.TObject<{
+          a: Type.TNumber
+          b: Type.TNumber
+        }>
+      >
+    >
+  }> = Type.Mapped(K, B, C, D)
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsReadonly(T.properties.x))
+  Assert.IsTrue(Type.IsOptional(T.properties.x))
+  Assert.IsTrue(Type.IsObject(T.properties.x))
+  Assert.IsTrue(Type.IsNumber(T.properties.x.properties.a))
+  Assert.IsTrue(Type.IsNumber(T.properties.x.properties.b))
+  Assert.IsEqual(T.properties.x.required, ['a', 'b'])
+  Assert.IsEqual(T.required, undefined)
+})
