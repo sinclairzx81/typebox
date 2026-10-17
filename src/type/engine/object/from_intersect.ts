@@ -34,7 +34,7 @@ import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TFromType, FromType } from './from_type.ts'
-import { type TEvaluateIntersect, EvaluateIntersect } from '../evaluate/evaluate.ts'
+import { type TEvaluatePropertyIntersect, EvaluatePropertyIntersect } from '../evaluate/property.ts'
 
 // ------------------------------------------------------------------
 // CollapseProperties
@@ -46,7 +46,7 @@ type TCollapseIntersectProperties<Left extends TProperties, Right extends TPrope
 
   LeftProperties extends TProperties = { [Key in LeftKeys]: Left[Key] },
   RightProperties extends TProperties = { [Key in RightKeys]: Right[Key] },
-  SharedProperties extends TProperties = { [Key in SharedKeys]: TEvaluateIntersect<[Left[Key], Right[Key]]> },
+  SharedProperties extends TProperties = { [Key in SharedKeys]: TEvaluatePropertyIntersect<Left[Key], Right[Key]> },
 
   Unique extends TProperties = Memory.TAssign<LeftProperties, RightProperties>,
   Shared extends TProperties = Memory.TAssign<Unique, SharedProperties>
@@ -59,7 +59,7 @@ function CollapseIntersectProperties<Left extends TProperties, Right extends TPr
 
   const leftProperties = leftKeys.reduce((result, key) => ({ ...result, [key]: left[key] }), {})
   const rightProperties = rightKeys.reduce((result, key) => ({ ...result, [key]: right[key] }), {})
-  const sharedProperties = sharedKeys.reduce((result, key) => ({ ...result, [key]: EvaluateIntersect([left[key], right[key]]) }), {})
+  const sharedProperties = sharedKeys.reduce((result, key) => ({ ...result, [key]: EvaluatePropertyIntersect(left[key], right[key]) }), {})
 
   const unique = Memory.Assign(leftProperties, rightProperties)
   const shared = Memory.Assign(unique, sharedProperties)

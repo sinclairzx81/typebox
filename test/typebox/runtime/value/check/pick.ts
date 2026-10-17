@@ -81,3 +81,118 @@ Test('Should support Pick of Never', () => {
   Fail(T, { x: 1, y: 1, z: 1 })
   Ok(T, {})
 })
+// ------------------------------------------------------------------
+// Retain Modifiers
+//
+// Ref: https://github.com/sinclairzx81/typebox/issues/1718
+// ------------------------------------------------------------------
+Test('Should retain optionality when picking an intersection property', () => {
+  const T = Type.Pick(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('x')
+  )
+  Ok(T, {})
+  Ok(T, { x: { a: 1, b: 1 } })
+  Fail(T, { x: { a: 1 } })
+  Fail(T, { x: { b: 1 } })
+})
+Test('Should pick no properties for an unknown intersection key', () => {
+  const T = Type.Pick(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('c'),
+    { additionalProperties: false }
+  )
+  Ok(T, {})
+  Fail(T, { x: { a: 1, b: 1 } })
+})
+Test('Should pick no properties from an intersection with never', () => {
+  const T = Type.Pick(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Never(),
+    { additionalProperties: false }
+  )
+  Ok(T, {})
+  Fail(T, { x: { a: 1, b: 1 } })
+})
+Test('Should retain optionality when picking a union property', () => {
+  const T = Type.Pick(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('x')
+  )
+  Ok(T, {})
+  Ok(T, { x: 1 })
+  Ok(T, { x: 'value' })
+  Fail(T, { x: true })
+})
+Test('Should pick no properties for an unknown union key', () => {
+  const T = Type.Pick(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('c'),
+    { additionalProperties: false }
+  )
+  Ok(T, {})
+  Fail(T, { x: 1 })
+})
+Test('Should pick no properties from a union with never', () => {
+  const T = Type.Pick(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Never(),
+    { additionalProperties: false }
+  )
+  Ok(T, {})
+  Fail(T, { x: 1 })
+})

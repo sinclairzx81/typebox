@@ -30,11 +30,14 @@ THE SOFTWARE.
 
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
+import { type TProperties } from '../../types/properties.ts'
+import { type TObject, IsObject } from '../../types/object.ts'
 import { type TAny, IsAny } from '../../types/any.ts'
 import { type TNever, Never, IsNever } from '../../types/never.ts'
+import { type TTuple, IsTuple } from '../../types/tuple.ts'
 import { type TUnknown, IsUnknown } from '../../types/unknown.ts'
 import { type TCompare, type TCompareResult, Compare, CompareResultLeftInside, CompareResultRightInside, CompareResultEqual } from './compare.ts'
-import { type TComposite, type TCanComposite, Composite, CanComposite } from './composite.ts'
+import { type TComposite, Composite } from './composite.ts'
 
 // ------------------------------------------------------------------
 // NarrowCompareRule
@@ -55,6 +58,17 @@ function NarrowCompareRule<Left extends TSchema, Right extends TSchema>(left: Le
     Guard.IsEqual(result, CompareResultEqual) ? right :
     Never()
   ) as never
+}
+// ------------------------------------------------------------------
+// CanComposite
+// ------------------------------------------------------------------
+type TCanComposite<Type extends TSchema> = (
+  Type extends TObject<infer _ extends TProperties> ? true :
+  Type extends TTuple<infer _ extends TSchema[]> ? true :
+  false
+)
+function CanComposite<Type extends TSchema>(type: Type): TCanComposite<Type> {
+  return (IsObject(type) || IsTuple(type)) as never
 }
 // ------------------------------------------------------------------
 // NarrowCompositeRule

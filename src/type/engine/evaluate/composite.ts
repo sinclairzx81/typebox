@@ -31,82 +31,15 @@ THE SOFTWARE.
 
 import { Guard } from '../../../guard/index.ts'
 
-import { type TReadonly, IsReadonly } from '../../types/_readonly.ts'
-import { type TOptional, IsOptional } from '../../types/_optional.ts'
-
 import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TObject, Object, IsObject } from '../../types/object.ts'
 import { type TNever, Never } from '../../types/never.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
 
-import { type TAddReadonly, AddReadonly } from '../../action/_add_readonly.ts'
-import { type TAddOptional, AddOptional } from '../../action/_add_optional.ts'
-import { type TRemoveReadonly, RemoveReadonly } from '../../action/_remove_readonly.ts'
-import { type TRemoveOptional, RemoveOptional } from '../../action/_remove_optional.ts'
-
 import { type TTupleElementsToProperties, TupleElementsToProperties } from '../tuple/to_object.ts'
-import { type TEvaluateIntersect, EvaluateIntersect } from './evaluate.ts'
+import { type TEvaluatePropertyIntersect, EvaluatePropertyIntersect } from './property.ts'
 
-// ------------------------------------------------------------------
-// CanComposite (note: TWith<T, ...> requires infer here. review)
-// ------------------------------------------------------------------
-/** Returns true if the type is a valid operand to Composite. */
-export type TCanComposite<Type extends TSchema> = (
-  Type extends TObject<infer _ extends TProperties> ? true :
-  Type extends TTuple<infer _ extends TSchema[]> ? true : 
-  false
-)
-/** Returns true if the type is a valid operand to Composite. */
-export function CanComposite<Type extends TSchema>(type: Type): TCanComposite<Type> {
-  return (IsObject(type) || IsTuple(type)) as never
-}
-// ----------------------------------------------------------------------------
-// IsReadonlyProperty
-// ----------------------------------------------------------------------------
-type TIsReadonlyProperty<Left extends TSchema, Right extends TSchema> = (
-  Left extends TReadonly<Left> ? Right extends TReadonly<Right> ? true : false : false
-)
-function IsReadonlyProperty<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TIsReadonlyProperty<Left, Right> {
-  return (IsReadonly(left) ? IsReadonly(right) ? true : false : false) as never
-}
-// ----------------------------------------------------------------------------
-// IsOptionalProperty
-// ----------------------------------------------------------------------------
-type TIsOptionalProperty<Left extends TSchema, Right extends TSchema> = (
-  Left extends TOptional<Left> ? Right extends TOptional<Right> ? true : false : false
-)
-function IsOptionalProperty<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TIsOptionalProperty<Left, Right> {
-  return (IsOptional(left) ? IsOptional(right) ? true : false : false) as never
-}
-// ----------------------------------------------------------------------------
-// CompositeProperty
-// ----------------------------------------------------------------------------
-type TCompositeProperty<Left extends TSchema, Right extends TSchema,
-  IsReadonly extends boolean = TIsReadonlyProperty<Left, Right>,
-  IsOptional extends boolean = TIsOptionalProperty<Left, Right>,
-  Evaluated extends TSchema = TEvaluateIntersect<[Left, Right]>,
-  // Modifiers need to be discarded and re-applied
-  Property extends TSchema = TRemoveReadonly<TRemoveOptional<Evaluated>>
-> = (
-  [IsReadonly, IsOptional] extends [true, true] ? TAddReadonly<TAddOptional<Property>> :
-  [IsReadonly, IsOptional] extends [true, false] ? TAddReadonly<Property> :
-  [IsReadonly, IsOptional] extends [false, true] ? TAddOptional<Property> :
-  Property
-)
-function CompositeProperty<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TCompositeProperty<Left, Right> {
-  const isReadonly = IsReadonlyProperty(left, right)
-  const isOptional = IsOptionalProperty(left, right)
-  const evaluated = EvaluateIntersect([left, right]) as TSchema
-  // Modifiers need to be discarded and re-applied
-  const property = RemoveReadonly(RemoveOptional(evaluated))
-  return (
-    isReadonly && isOptional ? AddReadonly(AddOptional(property)) :
-    isReadonly && !isOptional ? AddReadonly(property) :
-    !isReadonly && isOptional ? AddOptional(property) :
-    property
-  ) as never
-}
 // ----------------------------------------------------------------------------
 // CompositePropertyKey
 //
@@ -119,14 +52,14 @@ function CompositeProperty<Left extends TSchema, Right extends TSchema>(left: Le
 type TCompositePropertyKey<Left extends TProperties, Right extends TProperties, Key extends PropertyKey,
   Result extends TSchema = (
     Key extends keyof Left 
-      ? Key extends keyof Right ? TCompositeProperty<Left[Key], Right[Key]> : Left[Key]
+      ? Key extends keyof Right ? TEvaluatePropertyIntersect<Left[Key], Right[Key]> : Left[Key]
       : Key extends keyof Right ? Right[Key] : TNever
   )
 > = Result
 function CompositePropertyKey<Left extends TProperties, Right extends TProperties, Key extends PropertyKey>(left: Left, right: Right, key: Key): TCompositePropertyKey<Left, Right, Key> {
   return (
     key in left
-      ? key in right ? CompositeProperty(left[key], right[key]) : left[key]
+      ? key in right ? EvaluatePropertyIntersect(left[key], right[key]) : left[key]
       : key in right ? right[key] : Never()
   ) as never
 }

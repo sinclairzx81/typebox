@@ -81,3 +81,122 @@ Test('Should support Omit of Never', () => {
   Fail(T, { y: 1, z: 1 })
   Ok(T, { x: 1, y: 1, z: 1 })
 })
+// ------------------------------------------------------------------
+// Retain Modifiers
+//
+// Ref: https://github.com/sinclairzx81/typebox/issues/1718
+// ------------------------------------------------------------------
+Test('Should retain optionality when omitting an intersection property', () => {
+  const T = Type.Omit(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('z')
+  )
+  Ok(T, {})
+  Ok(T, { x: { a: 1, b: 1 } })
+  Fail(T, { x: { a: 1 } })
+  Fail(T, { x: { b: 1 } })
+})
+Test('Should retain required properties when omitting an unknown intersection property', () => {
+  const T = Type.Omit(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('c')
+  )
+  Ok(T, { z: 1 })
+  Ok(T, { x: { a: 1, b: 1 }, z: 1 })
+  Fail(T, {})
+  Fail(T, { x: { a: 1 }, z: 1 })
+})
+Test('Should retain optionality when omitting never from an intersection', () => {
+  const T = Type.Omit(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Never()
+  )
+  Ok(T, { z: 1 })
+  Ok(T, { x: { a: 1, b: 1 }, z: 1 })
+  Fail(T, { x: { a: 1 }, z: 1 })
+})
+Test('Should retain optionality when omitting a union property', () => {
+  const T = Type.Omit(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('z')
+  )
+  Ok(T, {})
+  Ok(T, { x: 1 })
+  Ok(T, { x: 'value' })
+  Fail(T, { x: true })
+})
+Test('Should retain required properties when omitting an unknown union property', () => {
+  const T = Type.Omit(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('c')
+  )
+  Ok(T, { z: 1 })
+  Ok(T, { x: 1, z: 1 })
+  Ok(T, { x: 'value', z: 1 })
+  Fail(T, {})
+  Fail(T, { x: true, z: 1 })
+})
+Test('Should retain optionality when omitting never from a union', () => {
+  const T = Type.Omit(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Never()
+  )
+  Ok(T, { z: 1 })
+  Ok(T, { x: 1, z: 1 })
+  Ok(T, { x: 'value', z: 1 })
+  Fail(T, { x: true, z: 1 })
+})
