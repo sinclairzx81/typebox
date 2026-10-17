@@ -61,6 +61,13 @@ function NarrowCompareRule<Left extends TSchema, Right extends TSchema>(left: Le
 }
 // ------------------------------------------------------------------
 // CanComposite
+//
+// Note: TWith<T, {}> requires an infer destructuring here, but it's 
+// not entirely clear why. It's possible that TWith<T, {}> property 
+// assignment is interfering with TypeScript's understanding of the 
+// type. We should review the infer-nothing pattern here and look
+// for issues with TWith<T, {}> assignments elsewhere. (review)
+//
 // ------------------------------------------------------------------
 type TCanComposite<Type extends TSchema> = (
   Type extends TObject<infer _ extends TProperties> ? true :
