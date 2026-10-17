@@ -607,3 +607,91 @@ Test('Should Index 44', () => {
   const T: Type.TNumber = Type.Index(L, R)
   Assert.IsTrue(Type.IsNumber(T))
 })
+// ------------------------------------------------------------------
+// Modifier Coverage
+// ------------------------------------------------------------------
+Test('Should Index 45', () => {
+  const A = Type.Object({
+    x: Type.Readonly(Type.Optional(Type.Number()))
+  })
+  const T: Type.TReadonly<Type.TOptional<Type.TNumber>> = Type.Index(A, Type.Literal('x'))
+  Assert.IsTrue(Type.IsNumber(T))
+  Assert.IsTrue(Type.IsOptional(T))
+  Assert.IsTrue(Type.IsReadonly(T))
+})
+Test('Should Index 46', () => {
+  const A = Type.Object({
+    x: Type.Readonly(Type.Number())
+  })
+  const T: Type.TReadonly<Type.TNumber> = Type.Index(A, Type.Literal('x'))
+  Assert.IsTrue(Type.IsNumber(T))
+  Assert.IsFalse(Type.IsOptional(T))
+  Assert.IsTrue(Type.IsReadonly(T))
+})
+// Future: Here we select x and y properties, producing a Union;
+// however, the variants contain the embedded modifiers when we would
+// have expected the variants to be modifier-unwrapped and applied
+// to the outer Union. There is some uncertainty as to how best to
+// handle this case, so for now we just select the properties
+// and modifiers verbatim. (review)
+Test('Should Index 47', () => {
+  const A = Type.Object({
+    x: Type.Readonly(Type.Optional(Type.Number())),
+    y: Type.Readonly(Type.String())
+  })
+  const T: Type.TUnion<[
+    Type.TReadonly<Type.TOptional<Type.TNumber>>,
+    Type.TReadonly<Type.TString>
+  ]> = Type.Index(
+    A,
+    Type.Union([
+      Type.Literal('x'),
+      Type.Literal('y')
+    ])
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsOptional(T.anyOf[0]))
+  Assert.IsTrue(Type.IsReadonly(T.anyOf[0]))
+  Assert.IsFalse(Type.IsOptional(T.anyOf[1]))
+  Assert.IsTrue(Type.IsReadonly(T.anyOf[1]))
+})
+Test('Should Index 48', () => {
+  const A = Type.Intersect([
+    Type.Object({
+      x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() })))
+    }),
+    Type.Object({
+      x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() })))
+    })
+  ])
+  const T: Type.TReadonly<
+    Type.TOptional<
+      Type.TObject<{
+        a: Type.TNumber
+        b: Type.TNumber
+      }>
+    >
+  > = Type.Index(A, Type.Literal('x'))
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsOptional(T))
+  Assert.IsTrue(Type.IsReadonly(T))
+  Assert.IsTrue(Type.IsNumber(T.properties.a))
+  Assert.IsTrue(Type.IsNumber(T.properties.b))
+  Assert.IsEqual(T.required, ['a', 'b'])
+})
+Test('Should Index 49', () => {
+  const A = Type.Union([
+    Type.Object({
+      x: Type.Readonly(Type.Optional(Type.Number()))
+    }),
+    Type.Object({
+      x: Type.String()
+    })
+  ])
+  const T: Type.TUnion<[Type.TNumber, Type.TString]> = Type.Index(A, Type.Literal('x'))
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsFalse(Type.IsOptional(T))
+  Assert.IsFalse(Type.IsReadonly(T))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0]))
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+})

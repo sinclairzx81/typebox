@@ -32,7 +32,7 @@ import { Guard } from '../../../guard/index.ts'
 import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/evaluate.ts'
+import { type TEvaluatePropertyUnion, EvaluatePropertyUnion } from '../evaluate/property.ts'
 import { type TFromType, FromType } from './from_type.ts'
 
 // ------------------------------------------------------------------
@@ -41,7 +41,7 @@ import { type TFromType, FromType } from './from_type.ts'
 type TCollapseUnionProperties<Left extends TProperties, Right extends TProperties,
   SharedKeys extends PropertyKey = keyof Left & keyof Right,
   Result extends TProperties = {
-    [Key in SharedKeys]: TEvaluateUnion<[Left[Key], Right[Key]]>
+    [Key in SharedKeys]: TEvaluatePropertyUnion<Left[Key], Right[Key]>
   }
 > = Result
 function CollapseUnionProperties<Left extends TProperties, Right extends TProperties>
@@ -49,7 +49,7 @@ function CollapseUnionProperties<Left extends TProperties, Right extends TProper
   TCollapseUnionProperties<Left, Right> {
   const sharedKeys = Guard.Keys(left).filter((key) => key in right)
   const result = sharedKeys.reduce((result, key) => {
-    return { ...result, [key]: EvaluateUnion([left[key], right[key]]) }
+    return { ...result, [key]: EvaluatePropertyUnion(left[key], right[key]) }
   }, {}) as never
   return result as never
 }

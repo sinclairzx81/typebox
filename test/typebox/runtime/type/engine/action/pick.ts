@@ -522,3 +522,136 @@ Test('Should Pick 30', () => {
   Assert.IsEqual(T.properties.z.const, 1)
   Assert.IsEqual(Guard.Keys(T.properties).length, 1)
 })
+// ------------------------------------------------------------------
+// Retain Modifiers
+//
+// Ref: https://github.com/sinclairzx81/typebox/issues/1718
+// ------------------------------------------------------------------
+Test('Should Pick 31', () => {
+  const T: Type.TObject<{
+    x: Type.TReadonly<
+      Type.TOptional<
+        Type.TObject<{
+          a: Type.TNumber
+          b: Type.TNumber
+        }>
+      >
+    >
+  }> = Type.Pick(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('x')
+  )
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsEqual(T.required, undefined)
+  Assert.IsTrue(Type.IsOptional(T.properties.x))
+  Assert.IsTrue(Type.IsReadonly(T.properties.x))
+  Assert.IsEqual(Guard.Keys(T.properties), ['x'])
+  Assert.IsTrue(Type.IsObject(T.properties.x))
+  Assert.IsEqual(Guard.Keys(T.properties.x.properties), ['a', 'b'])
+  Assert.IsEqual(T.properties.x.required, ['a', 'b'])
+  Assert.IsTrue(Type.IsNumber(T.properties.x.properties.a))
+  Assert.IsTrue(Type.IsNumber(T.properties.x.properties.b))
+})
+Test('Should Pick 32', () => {
+  const U: Type.TObject<{}> = Type.Pick(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('c')
+  )
+  Assert.IsEqual(U.required, undefined)
+  Assert.IsEqual(Guard.Keys(U.properties), [])
+})
+Test('Should Pick 33', () => {
+  const N: Type.TObject<{}> = Type.Pick(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Never()
+  )
+  Assert.IsEqual(N.required, undefined)
+  Assert.IsEqual(Guard.Keys(N.properties), [])
+})
+Test('Should Pick 34', () => {
+  const T: Type.TObject<{
+    x: Type.TReadonly<Type.TOptional<Type.TUnion<[Type.TNumber, Type.TString]>>>
+  }> = Type.Pick(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('x')
+  )
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsEqual(T.required, undefined)
+  Assert.IsTrue(Type.IsOptional(T.properties.x))
+  Assert.IsTrue(Type.IsReadonly(T.properties.x))
+  Assert.IsEqual(Guard.Keys(T.properties), ['x'])
+  Assert.IsTrue(Type.IsUnion(T.properties.x))
+  Assert.IsEqual(T.properties.x.anyOf.length, 2)
+  Assert.IsTrue(Type.IsNumber(T.properties.x.anyOf[0]))
+  Assert.IsTrue(Type.IsString(T.properties.x.anyOf[1]))
+})
+Test('Should Pick 35', () => {
+  const V: Type.TObject<{}> = Type.Pick(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('c')
+  )
+  Assert.IsEqual(V.required, undefined)
+  Assert.IsEqual(Guard.Keys(V.properties), [])
+})
+Test('Should Pick 36', () => {
+  const N: Type.TObject<{}> = Type.Pick(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Never()
+  )
+  Assert.IsEqual(N.required, undefined)
+  Assert.IsEqual(Guard.Keys(N.properties), [])
+})

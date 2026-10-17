@@ -502,3 +502,196 @@ Test('Should Omit 31', () => {
   Assert.IsTrue(Type.IsString(T.properties.y))
   Assert.IsEqual(Guard.Keys(T.properties).length, 2)
 })
+// ------------------------------------------------------------------
+// Retain Modifiers
+//
+// Ref: https://github.com/sinclairzx81/typebox/issues/1718
+// ------------------------------------------------------------------
+Test('Should Omit 32', () => {
+  const T: Type.TObject<{
+    x: Type.TReadonly<
+      Type.TOptional<
+        Type.TObject<{
+          a: Type.TNumber
+          b: Type.TNumber
+        }>
+      >
+    >
+  }> = Type.Omit(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('z')
+  )
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsEqual(T.required, undefined)
+  Assert.IsTrue(Type.IsOptional(T.properties.x))
+  Assert.IsTrue(Type.IsReadonly(T.properties.x))
+  Assert.IsEqual(Guard.Keys(T.properties), ['x'])
+  Assert.IsTrue(Type.IsObject(T.properties.x))
+  Assert.IsEqual(Guard.Keys(T.properties.x.properties), ['a', 'b'])
+  Assert.IsEqual(T.properties.x.required, ['a', 'b'])
+  Assert.IsTrue(Type.IsNumber(T.properties.x.properties.a))
+  Assert.IsTrue(Type.IsNumber(T.properties.x.properties.b))
+})
+Test('Should Omit 33', () => {
+  const U: Type.TObject<{
+    x: Type.TReadonly<
+      Type.TOptional<
+        Type.TObject<{
+          a: Type.TNumber
+          b: Type.TNumber
+        }>
+      >
+    >
+    z: Type.TNumber
+  }> = Type.Omit(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('c')
+  )
+  Assert.IsTrue(Type.IsObject(U))
+  Assert.IsEqual(U.required, ['z'])
+  Assert.IsTrue(Type.IsOptional(U.properties.x))
+  Assert.IsTrue(Type.IsReadonly(U.properties.x))
+  Assert.IsEqual(Guard.Keys(U.properties), ['x', 'z'])
+  Assert.IsTrue(Type.IsObject(U.properties.x))
+  Assert.IsEqual(Guard.Keys(U.properties.x.properties), ['a', 'b'])
+  Assert.IsEqual(U.properties.x.required, ['a', 'b'])
+  Assert.IsTrue(Type.IsNumber(U.properties.x.properties.a))
+  Assert.IsTrue(Type.IsNumber(U.properties.x.properties.b))
+  Assert.IsTrue(Type.IsNumber(U.properties.z))
+})
+Test('Should Omit 34', () => {
+  const N: Type.TObject<{
+    x: Type.TReadonly<
+      Type.TOptional<
+        Type.TObject<{
+          a: Type.TNumber
+          b: Type.TNumber
+        }>
+      >
+    >
+    z: Type.TNumber
+  }> = Type.Omit(
+    Type.Intersect([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ a: Type.Number() }))),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Object({ b: Type.Number() }))),
+        z: Type.Number()
+      })
+    ]),
+    Type.Never()
+  )
+  Assert.IsTrue(Type.IsObject(N))
+  Assert.IsEqual(N.required, ['z'])
+  Assert.IsTrue(Type.IsOptional(N.properties.x))
+  Assert.IsTrue(Type.IsReadonly(N.properties.x))
+  Assert.IsEqual(Guard.Keys(N.properties), ['x', 'z'])
+  Assert.IsTrue(Type.IsObject(N.properties.x))
+  Assert.IsEqual(Guard.Keys(N.properties.x.properties), ['a', 'b'])
+  Assert.IsEqual(N.properties.x.required, ['a', 'b'])
+  Assert.IsTrue(Type.IsNumber(N.properties.x.properties.a))
+  Assert.IsTrue(Type.IsNumber(N.properties.x.properties.b))
+  Assert.IsTrue(Type.IsNumber(N.properties.z))
+})
+Test('Should Omit 35', () => {
+  const T: Type.TObject<{
+    x: Type.TReadonly<Type.TOptional<Type.TUnion<[Type.TNumber, Type.TString]>>>
+  }> = Type.Omit(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('z')
+  )
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsEqual(T.required, undefined)
+  Assert.IsTrue(Type.IsOptional(T.properties.x))
+  Assert.IsTrue(Type.IsReadonly(T.properties.x))
+  Assert.IsEqual(Guard.Keys(T.properties), ['x'])
+  Assert.IsTrue(Type.IsUnion(T.properties.x))
+  Assert.IsEqual(T.properties.x.anyOf.length, 2)
+  Assert.IsTrue(Type.IsNumber(T.properties.x.anyOf[0]))
+  Assert.IsTrue(Type.IsString(T.properties.x.anyOf[1]))
+})
+Test('Should Omit 36', () => {
+  const V: Type.TObject<{
+    x: Type.TReadonly<Type.TOptional<Type.TUnion<[Type.TNumber, Type.TString]>>>
+    z: Type.TNumber
+  }> = Type.Omit(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Literal('c')
+  )
+  Assert.IsTrue(Type.IsObject(V))
+  Assert.IsEqual(V.required, ['z'])
+  Assert.IsTrue(Type.IsOptional(V.properties.x))
+  Assert.IsTrue(Type.IsReadonly(V.properties.x))
+  Assert.IsEqual(Guard.Keys(V.properties), ['x', 'z'])
+  Assert.IsTrue(Type.IsUnion(V.properties.x))
+  Assert.IsEqual(V.properties.x.anyOf.length, 2)
+  Assert.IsTrue(Type.IsNumber(V.properties.x.anyOf[0]))
+  Assert.IsTrue(Type.IsString(V.properties.x.anyOf[1]))
+  Assert.IsTrue(Type.IsNumber(V.properties.z))
+})
+Test('Should Omit 37', () => {
+  const N: Type.TObject<{
+    x: Type.TReadonly<Type.TOptional<Type.TUnion<[Type.TNumber, Type.TString]>>>
+    z: Type.TNumber
+  }> = Type.Omit(
+    Type.Union([
+      Type.Object({
+        x: Type.Readonly(Type.Optional(Type.Number())),
+        z: Type.Number()
+      }),
+      Type.Object({
+        x: Type.String(),
+        z: Type.Number()
+      })
+    ]),
+    Type.Never()
+  )
+  Assert.IsTrue(Type.IsObject(N))
+  Assert.IsEqual(N.required, ['z'])
+  Assert.IsTrue(Type.IsOptional(N.properties.x))
+  Assert.IsTrue(Type.IsReadonly(N.properties.x))
+  Assert.IsEqual(Guard.Keys(N.properties), ['x', 'z'])
+  Assert.IsTrue(Type.IsUnion(N.properties.x))
+  Assert.IsEqual(N.properties.x.anyOf.length, 2)
+  Assert.IsTrue(Type.IsNumber(N.properties.x.anyOf[0]))
+  Assert.IsTrue(Type.IsString(N.properties.x.anyOf[1]))
+  Assert.IsTrue(Type.IsNumber(N.properties.z))
+})
