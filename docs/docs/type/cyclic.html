@@ -1,29 +1,177 @@
 <h1>Type.Cyclic</h1>
-<p>Creates a Cyclic type.</p>
+<p>Creates a <code>Cyclic</code> type. A <code>Cyclic</code> is a self-contained schema for potentially recursive types. It holds one or more named definitions in a <code>$defs</code> map and uses a <code>$ref</code> to select the root definition. Because references resolve against these definitions, a definition can refer to itself or another definition without depending on an external schema. <code>Cyclic</code> types are typically produced by <code>Script</code> when a declaration is recursive, but can also be created directly with <code>Cyclic</code>.</p>
 <h2>Example</h2>
 <p>Example usage is shown below.</p>
 <pre><code class="language-typescript">const T = Type.Cyclic({                             // const T = {
-  A: Type.Object({                                  //   $defs: {
+  A: Type.Object({                                  //   &#39;$defs&#39;: {
     x: Type.Array(Type.Ref(&#39;A&#39;)),                   //     A: {
   }),                                               //       type: &#39;object&#39;,
-}, &#39;A&#39;)                                             //       required: [&#39;x&#39;],
+}, &#39;A&#39;)                                             //       required: [ &#39;x&#39; ],
                                                     //       properties: {
                                                     //         x: {
                                                     //           type: &#39;array&#39;,
                                                     //           items: {
-                                                    //             $ref: &#39;A&#39;
+                                                    //             &#39;$ref&#39;: &#39;A&#39;
                                                     //           }
                                                     //         }
                                                     //       },
                                                     //       &#39;$id&#39;: &#39;A&#39;
                                                     //     }
                                                     //   },
-                                                    //   $ref: &#39;A&#39;
+                                                    //   &#39;$ref&#39;: &#39;A&#39;
                                                     // }
 
 type T = Static&lt;typeof T&gt;                           // type T = { x: ...[] }
 </code></pre>
 <h2>Guard</h2>
-<p>Use the IsCyclic function to guard values of this type.</p>
+<p>Use the <code>IsCyclic</code> function to guard values of this type.</p>
 <pre><code class="language-typescript">Type.IsCyclic(value)                                // value is TCyclic
+</code></pre>
+<h2>Declarations</h2>
+<p>The Cyclic type is a container that bundles a recursive type with the definitions it depends on, producing a self-contained schema. It is intended to be the result structure for multi-type declarations, where one declaration may depend on another. This ensures each returned schema is self-contained, meaning all of its references resolve within the type itself.</p>
+<p>The need for <code>Cyclic</code> is easiest to explain with an example. Consider the following two declarations: <code>Vector</code> is acyclic and has no dependencies, while <code>Node</code> is recursive and depends on <code>Vector</code>. Note that <code>Node</code> is inferred as a <code>TCyclic</code> to ensure it is self-contained.</p>
+<pre><code class="language-typescript">import Type from &#39;typebox&#39;
+
+// Each declaration is returned as a standalone type
+const { Vector, Node } = Type.Script(`
+  type Vector = {
+    x: number
+    y: number
+    z: number
+  }
+  type Node = {
+    id: string
+    value: Vector
+    nodes: Node[]   // &lt;-- Node is recursive, so it infers as TCyclic
+  }
+`)
+</code></pre>
+<h3>Vector</h3>
+<p>The Vector type is acyclic and has no dependencies, so it can be returned as is.</p>
+<pre><code class="language-typescript">const Vector: Type.TObject&lt;{
+  x: Type.TNumber;
+  y: Type.TNumber;
+  z: Type.TNumber;
+}&gt;
+</code></pre>
+<h3>Node</h3>
+<p>The <code>Node</code> type references itself and depends on <code>Vector</code>, so it must be transformed into a <code>TCyclic</code> to be self-contained. The <code>Vector</code> dependency is collected and included as a definition within the <code>TCyclic</code>, and references inside <code>Node</code> resolve against those definitions. The second type argument (<code>&quot;Node&quot;</code>) identifies the root definition.</p>
+<pre><code class="language-typescript">const Node: Type.TCyclic&lt;{
+  Node: Type.TObject&lt;{
+    id: Type.TString;
+    nodes: Type.TArray&lt;Type.TRef&lt;&quot;Node&quot;&gt;&gt;;
+    value: Type.TRef&lt;&quot;Vector&quot;&gt;;
+  }&gt;;
+  Vector: Type.TObject&lt;{
+    x: Type.TNumber;
+    y: Type.TNumber;
+    z: Type.TNumber;
+  }&gt;;
+}, &quot;Node&quot;&gt;
+</code></pre>
+<h2>Embedding</h2>
+<p>The output structure of a <code>TCyclic</code> is a flat <code>$defs</code> and <code>$ref</code> structure. It can safely reference only structures downstream of itself, and it has no information about potential parent types. Because of this, embedding a <code>Cyclic</code> in an enclosing type is generally considered unsafe.</p>
+<h3>Unsafe</h3>
+<p>Here, the <code>Node</code> type produces a <code>Cyclic</code>, which we embed in a parent <code>Container</code> type. This composition works in this example, but it is not always safe: duplicate or overridden <code>$id</code> values can cause references to resolve to the wrong target. We therefore consider this embedding unsafe.</p>
+<pre><code class="language-typescript">const { Node } = Type.Script(`
+  type Node = {
+    id: string
+    nodes: Node[]
+  }
+`)
+
+// Unsafe Embedding
+const Container = Type.Object({ node: Node })
+// const Container = {
+//   type: &#39;object&#39;,
+//   required: [ &#39;node&#39; ],
+//   properties: {
+//     node: {
+//       &#39;$defs&#39;: {
+//         Node: {
+//           type: &#39;object&#39;,
+//           required: [ &#39;id&#39;, &#39;nodes&#39; ],
+//           properties: {
+//             id: { type: &#39;string&#39; },
+//             nodes: { type: &#39;array&#39;, items: { &#39;$ref&#39;: &#39;Node&#39; } }
+//           },
+//           &#39;$id&#39;: &#39;Node&#39;
+//         }
+//       },
+//       &#39;$ref&#39;: &#39;Node&#39;
+//     }
+//   }
+// }
+</code></pre>
+<h3>Safe</h3>
+<p>If the <code>Container</code> type is declared in the same multi-type declaration as <code>Node</code>, TypeBox can reason about the relationship between them. In the following example, <code>Node</code> is recursive, which implicitly makes <code>Container</code> a <code>Cyclic</code> as well.</p>
+<pre><code class="language-typescript">const { Container } = Type.Script(`
+  type Node = {
+    id: string
+    nodes: Node[]
+  }
+
+  // Safe
+  type Container = {
+    node: Node
+  }
+`)
+// const Container = {
+//   &#39;$defs&#39;: {
+//     Node: {
+//       type: &#39;object&#39;,
+//       required: [ &#39;id&#39;, &#39;nodes&#39; ],
+//       properties: {
+//         id: { type: &#39;string&#39; },
+//         nodes: { type: &#39;array&#39;, items: { &#39;$ref&#39;: &#39;Node&#39; } }
+//       },
+//       &#39;$id&#39;: &#39;Node&#39;
+//     },
+//     Container: {
+//       type: &#39;object&#39;,
+//       required: [ &#39;node&#39; ],
+//       properties: { node: { &#39;$ref&#39;: &#39;Node&#39; } },
+//       &#39;$id&#39;: &#39;Container&#39;
+//     }
+//   },
+//   &#39;$ref&#39;: &#39;Container&#39;
+// }
+</code></pre>
+<h2>Recommendation</h2>
+<p>If you need to use <code>Cyclic</code> types manually to express recursion, the <code>Cyclic</code> type should always be the outermost type, and it should contain definitions for every type it depends on or references. This keeps the schema self-contained and avoids the embedding problems described above. In the following example, <code>Expression</code> is the root definition. <code>BinaryExpression</code> refers back to <code>Expression</code>, which makes the type recursive, and the literal and operator types are included as definitions within the same <code>Cyclic</code>.</p>
+<pre><code class="language-typescript">import Type from &#39;typebox&#39;
+
+type Expression = Type.Static&lt;typeof Expression&gt;
+
+// Include definitions for every type required by this Cyclic.
+const Expression = Type.Cyclic({
+  BooleanLiteral: Type.Object({
+    type: Type.Literal(&#39;BooleanLiteral&#39;),
+    value: Type.Boolean()
+  }),
+  NumberLiteral: Type.Object({
+    type: Type.Literal(&#39;NumberLiteral&#39;),
+    value: Type.Number()
+  }),
+  Literal: Type.Union([
+    Type.Ref(&#39;BooleanLiteral&#39;),
+    Type.Ref(&#39;NumberLiteral&#39;),
+  ]),
+  Operator: Type.Union([
+    Type.Literal(&#39;+&#39;),
+    Type.Literal(&#39;-&#39;),
+    Type.Literal(&#39;*&#39;),
+    Type.Literal(&#39;/&#39;),
+  ]),
+  BinaryExpression: Type.Object({
+    type: Type.Literal(&#39;BinaryExpression&#39;),
+    operator: Type.Ref(&#39;Operator&#39;),
+    left: Type.Ref(&#39;Expression&#39;),
+    right: Type.Ref(&#39;Expression&#39;),
+  }),
+  Expression: Type.Union([
+    Type.Ref(&#39;Literal&#39;),
+    Type.Ref(&#39;BinaryExpression&#39;),
+  ]),
+}, &#39;Expression&#39;)
 </code></pre>
