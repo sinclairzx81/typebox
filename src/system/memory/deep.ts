@@ -56,11 +56,15 @@ function IsSchemaObject(value: Record<PropertyKey, unknown>): boolean {
 function FromSchemaObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
   for (const key of Guard.Keys(value)) {
-    if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
     const descriptor = Object.getOwnPropertyDescriptor(value, key)! // safe-name!
     descriptor.value = FromValue(descriptor.value)
     if(Guard.IsEqual(descriptor.enumerable, true)) {
-      result[key] = descriptor.value
+      Object.defineProperty(result, key, {
+        value: descriptor.value,
+        enumerable: true,
+        writable: true,
+        configurable: true
+      })
     } else {
       Object.defineProperty(result, key, descriptor)
     }
@@ -73,8 +77,12 @@ function FromSchemaObject(value: Record<PropertyKey, unknown>): Record<PropertyK
 function FromPlainObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
   for (const key of Guard.Keys(value)) {
-    if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
-    result[key] = FromValue(value[key])
+    Object.defineProperty(result, key, {
+      value: FromValue(value[key]),
+      enumerable: true,
+      writable: true,
+      configurable: true
+    })
   }
   for (const key of Guard.Symbols(value)) {
     result[key] = FromValue(value[key])

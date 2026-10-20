@@ -1,4 +1,5 @@
 import { Value } from 'typebox/value'
+import { Type } from 'typebox'
 import { Assert } from 'test'
 
 // ------------------------------------------------------------------
@@ -39,4 +40,38 @@ Test('Should Clone 7', () => {
 Test('Should Clone 8', () => {
   const R = Value.Clone({ x: { y: 2 } })
   Assert.IsEqual(R, { x: { y: 2 } })
+})
+
+Test('Should preserve own prototype-named data properties without prototype pollution', () => {
+  const source = {
+    ['__proto__']: { pollution: true },
+    constructor: { prototype: { pollution: true } },
+    prototype: { pollution: true }
+  }
+  const cloned = Value.Clone(source)
+  Assert.IsEqual(cloned, source)
+  Assert.NotEqual(cloned, source)
+  Assert.IsEqual(Object.getPrototypeOf(cloned), Object.prototype)
+  Assert.IsFalse(Object.hasOwn(Object.prototype, 'pollution'))
+  for (const key of ['__proto__', 'constructor', 'prototype'] as const) {
+    Assert.NotEqual(cloned[key], source[key])
+  }
+})
+Test('Should preserve own prototype-named schema options and hidden metadata', () => {
+  const source = Type.String({
+    ['__proto__']: { pollution: true },
+    constructor: { prototype: { pollution: true } },
+    prototype: { pollution: true }
+  })
+  const cloned = Value.Clone(source)
+  Assert.IsEqual(cloned, source)
+  Assert.NotEqual(cloned, source)
+  Assert.IsEqual(Object.getPrototypeOf(cloned), Object.prototype)
+  Assert.IsFalse(Object.hasOwn(Object.prototype, 'pollution'))
+  Assert.IsEqual(Object.getOwnPropertyDescriptor(cloned, '~kind'), Object.getOwnPropertyDescriptor(source, '~kind'))
+  const clonedDescriptors = Object.getOwnPropertyDescriptors(cloned)
+  const sourceDescriptors = Object.getOwnPropertyDescriptors(source)
+  for (const key of ['__proto__', 'constructor', 'prototype']) {
+    Assert.NotEqual(clonedDescriptors[key].value, sourceDescriptors[key].value)
+  }
 })

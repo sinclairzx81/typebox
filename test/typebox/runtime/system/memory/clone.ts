@@ -1,6 +1,5 @@
 import { Memory, Settings } from 'typebox/system'
 import { Assert } from 'test'
-import Guard from 'typebox/guard'
 
 const Test = Assert.Context('System.Memory.Clone')
 
@@ -26,7 +25,7 @@ Test('Should Clone 1', () => {
 // ------------------------------------------------------------------
 // Prototype Pollution Guards
 // ------------------------------------------------------------------
-Test('Should Clone 2', () => {
+Test('Should preserve own prototype-named properties without changing the clone prototype', () => {
   Settings.Set({ enumerableKind: false, immutableTypes: false })
   try {
     const source: Record<PropertyKey, unknown> = { value: 1 }
@@ -35,9 +34,7 @@ Test('Should Clone 2', () => {
     Object.defineProperty(source, 'prototype', { value: 4, enumerable: true })
     const A = Memory.Clone(source)
     Assert.IsEqual(Object.getPrototypeOf(A), Object.prototype)
-    Assert.IsFalse(Guard.HasPropertyKey(A, '__proto__'))
-    Assert.IsFalse(Guard.HasPropertyKey(A, 'constructor'))
-    Assert.IsFalse(Guard.HasPropertyKey(A, 'prototype'))
+    Assert.IsEqual(A, source)
   } finally {
     Settings.Reset()
   }

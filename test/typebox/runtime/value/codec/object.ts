@@ -5,6 +5,19 @@ import { Assert } from 'test'
 
 const Test = Assert.Context('Value.Codec.Object')
 
+Test('Should retain an own __proto__ property through decode, encode, and clean', () => {
+  const T = Type.Object({
+    ['__proto__']: Type.Object({ pollution: Type.Literal(true) })
+  })
+  const source = { ['__proto__']: { pollution: true } }
+  const decoded = Value.Decode(T, source)
+  Assert.IsEqual(decoded, source)
+  Assert.IsEqual(Object.getPrototypeOf(decoded), Object.prototype)
+  Assert.IsFalse(Object.hasOwn(Object.prototype, 'pollution'))
+  Assert.IsEqual(Value.Encode(T, decoded), source)
+  Assert.IsEqual(Value.Clean(T, Value.Clone(source)), source)
+})
+
 // ------------------------------------------------------------------
 // Interior
 // ------------------------------------------------------------------

@@ -60,9 +60,7 @@ function Modifiers(type: TSchema, next: TSchema): TSchema {
 // Properties
 // ------------------------------------------------------------------
 function FromProperties(properties: TProperties): TProperties {
-  const result = {} as TProperties
-  for (const key of Guard.Keys(properties)) result[key] = FromType(properties[key])
-  return result
+  return Object.fromEntries(Guard.Keys(properties).map((key) => [key, FromType(properties[key])]))
 }
 // ------------------------------------------------------------------
 // FromRecordKey
