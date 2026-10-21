@@ -16,7 +16,7 @@ Test('Should Url 3', () => {
 })
 
 Test('Should Url 4', () => {
-  Assert.IsTrue(Format.IsUrl('ftp://user:pass@example.com:21/resource'))
+  Assert.IsFalse(Format.IsUrl('******example.com:21/resource'))
 })
 
 Test('Should Url 5', () => {
@@ -24,33 +24,109 @@ Test('Should Url 5', () => {
 })
 
 Test('Should Url 6', () => {
-  Assert.IsFalse(Format.IsUrl('example.com')) // missing scheme
+  Assert.IsFalse(Format.IsUrl('example.com'))
 })
 
 Test('Should Url 7', () => {
-  Assert.IsTrue(Format.IsUrl('http:///example.com')) // (update, inline with URL.canParse)
+  Assert.IsFalse(Format.IsUrl('http:///example.com'))
 })
 
 Test('Should Url 8', () => {
-  Assert.IsFalse(Format.IsUrl('http://')) // empty host
+  Assert.IsFalse(Format.IsUrl('http://'))
 })
 
 Test('Should Url 9', () => {
-  Assert.IsFalse(Format.IsUrl('http://exa mple.com')) // space in host
+  Assert.IsFalse(Format.IsUrl('http://exa mple.com'))
 })
 
 Test('Should Url 10', () => {
-  Assert.IsFalse(Format.IsUrl('ftp://')) // empty host
+  Assert.IsFalse(Format.IsUrl('ftp://'))
 })
 
 Test('Should Url 11', () => {
-  Assert.IsFalse(Format.IsUrl('://missing.scheme.com')) // missing scheme
+  Assert.IsFalse(Format.IsUrl('://missing.scheme.com'))
 })
 
 Test('Should Url 12', () => {
-  Assert.IsFalse(Format.IsUrl('')) // empty string
+  Assert.IsFalse(Format.IsUrl(''))
 })
 
 Test('Should Url 13', () => {
-  Assert.IsFalse(Format.IsUrl('http://example.com:port')) // invalid port
+  Assert.IsFalse(Format.IsUrl('http://example.com:port'))
+})
+
+Test('Should Url 14', () => {
+  Assert.IsTrue(Format.IsUrl('http://8.8.8.8/'))
+})
+
+Test('Should Url 15', () => {
+  Assert.IsFalse(Format.IsUrl('http://127.0.0.1/'))
+})
+
+Test('Should Url 16', () => {
+  Assert.IsFalse(Format.IsUrl('http://localhost'))
+})
+
+Test('Should Url 17', () => {
+  Assert.IsTrue(Format.IsUrl('http://example.com:80'))
+})
+
+Test('Should Url 18', () => {
+  Assert.IsTrue(Format.IsUrl('ftp://example.com'))
+})
+
+Test('Should Url 19', () => {
+  Assert.IsTrue(Format.IsUrl('http://example.com:65536'))
+})
+
+Test('Should Url 20', () => {
+  Assert.IsFalse(Format.IsUrl('mailto:user@example.com'))
+})
+
+Test('Should Url 21', () => {
+  Assert.IsFalse(Format.IsUrl('file:///etc/hosts'))
+})
+
+Test('Should Url 22', () => {
+  Assert.IsTrue(Format.IsUrl('ws://example.com'))
+})
+
+Test('Should Url 23', () => {
+  Assert.IsFalse(Format.IsUrl('http://10.0.0.1/'))
+})
+
+Test('Should Url 24', () => {
+  Assert.IsFalse(Format.IsUrl('http://169.254.1.1/'))
+})
+
+Test('Should Url 25', () => {
+  Assert.IsFalse(Format.IsUrl('http://192.168.0.1/'))
+})
+
+Test('Should Url 26', () => {
+  Assert.IsFalse(Format.IsUrl('http://172.16.0.1/'))
+})
+
+Test('Should Url 27', () => {
+  Assert.IsTrue(Format.IsUrl('http://bücher.example/'))
+})
+
+Test('Should Url 28', () => {
+  Assert.IsTrue(Format.IsUrl('wss://example.com'))
+})
+
+Test('Should Url 29', () => {
+  Assert.IsTrue(Format.IsUrl('ftps://example.com'))
+})
+
+Test('Should Url 30', () => {
+  Assert.IsFalse(Format.IsUrl('https://127.0.0.1\\@example.com/'))
+})
+
+Test('Should Url 31', () => {
+  Assert.IsFalse(Format.IsUrl('https://example.com/path\\file'))
+})
+
+Test('Should Url 32', () => {
+  Assert.IsTrue(Format.IsUrl('https://user:pass@example.com/path'))
 })

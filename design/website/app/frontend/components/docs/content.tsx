@@ -52,6 +52,13 @@ export function Content(props: ContentProperties) {
     if (!content) return
     const container = content.closest<HTMLElement>('.content')
     if (container) container.scrollTop = 0
+    content.querySelectorAll('table').forEach((table) => {
+      if (table.parentElement?.classList.contains('docs-table-wrap')) return
+      const wrapper = document.createElement('div')
+      wrapper.className = 'docs-table-wrap'
+      table.replaceWith(wrapper)
+      wrapper.append(table)
+    })
     Prism.highlightAllUnder(content)
     const headings = [...content.querySelectorAll<HTMLElement>('h2, h3')]
     setSections(headings.map((heading, index) => {

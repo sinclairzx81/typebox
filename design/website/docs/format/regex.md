@@ -1,6 +1,6 @@
 # Format.IsRegex
 
-Returns true if the string is a regular expression
+Returns true if the string is a valid ECMAScript regular expression pattern as defined by [ECMA-262](https://tc39.es/ecma262/).
 
 ## Function
 

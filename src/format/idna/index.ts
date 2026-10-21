@@ -28,3 +28,4 @@ THE SOFTWARE.
 
 export * from './hostname.ts'
 export * from './idn-hostname.ts'
+export { IsAsciiLdhLabel } from './label/ascii.ts'

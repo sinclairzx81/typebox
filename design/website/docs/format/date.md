@@ -1,6 +1,6 @@
 # Format.IsDate
 
-Returns true if the string is an [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) date component.
+Returns true if the string is a date component defined by [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339).
 
 ## Function
 

@@ -42,3 +42,39 @@ Test('Should IsEmail 12', () => {
 Test('Should IsEmail 13', () => {
   Assert.IsFalse(Format.IsEmail('user@example..com'))
 })
+Test('Should IsEmail 14', () => {
+  Assert.IsTrue(Format.IsEmail('user@[127.0.0.1]'))
+})
+Test('Should IsEmail 15', () => {
+  Assert.IsFalse(Format.IsEmail('user@[256.0.0.1]'))
+})
+Test('Should IsEmail 16', () => {
+  Assert.IsTrue(Format.IsEmail('user@[IPv6:::1]'))
+})
+Test('Should IsEmail 17', () => {
+  Assert.IsTrue(Format.IsEmail('user@[IPv6:::ffff:192.0.2.1]'))
+})
+Test('Should IsEmail 18', () => {
+  Assert.IsFalse(Format.IsEmail('user@[IPv6::::1]'))
+})
+Test('Should IsEmail 19', () => {
+  Assert.IsTrue(Format.IsEmail('"local@part"@example.com'))
+})
+
+Test('Should IsEmail 20', () => {
+  const prefix = `${'a'.repeat(64)}@${'b'.repeat(63)}.${'c'.repeat(63)}.`
+  const email = `${prefix}${'d'.repeat(254 - prefix.length)}`
+  Assert.IsEqual(email.length, 254)
+  Assert.IsTrue(Format.IsEmail(email))
+})
+
+Test('Should IsEmail 21', () => {
+  const prefix = `${'a'.repeat(64)}@${'b'.repeat(63)}.${'c'.repeat(63)}.`
+  const email = `${prefix}${'d'.repeat(255 - prefix.length)}`
+  Assert.IsEqual(email.length, 255)
+  Assert.IsTrue(Format.IsEmail(email))
+})
+
+Test('Should IsEmail 22', () => {
+  Assert.IsFalse(Format.IsEmail('"a\r\nBcc: x"@example.com'))
+})

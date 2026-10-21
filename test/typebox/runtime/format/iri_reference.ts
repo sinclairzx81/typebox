@@ -24,7 +24,6 @@ Test('Should IsIriReference 4', () => {
 })
 
 // 2. Invalid IRI References (4 cases)
-
 Test('Should IsIriReference 5', () => {
   // Contains an unencoded space (spaces must be percent-encoded)
   Assert.IsFalse(Format.IsIriReference('http://example.com/file name.txt'))
@@ -51,36 +50,43 @@ Test('Should IsIriReference 9', () => {
 })
 
 // Forbidden character: DEL control character
-Test('Should IsIriReference 11', () => {
+Test('Should IsIriReference 10', () => {
   Assert.IsFalse(Format.IsIriReference('http://example.com/path\x7Fsegment'))
 })
 
 // Malformed scheme/authority (looks like scheme but missing colon)
-Test('Should IsIriReference 12', () => {
+Test('Should IsIriReference 11', () => {
   Assert.IsFalse(Format.IsIriReference('abc//example.com'))
 })
 
 // Valid absolute IRI with a valid scheme prefix
-Test('Should IsIriReference 13', () => {
+Test('Should IsIriReference 12', () => {
   Assert.IsTrue(Format.IsIriReference('ftp://example.com/resource'))
 })
 
 // Relative IRI with valid path (triggers relative fallback)
-Test('Should IsIriReference 14', () => {
+Test('Should IsIriReference 13', () => {
   Assert.IsTrue(Format.IsIriReference('folder/file.txt'))
 })
 
 // Relative IRI with query only (triggers relative fallback)
-Test('Should IsIriReference 15', () => {
+Test('Should IsIriReference 14', () => {
   Assert.IsTrue(Format.IsIriReference('?foo=bar'))
 })
 
 // Relative IRI with fragment only (triggers relative fallback)
-Test('Should IsIriReference 16', () => {
+Test('Should IsIriReference 15', () => {
   Assert.IsTrue(Format.IsIriReference('#section'))
 })
 
-Test('Should IsIriReference 17', () => {
-  // Looks like malformed scheme/authority, but colon is present
+Test('Should IsIriReference 16', () => {
   Assert.IsTrue(Format.IsIriReference('abc://example.com'))
+})
+
+Test('Should IsIriReference 17', () => {
+  Assert.IsFalse(Format.IsIriReference('1abc://example.com'))
+})
+
+Test('Should IsIriReference 18', () => {
+  Assert.IsFalse(Format.IsIriReference('//[not-ip]/path'))
 })

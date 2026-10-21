@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import * as Syntax from '../syntax/index.ts'
 import * as LabelAscii from './label/ascii.ts'
 import * as LabelPuny from './label/puny.ts'
 
@@ -34,12 +35,13 @@ function IsValidLabelLength(value: string): boolean {
 }
 function IsLabel(value: string): boolean {
   return IsValidLabelLength(value) && (
-    LabelPuny.IsPunyLabel(value) ||
-    LabelAscii.IsAsciiLabel(value)
+    LabelAscii.IsAsciiLabel(value) ||
+    LabelPuny.IsPunyLabel(value)
   )
 }
 export function IsHostname(value: string): boolean {
   if (value.length === 0 || value.length > 253) return false
   if (value.charCodeAt(value.length - 1) === 46) return false
+  if (Syntax.FORMAT_HOSTNAME_ASCII_LDH.test(value)) return true
   return value.split('.').every((label) => IsLabel(label))
 }

@@ -31,19 +31,6 @@ import * as FormatBidi from '../format/bidi.ts'
 import * as FormatPuny from '../format/puny.ts'
 
 // ------------------------------------------------------------------
-// ExceedsMaxALabelLength
-//
-// RFC 5890 §2.3.2.1: an A-label (the ACE-encoded form of a label,
-// "xn--" + punycode) must not exceed 63 octets. Only labels
-// containing non-ASCII characters need checking - a pure-ASCII label
-// has no "xn--" prefix and is used as-is, so its punycode-encoded
-// length is irrelevant. The ASCII check is a cheap short-circuit that
-// avoids running the punycode encoder on labels that don't need it.
-// ------------------------------------------------------------------
-function ExceedsMaxALabelLength(value: string): boolean {
-  return Pattern.RE_NON_ASCII.test(value) && FormatPuny.Encode(value).length + 4 > 63
-}
-// ------------------------------------------------------------------
 // HasInvalidHyphens
 //
 // RFC 5891 §4.2.3.2: label must not start or end with a hyphen, and
@@ -60,13 +47,13 @@ function HasInvalidHyphens(chars: string[]): boolean {
 // ------------------------------------------------------------------
 // IsUnicodeLabel
 // ------------------------------------------------------------------
-export function IsUnicodeLabel(value: string): boolean {
-  // RFC 5890 §2.3.2.1: Ensure Max Length
-  if (ExceedsMaxALabelLength(value)) return false
-  // RFC 5893 - Bidi Rule (applies whenever this label itself is RTL)
-  if (FormatBidi.HasRightToLeftCharacters(value) && !FormatBidi.SatisfiesBidiRule(value)) return false
+export function IsUnicodeLabel(value: string, validateBidi: boolean = true): boolean {
   const chars = [...value]
   const codePoints = chars.map((c) => c.codePointAt(0)!)
+  // RFC 5890 §2.3.2.1: Ensure Max Length
+  if (Pattern.RE_NON_ASCII.test(value) && FormatPuny.EncodedLength(codePoints) + 4 > 63) return false
+  // RFC 5893 - Bidi Rule (applies whenever this label itself is RTL)
+  if (validateBidi && FormatBidi.HasRightToLeftCharacters(value) && !FormatBidi.SatisfiesBidiRule(value)) return false
   const length = codePoints.length
   // RFC 5891 §4.2.3.2: Hyphen rules
   if (HasInvalidHyphens(chars)) return false

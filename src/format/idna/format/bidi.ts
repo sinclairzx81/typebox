@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as FormatPuny from './puny.ts'
 import * as Pattern from '../pattern/pattern.ts'
 
 // ------------------------------------------------------------------
@@ -38,22 +37,6 @@ const RE_RTL_ALLOWED = /^(?:R|AL|AN|EN|ES|CS|ET|ON|BN|NSM)$/
 const RE_LTR_ALLOWED = /^(?:L|EN|ES|CS|ET|ON|BN|NSM)$/
 const RE_RTL_CLASSES = /^(?:R|AL|AN)$/
 
-// ------------------------------------------------------------------
-// HasBidiChars
-//
-// Decodes a punycode label to its Unicode form (if it is one) and
-// checks whether the result is an RTL label per RFC 5893 §1.4.
-// ------------------------------------------------------------------
-export function HasBidiChars(value: string): boolean {
-  if (FormatPuny.IsAcePrefixed(value)) {
-    try {
-      return HasRightToLeftCharacters(FormatPuny.Decode(value.slice(4).toLowerCase()))
-    } catch {
-      return false
-    }
-  }
-  return HasRightToLeftCharacters(value)
-}
 // ------------------------------------------------------------------
 // GetBidiClass
 // ------------------------------------------------------------------
@@ -80,7 +63,10 @@ function GetBidiClass(codePoint: number): string {
 // the Bidi Rule applies to every label in the domain.
 // ------------------------------------------------------------------
 export function HasRightToLeftCharacters(value: string): boolean {
-  for (const ch of value) if (RE_RTL_CLASSES.test(GetBidiClass(ch.codePointAt(0)!))) return true
+  for (const ch of value) {
+    const codePoint = ch.codePointAt(0)!
+    if (codePoint >= 0x80 && RE_RTL_CLASSES.test(GetBidiClass(codePoint))) return true
+  }
   return false
 }
 // ------------------------------------------------------------------

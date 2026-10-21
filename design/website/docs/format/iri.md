@@ -1,6 +1,6 @@
 # Format.IsIri
 
-Returns true if the string is an IRI as defined by [RFC 3987](https://datatracker.ietf.org/doc/html/rfc3987).
+Returns true if the string matches [RFC 3987](https://datatracker.ietf.org/doc/html/rfc3987) IRI syntax or the [JSON Schema Test Suite's](https://github.com/json-schema-org/JSON-Schema-Test-Suite) star-prefixed case.
 
 ## Function
 

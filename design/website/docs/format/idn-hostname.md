@@ -2,6 +2,10 @@
 
 Returns true if the string is an internationalized hostname described by [RFC 5890](https://datatracker.ietf.org/doc/html/rfc5890), [RFC 5891](https://datatracker.ietf.org/doc/html/rfc5891), [RFC 5892](https://datatracker.ietf.org/doc/html/rfc5892), and [RFC 5893](https://datatracker.ietf.org/doc/html/rfc5893).
 
+## Maximum Length
+
+Inputs longer than 65,536 UTF-16 code units return false. Use JSON Schema's `maxLength` keyword to set a lower limit.
+
 ## Function
 
 Test with format function

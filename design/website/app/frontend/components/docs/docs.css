@@ -235,7 +235,7 @@ THE SOFTWARE.
 .docs .content blockquote {
   background: var(--docs-blockquote-background);
   color: var(--docs-blockquote-color);
-  border: 1px solid var(--app-edge-color);
+  border: 1px solid var(--docs-search-border-color);
   border-left: 3px solid var(--docs-text-color-select);
   padding: 1rem 1.25rem;
   margin: 1.5rem 0;
@@ -284,14 +284,24 @@ THE SOFTWARE.
    Tables
    ------------------------------------------------------------------ */
 .docs .content .docs-table-wrap {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-color: var(--docs-menu-scrollbar-color) transparent;
+  scrollbar-width: thin;
   margin: 1.25rem 0;
+  border: 1px solid var(--app-edge-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 12%);
 }
 .docs .content table {
   width: 100%;
   max-width: 100%;
+  min-width: max-content;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: 0.78rem;
   font-family: var(--app-font-family-standard);
   table-layout: auto;
 }
@@ -303,14 +313,11 @@ THE SOFTWARE.
   color: var(--docs-text-color-muted);
   font-weight: 500;
   text-align: left;
-  padding: 0.6rem 1rem;
+  padding: 0.6rem 0.3rem;
   white-space: nowrap;
   font-size: 0.78rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-}
-.docs .content table thead th:first-child {
-  border-left: 4px solid var(--docs-text-color-select);
 }
 .docs .content table tbody tr {
   border-bottom: 1px solid var(--docs-blockquote-border-color);
@@ -322,16 +329,11 @@ THE SOFTWARE.
   background: var(--docs-menu-background-color);
 }
 .docs .content table tbody td {
-  padding: 0.6rem 1rem;
+  padding: 0.6rem 0.3rem;
   color: var(--docs-text-color);
   vertical-align: middle;
   line-height: 1.6;
-}
-.docs .content table tbody td:first-child {
-  border-left: 4px solid transparent;
-}
-.docs .content table tbody tr:hover td:first-child {
-  border-left-color: var(--docs-text-color-select);
+  white-space: nowrap;
 }
 .docs .content table tfoot tr {
   border-top: 1px solid var(--docs-search-border-color);
@@ -438,10 +440,6 @@ THE SOFTWARE.
   .docs .content pre {
     padding: 1rem;
     font-size: 0.82rem;
-  }
-  .docs .content table {
-    display: block;
-    overflow-x: auto;
   }
 }
 

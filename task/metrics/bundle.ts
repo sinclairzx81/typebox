@@ -26,6 +26,8 @@ export async function metrics(entries: string[]): Promise<void> {
     const bundleOutput = bundle.outputFiles[0]
     const minifiedOutput = minified.outputFiles[0]
     if (bundleOutput === undefined || minifiedOutput === undefined) throw new Error(`No bundle output produced for ${entry}`)
+    await Task.write(Path.join(target, `${filename}-bundle.js`), bundleOutput.text)
+    await Task.write(Path.join(target, `${filename}-minified.js`), minifiedOutput.text)
     await Task.write(Path.join(target, `${filename}-bundle.meta.json`), JSON.stringify(bundle.metafile, null, 2))
     await Task.write(Path.join(target, `${filename}-minified.meta.json`), JSON.stringify(minified.metafile, null, 2))
     return {

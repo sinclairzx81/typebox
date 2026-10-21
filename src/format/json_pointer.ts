@@ -26,13 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const JsonPointer = /^(?:\/(?:[^~/]|~0|~1)*)*$/
+import * as Syntax from './syntax/index.ts'
 
 /**
- * Returns true if the value is a json pointer
+ * Returns true if the value is a JSON Pointer.
  * @specification https://datatracker.ietf.org/doc/html/rfc6901
  * @source https://github.com/ajv-validator/ajv-formats
  */
 export function IsJsonPointer(value: string): boolean {
-  return JsonPointer.test(value)
+  return Syntax.FORMAT_JSON_POINTER.test(value)
 }

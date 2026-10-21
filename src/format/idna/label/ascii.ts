@@ -26,15 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import * as Syntax from '../../syntax/index.ts'
 import * as Pattern from '../pattern/pattern.ts'
 
+// ------------------------------------------------------------------
+// IsAsciiLdhLabel
+//
+// RFC 1123 §2.1: hostname labels contain letters, digits, and interior
+// hyphens, and must begin and end with a letter or digit.
+// ------------------------------------------------------------------
+export function IsAsciiLdhLabel(value: string): boolean {
+  return value.length > 0 && value.length <= 63 && Syntax.FORMAT_HOST_ASCII_LDH_LABEL.test(value)
+}
 // -------------------------------------------------------------------
 // Validates an ASCII LDH label per RFC 5891 §4.2.3.1
 // -------------------------------------------------------------------
 export function IsAsciiLabel(value: string): boolean {
-  return (
-    Pattern.RE_RULE_HYPHEN_PLACEMENT.test(value) &&
-    Pattern.RE_RULE_NOT_RESERVED_ACE.test(value) &&
-    Pattern.RE_ASCII_LDH.test(value)
-  )
+  return Pattern.RE_RULE_NOT_RESERVED_ACE.test(value) && IsAsciiLdhLabel(value)
 }

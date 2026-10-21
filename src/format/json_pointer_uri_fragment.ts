@@ -26,13 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const JsonPointerUriFragment = /^#(?:\/(?:[a-z0-9_\-.!$&'()*+,;:=@]|%[0-9a-f]{2}|~0|~1)*)*$/i
+import * as Syntax from './syntax/index.ts'
 
 /**
- * Returns true if the value is a json pointer uri fragment
+ * Returns true if the value is a JSON Pointer URI fragment.
  * @specification https://datatracker.ietf.org/doc/html/rfc6901
  * @source https://github.com/ajv-validator/ajv-formats
  */
 export function IsJsonPointerUriFragment(value: string): boolean {
-  return JsonPointerUriFragment.test(value)
+  return Syntax.FORMAT_JSON_POINTER_URI_FRAGMENT.test(value)
 }

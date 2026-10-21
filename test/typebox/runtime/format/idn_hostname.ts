@@ -138,3 +138,25 @@ Test('Should IsIdnHostname Zero Width Joiner invalid', () => {
   // U+200D not preceded by U+094D (invalid)
   Assert.IsFalse(Format.IsIdnHostname('test.a‍b.com'))
 })
+
+Test('Should IsIdnHostname validate Punycode Bidi labels', () => {
+  Assert.IsTrue(Format.IsIdnHostname('xn--mgbh0fb.xn--kgbechtv'))
+})
+
+Test('Should IsIdnHostname apply Bidi rules to every label', () => {
+  Assert.IsFalse(Format.IsIdnHostname('1.xn--mgbh0fb'))
+})
+
+const MAX_FORMAT_LENGTH = 65536
+
+Test('Should IsIdnHostname accept the maximum input length after IDNA mapping', () => {
+  const hostname = `${'\u00ad'.repeat(MAX_FORMAT_LENGTH - 'example.com'.length)}example.com`
+  Assert.IsEqual(hostname.length, MAX_FORMAT_LENGTH)
+  Assert.IsTrue(Format.IsIdnHostname(hostname))
+})
+
+Test('Should IsIdnHostname return false for inputs over the maximum length before IDNA mapping', () => {
+  const hostname = `${'\u00ad'.repeat(MAX_FORMAT_LENGTH + 1 - 'example.com'.length)}example.com`
+  Assert.IsEqual(hostname.length, MAX_FORMAT_LENGTH + 1)
+  Assert.IsFalse(Format.IsIdnHostname(hostname))
+})

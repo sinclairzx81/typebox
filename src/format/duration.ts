@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const Duration = /^P((\d+Y(\d+M(\d+D)?)?|\d+M(\d+D)?|\d+D)(T(\d+H(\d+M(\d+S)?)?|\d+M(\d+S)?|\d+S))?|T(\d+H(\d+M(\d+S)?)?|\d+M(\d+S)?|\d+S)|\d+W)$/
+import * as Syntax from './syntax/index.ts'
 
 /**
  * Returns true if the value is a valid duration.
  * @specification https://www.rfc-editor.org/rfc/rfc3339.html#appendix-A
  */
 export function IsDuration(value: string): boolean {
-  return Duration.test(value)
+  return Syntax.FORMAT_DURATION.test(value)
 }

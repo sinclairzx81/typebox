@@ -66,3 +66,7 @@ Test('Should IsIPv4 15', () => {
 Test('Should IsIPv4 16', () => {
   Assert.IsFalse(Format.IsIPv4('1.2.3.4 '))
 })
+
+Test('Should IsIPv4 17', () => {
+  Assert.IsFalse(Format.IsIPv4('1'.repeat(256)))
+})

@@ -26,19 +26,20 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import * as Syntax from './syntax/index.ts'
+
 const DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-const DATE = /^(\d\d\d\d)-(\d\d)-(\d\d)$/
 
 function IsLeapYear(year: number): boolean {
   return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)
 }
 /**
- * Returns true if the value is a ISO8601 Date component string
- * @description https://datatracker.ietf.org/doc/html/rfc3339
+ * Returns true if the value is a date component defined by RFC 3339.
+ * @specification https://datatracker.ietf.org/doc/html/rfc3339
  * @example `2020-12-12`
  */
 export function IsDate(value: string): boolean {
-  const matches: string[] | null = DATE.exec(value)
+  const matches: string[] | null = Syntax.FORMAT_DATE.exec(value)
   if (!matches) return false
   const year: number = +matches[1]
   const month: number = +matches[2]

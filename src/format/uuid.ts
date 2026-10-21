@@ -26,13 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const Uuid = /^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i
+import * as Syntax from './syntax/index.ts'
 
 /**
- * Returns true if the value is a uuid
+ * Returns true if the value is a UUID.
  * @specification https://www.rfc-editor.org/info/rfc4122/
  * @specification https://www.rfc-editor.org/info/rfc9562/
  */
 export function IsUuid(value: string): boolean {
-  return Uuid.test(value)
+  return Syntax.FORMAT_UUID.test(value)
 }

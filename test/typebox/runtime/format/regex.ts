@@ -66,3 +66,7 @@ Test('Should RegEx 15', () => {
 Test('Should RegEx 16', () => {
   Assert.IsTrue(Format.IsRegex('')) // empty string
 })
+
+Test('Should RegEx 17', () => {
+  Assert.IsTrue(Format.IsRegex('a'.repeat(65537)))
+})

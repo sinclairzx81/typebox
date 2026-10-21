@@ -27,20 +27,16 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as FormatBidi from './format/bidi.ts'
+import * as FormatPuny from './format/puny.ts'
 import * as LabelUnicode from './label/unicode.ts'
 import * as LabelPuny from './label/puny.ts'
+import * as Syntax from '../syntax/index.ts'
 
 // ------------------------------------------------------------------
 // IsLabel
 // ------------------------------------------------------------------
 function IsValidLabelLength(value: string): boolean {
   return value.length > 0 && value.length <= 63
-}
-function IsLabel(value: string): boolean {
-  return IsValidLabelLength(value) && (
-    LabelPuny.IsPunyLabel(value) ||
-    LabelUnicode.IsUnicodeLabel(value)
-  )
 }
 // ------------------------------------------------------------------
 // NormalizeHostname
@@ -63,10 +59,19 @@ function NormalizeHostname(value: string): string {
 // IsIdnHostname
 // ------------------------------------------------------------------
 export function IsIdnHostname(value: string): boolean {
-  if (value.length === 0 || value.includes(' ')) return false
+  if (value.length === 0 || value.length > Syntax.MAX_FORMAT_LENGTH || value.includes(' ')) return false
   const normalized = NormalizeHostname(value)
   if (normalized.length > 253) return false
   const labels = normalized.split('.')
-  const hasBidiChars = labels.some((label) => FormatBidi.HasBidiChars(label))
-  return labels.every((label) => IsLabel(label) && (!hasBidiChars || FormatBidi.SatisfiesBidiRule(label)))
+  let hasBidiChars = false
+  for (let i = 0; i < labels.length; i++) {
+    const label = labels[i]
+    if (!IsValidLabelLength(label)) return false
+    const isPunyLabel = FormatPuny.IsAcePrefixed(label)
+    const unicodeLabel = isPunyLabel ? LabelPuny.DecodePunyPayload(label) : label
+    if (unicodeLabel === null || !LabelUnicode.IsUnicodeLabel(unicodeLabel, false)) return false
+    labels[i] = unicodeLabel
+    hasBidiChars ||= FormatBidi.HasRightToLeftCharacters(unicodeLabel)
+  }
+  return !hasBidiChars || labels.every((label) => FormatBidi.SatisfiesBidiRule(label))
 }

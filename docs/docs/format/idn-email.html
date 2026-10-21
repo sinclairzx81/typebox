@@ -1,5 +1,7 @@
 <h1>Format.IsIdnEmail</h1>
 <p>Returns true if the string is an internationalized email address described by <a href="https://datatracker.ietf.org/doc/html/rfc4952">RFC 4952</a> and supported by the SMTP extension in <a href="https://datatracker.ietf.org/doc/html/rfc6531">RFC 6531</a>.</p>
+<h2>Maximum Length</h2>
+<p>Inputs longer than 65,536 UTF-16 code units return false. Use JSON Schema&#39;s <code>maxLength</code> keyword to set a lower limit.</p>
 <h2>Function</h2>
 <p>Test with format function</p>
 <pre><code class="language-typescript">import Format from &#39;typebox/format&#39;

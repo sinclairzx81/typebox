@@ -30,9 +30,10 @@ import * as Idna from './idna/index.ts'
 
 /**
  * Returns true if the value is a valid hostname.
- * @specification https://tools.ietf.org/html/rfc1123
- * @specification https://tools.ietf.org/html/rfc5891
- * @specification https://tools.ietf.org/html/rfc5892
+ * @specification https://www.rfc-editor.org/rfc/rfc1123.html
+ * @specification https://datatracker.ietf.org/doc/html/rfc5891
+ * @specification https://datatracker.ietf.org/doc/html/rfc5892
+ * @specification https://datatracker.ietf.org/doc/html/rfc5893
  */
 export function IsHostname(value: string): boolean {
   return Idna.IsHostname(value)

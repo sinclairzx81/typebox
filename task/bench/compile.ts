@@ -1,26 +1,23 @@
-import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { type TSchema } from '@sinclair/typebox'
-import { Compile } from 'typebox/compile'
+import { Compile } from 'typebox/schema'
 import Ajv from 'ajv'
 
-import { Benchmark } from './benchmark/index.ts'
-import { Cases } from './cases.ts'
+import * as Harness from './harness/index.ts'
+import { StructuralCases } from './cases.ts'
 
 const ajv8 = new Ajv.Ajv()
-const benchmarks: Record<string, any> = {}
-for(const key of Object.getOwnPropertyNames(Cases)) {
-  const test = Cases[key as never] as () => TSchema
-  benchmarks[test.name] = {
-    //'TB0X': () => TypeCompiler.Compile(test()),
-    'TB1X': () => Compile(test()),
-    'AJV8': () => ajv8.compile(test())
+const benchmarks: Record<string, Record<string, () => void>> = {}
+for (const [name, makeSchema] of Object.entries(StructuralCases)) {
+  benchmarks[name] = {
+    TB1X: () => Compile(makeSchema()),
+    AJV8: () => ajv8.compile(makeSchema()),
   }
 }
 /** Runs Compile Benchmarks */
 export function CompileTest() {
-  const result = Benchmark.Run(1000, benchmarks)
-  Benchmark.Print(result, {
+  const result = Harness.Run(1000, benchmarks)
+  Harness.Print(result, {
     units: 'OperationsPerSecond',
-    formatResults: true
+    formatResults: true,
+    rowHeader: 'Compile',
   })
 }

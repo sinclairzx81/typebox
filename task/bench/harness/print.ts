@@ -36,12 +36,9 @@ function FormatResults(
   const { results, iterations } = benchmark
   const formatted: Record<string, Record<string, string>> = {}
 
-  const rawNumeric: Record<string, Record<string, number>> = {}
-
   // Collect raw values
   for (const [testName, impls] of Object.entries(results)) {
     formatted[testName] = {}
-    rawNumeric[testName] = {}
 
     for (const [implName, elapsed] of Object.entries(impls)) {
       if (typeof elapsed === 'number' && !isNaN(elapsed)) {
@@ -57,8 +54,6 @@ function FormatResults(
             raw = iterations / elapsed
             break
         }
-
-        rawNumeric[testName][implName] = raw
 
         const formattedRaw = formatValues
           ? FormatNumber(raw)
@@ -109,7 +104,8 @@ function FormatNumber(value: number): string {
 
 function PrintTable(
   formattedResults: Record<string, Record<string, string>>,
-  rawResults: Record<string, Record<string, number | null>>
+  rawResults: Record<string, Record<string, number | null>>,
+  rowHeader: string
 ): void {
 const reset = '\x1b[0m'
 const lightYellow = '\x1b[93m'
@@ -120,7 +116,7 @@ const dim = '\x1b[2m\x1b[34m'  // dim + blue
     Object.values(formattedResults).flatMap(impls => Object.keys(impls))
   ))
 
-  const header = ['Test', ...implementations]
+  const header = [rowHeader, ...implementations]
   const rows: string[][] = [header]
 
   // Build output rows
@@ -218,5 +214,5 @@ export function Print(result: BenchmarkResult, options?: PrintOptions): void {
     }
   }
 
-  PrintTable(formatted, rawResults)
+  PrintTable(formatted, rawResults, options?.rowHeader ?? 'Test')
 }

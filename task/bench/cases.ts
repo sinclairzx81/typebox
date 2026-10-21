@@ -1,7 +1,10 @@
 import { Type, type TSchema } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
-export const Cases = {
+// ------------------------------------------------------------------
+// StructuralCases
+// ------------------------------------------------------------------
+export const StructuralCases = {
   Boolean: () => Type.Boolean(),
   Number: () => Type.Number(),
   String: () => Type.String(),
@@ -24,7 +27,7 @@ export const Cases = {
       bool: Type.Boolean(),
     }),
   }),
-  Object_Close: () => Type.Object(Cases.Object_Open().properties, {
+  Object_Close: () => Type.Object(StructuralCases.Object_Open().properties, {
     additionalProperties: false,
   }),
   Object_Vector3: () => Type.Object({
@@ -33,9 +36,9 @@ export const Cases = {
     z: Type.Number(),
   }),
   Object_Basis3: () => Type.Object({
-    x: Cases.Object_Vector3(),
-    y: Cases.Object_Vector3(),
-    z: Cases.Object_Vector3(),
+    x: StructuralCases.Object_Vector3(),
+    y: StructuralCases.Object_Vector3(),
+    z: StructuralCases.Object_Vector3(),
   }),
   Intersect_And: () => Type.Intersect([
     Type.Number(),
@@ -66,25 +69,26 @@ export const Cases = {
     Type.Boolean(),
   ]),
   Tuple_Objects: () => Type.Tuple([
-    Cases.Object_Open(),
-    Cases.Object_Open(),
-    Cases.Object_Open(),
+    StructuralCases.Object_Open(),
+    StructuralCases.Object_Open(),
+    StructuralCases.Object_Open(),
   ]),
   Array_Numbers_4: () => Type.Array(Type.Number(), { minItems: 4 }),
   Array_Numbers_8: () => Type.Array(Type.Number(), { minItems: 8 }),
   Array_Numbers_16: () => Type.Array(Type.Number(), { minItems: 16 }),
-  Array_Objects_Open: () => Type.Array(Cases.Object_Open(), { minItems: 4 }),
-  Array_Objects_Close: () => Type.Array(Cases.Object_Close(), { minItems: 4 }),
+  Array_Objects_Open: () => Type.Array(StructuralCases.Object_Open(), { minItems: 4 }),
+  Array_Objects_Close: () => Type.Array(StructuralCases.Object_Close(), { minItems: 4 }),
 } as const
+
 // ------------------------------------------------------------------
-// Tests
+// StructuralTests
 // ------------------------------------------------------------------
-export const Tests = () => Object.getOwnPropertyNames(Cases).reduce<{
+export const StructuralTests = () => Object.getOwnPropertyNames(StructuralCases).reduce<{
   name: string
   type: TSchema,
   value: unknown
 }[]>((result, name) => {
-  const factory = Cases[name as never] as () => TSchema
+  const factory = StructuralCases[name as keyof typeof StructuralCases]
   const type = factory()
   const value = Value.Create(type)
   return [...result, { name, type, value }]
@@ -93,3 +97,29 @@ export const Tests = () => Object.getOwnPropertyNames(Cases).reduce<{
   type: TSchema,
   value: unknown
 }[])
+// ------------------------------------------------------------------
+// FormatCases
+// ------------------------------------------------------------------
+export const FormatCases = [
+  { name: 'DateTime', format: 'date-time', value: '2024-01-02T12:34:56Z' },
+  { name: 'Date', format: 'date', value: '2024-01-02' },
+  { name: 'Duration', format: 'duration', value: 'P1DT2H3M4S' },
+  { name: 'Email', format: 'email', value: 'user@example.com' },
+  { name: 'Hostname', format: 'hostname', value: 'example.com' },
+  { name: 'IdnEmail', format: 'idn-email', value: 'user@bücher.example' },
+  { name: 'IdnHostname', format: 'idn-hostname', value: 'bücher.example' },
+  { name: 'IPv4', format: 'ipv4', value: '192.168.0.1' },
+  { name: 'IPv6', format: 'ipv6', value: '2001:db8::1' },
+  { name: 'IriReference', format: 'iri-reference', value: 'https://例え.テスト/道?q=値' },
+  { name: 'Iri', format: 'iri', value: 'https://例え.テスト/道?q=値' },
+  { name: 'JsonPointerUriFragment', format: 'json-pointer-uri-fragment', value: '#/a~1b' },
+  { name: 'JsonPointer', format: 'json-pointer', value: '/foo/bar' },
+  { name: 'Regex', format: 'regex', value: '^[a-z]+$' },
+  { name: 'RelativeJsonPointer', format: 'relative-json-pointer', value: '1/foo' },
+  { name: 'Time', format: 'time', value: '12:34:56Z' },
+  { name: 'UriReference', format: 'uri-reference', value: 'https://example.com/a?b=c#d' },
+  { name: 'UriTemplate', format: 'uri-template', value: 'https://example.com/{id}' },
+  { name: 'Uri', format: 'uri', value: 'https://example.com/a?b=c#d' },
+  { name: 'Url', format: 'url', value: 'https://example.com/a?b=c#d' },
+  { name: 'Uuid', format: 'uuid', value: '550e8400-e29b-41d4-a716-446655440000' },
+] as const

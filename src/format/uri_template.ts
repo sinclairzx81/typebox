@@ -26,15 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file no-control-regex
-
-const UriTemplate =
-  /^(?:(?:[^\x00-\x20"<>%\\^`{|}\x7f]|%[0-9a-f]{2})|\{[+#./;?&=,!@|]?(?:[a-z0-9_]|%[0-9a-f]{2})+(?:\.(?:[a-z0-9_]|%[0-9a-f]{2})+)*(?::[1-9]\d{0,3}|\*)?(?:,(?:[a-z0-9_]|%[0-9a-f]{2})+(?:\.(?:[a-z0-9_]|%[0-9a-f]{2})+)*(?::[1-9]\d{0,3}|\*)?)*\})*$/i
+import * as Syntax from './syntax/index.ts'
 
 /**
- * Returns true if the value is a valid Uri Template
+ * Returns true if the value is a URI template.
  * @specification https://datatracker.ietf.org/doc/html/rfc6570
  */
 export function IsUriTemplate(value: string): boolean {
-  return UriTemplate.test(value)
+  return Syntax.FORMAT_URI_TEMPLATE.test(value)
 }

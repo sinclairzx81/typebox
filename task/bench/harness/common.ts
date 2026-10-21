@@ -26,6 +26,18 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * as Benchmark from './benchmark.ts'
-import * as Benchmark from './benchmark.ts'
-export default Benchmark
+export type TestResultsRaw = Record<string, Record<string, number>>
+
+export type Units = 'ElapsedTime' | 'OperationsPerSecond' | 'OperationsPerMillisecond'
+
+export interface PrintOptions {
+  units?: Units
+  formatResults?: boolean
+  /** Optional label for the leftmost table column. */
+  rowHeader?: string
+}
+
+export interface BenchmarkResult {
+  iterations: number
+  results: TestResultsRaw
+}

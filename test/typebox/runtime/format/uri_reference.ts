@@ -46,3 +46,7 @@ Test('Should UriReference 10', () => {
 Test('Should UriReference 11', () => {
   Assert.IsFalse(Format.IsUriReference('exa mple.com')) // space
 })
+
+Test('Should UriReference 12', () => {
+  Assert.IsFalse(Format.IsUriReference('//[not-ip]/path')) // invalid IP-literal
+})

@@ -157,3 +157,11 @@ Test('Should IsUri 38', () => {
 Test('Should IsUri 39', () => {
   Assert.IsTrue(Format.IsUri('http://xn--fsqu00a.xn--0zwm56d')) // Punycode
 })
+
+Test('Should IsUri 40', () => {
+  Assert.IsFalse(Format.IsUri('http://[not-ip]/')) // invalid IP-literal
+})
+
+Test('Should IsUri 41', () => {
+  Assert.IsFalse(Format.IsUri('http://[2001:db8::7]:abc/')) // invalid port after IP-literal
+})

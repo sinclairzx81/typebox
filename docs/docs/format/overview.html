@@ -1,10 +1,241 @@
 <h1>Format</h1>
-<p>Standards-Based RFC String Validation</p>
+<p>Standard String Format Validation</p>
 <h2>Overview</h2>
-<p>The Format module contains functions to validate string formats defined in Section 7.3 (<a href="https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.7.3">Defined Formats</a>) of the JSON Schema specification. These formats are integrated into TypeBox&#39;s JSON Schema validation infrastructure, but can also be used independently.</p>
+<p>The Format module contains validators for the string formats defined in Section 7.3 (<a href="https://json-schema.org/draft/2020-12/json-schema-validation">Defined Formats</a>) of the JSON Schema specification. These validators are integrated into TypeBox&#39;s JSON Schema validation infrastructure, but can also be used independently to check strings without invoking JSON Schema validation.</p>
 <h2>Example</h2>
 <p>The Format module is available via a submodule import.</p>
 <pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
 
 const A = Format.IsEmail(&#39;user@domain.com&#39;)     // true
 </code></pre>
+<h2>Length</h2>
+<p>Formats that check strings of arbitrary length are written to scale approximately linearly with respect to input length and are uncapped by default. The only exceptions are IsIdnHostname and IsIdnEmail, which return false for input longer than 65,536 UTF-16 code units due to their complexity.</p>
+<blockquote>
+<p>⚠️ Even with linear scaling, whoever supplies untrusted input controls how much work you do. It is recommended that you limit input length before validation, either by comparing the length to a maximum or by using the maxLength keyword in JSON Schema. Choose the limit with these costs in mind: IsRegex takes about 1.9 ms at 256K, and IsIdnHostname takes about 4.3 ms at 64K. Also note that maxLength counts Unicode code points, while string length in many runtimes counts UTF-16 code units.</p>
+</blockquote>
+<h2>Performance</h2>
+<p>The table below shows measured time as input length increases, where K is 1,024 UTF-16 code units. Entries marked with an asterisk (*) belong to formats with a fixed maximum valid length. They reject longer input immediately, so their time is constant. Entries marked --- were not measured because the input exceeds the 65,536 limit.</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>4K</th>
+<th>8K</th>
+<th>16K</th>
+<th>32K</th>
+<th>64K</th>
+<th>128K</th>
+<th>256K</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IsDate</td>
+<td>0.14 µs</td>
+<td>0.11 µs</td>
+<td>0.11 µs</td>
+<td>0.10 µs</td>
+<td>0.13 µs</td>
+<td>0.12 µs</td>
+<td>0.14 µs</td>
+</tr>
+<tr>
+<td>IsDateTime</td>
+<td>6.96 µs</td>
+<td>14.30 µs</td>
+<td>27.19 µs</td>
+<td>54.16 µs</td>
+<td>108.59 µs</td>
+<td>216.99 µs</td>
+<td>432.23 µs</td>
+</tr>
+<tr>
+<td>IsDuration</td>
+<td>4.46 µs</td>
+<td>8.76 µs</td>
+<td>17.39 µs</td>
+<td>34.64 µs</td>
+<td>92.99 µs</td>
+<td>185.39 µs</td>
+<td>370.92 µs</td>
+</tr>
+<tr>
+<td>IsEmail</td>
+<td>14.68 µs</td>
+<td>29.01 µs</td>
+<td>57.95 µs</td>
+<td>115.09 µs</td>
+<td>230.08 µs</td>
+<td>459.46 µs</td>
+<td>928.04 µs</td>
+</tr>
+<tr>
+<td>IsHostname</td>
+<td>0.10 µs*</td>
+<td>0.06 µs*</td>
+<td>0.12 µs*</td>
+<td>0.06 µs*</td>
+<td>0.07 µs*</td>
+<td>0.07 µs*</td>
+<td>0.13 µs*</td>
+</tr>
+<tr>
+<td>IsIdnEmail</td>
+<td>34.20 µs</td>
+<td>65.13 µs</td>
+<td>127.55 µs</td>
+<td>252.00 µs</td>
+<td>501.40 µs</td>
+<td>---</td>
+<td>---</td>
+</tr>
+<tr>
+<td>IsIdnHostname</td>
+<td>197.67 µs</td>
+<td>470.74 µs</td>
+<td>1078.67 µs</td>
+<td>2190.45 µs</td>
+<td>4392.38 µs</td>
+<td>---</td>
+<td>---</td>
+</tr>
+<tr>
+<td>IsIPv4</td>
+<td>0.10 µs*</td>
+<td>0.05 µs*</td>
+<td>0.24 µs*</td>
+<td>0.05 µs*</td>
+<td>0.06 µs*</td>
+<td>0.05 µs*</td>
+<td>0.04 µs*</td>
+</tr>
+<tr>
+<td>IsIPv6</td>
+<td>0.28 µs*</td>
+<td>0.26 µs*</td>
+<td>0.33 µs*</td>
+<td>0.26 µs*</td>
+<td>0.26 µs*</td>
+<td>0.27 µs*</td>
+<td>0.24 µs*</td>
+</tr>
+<tr>
+<td>IsIriReference</td>
+<td>10.09 µs</td>
+<td>20.09 µs</td>
+<td>39.16 µs</td>
+<td>77.86 µs</td>
+<td>156.21 µs</td>
+<td>313.04 µs</td>
+<td>626.67 µs</td>
+</tr>
+<tr>
+<td>IsIri</td>
+<td>7.80 µs</td>
+<td>14.60 µs</td>
+<td>28.67 µs</td>
+<td>56.94 µs</td>
+<td>114.33 µs</td>
+<td>229.14 µs</td>
+<td>457.22 µs</td>
+</tr>
+<tr>
+<td>IsJsonPointerUriFragment</td>
+<td>15.95 µs</td>
+<td>30.89 µs</td>
+<td>62.01 µs</td>
+<td>123.62 µs</td>
+<td>247.00 µs</td>
+<td>494.02 µs</td>
+<td>989.88 µs</td>
+</tr>
+<tr>
+<td>IsJsonPointer</td>
+<td>13.63 µs</td>
+<td>26.96 µs</td>
+<td>53.97 µs</td>
+<td>107.64 µs</td>
+<td>228.91 µs</td>
+<td>461.82 µs</td>
+<td>919.16 µs</td>
+</tr>
+<tr>
+<td>IsRegex</td>
+<td>32.56 µs</td>
+<td>60.49 µs</td>
+<td>116.58 µs</td>
+<td>228.15 µs</td>
+<td>451.59 µs</td>
+<td>967.63 µs</td>
+<td>1900.47 µs</td>
+</tr>
+<tr>
+<td>IsRelativeJsonPointer</td>
+<td>12.76 µs</td>
+<td>25.12 µs</td>
+<td>49.97 µs</td>
+<td>99.86 µs</td>
+<td>200.14 µs</td>
+<td>402.09 µs</td>
+<td>800.49 µs</td>
+</tr>
+<tr>
+<td>IsTime</td>
+<td>14.93 µs</td>
+<td>31.74 µs</td>
+<td>63.34 µs</td>
+<td>126.68 µs</td>
+<td>253.24 µs</td>
+<td>505.73 µs</td>
+<td>957.35 µs</td>
+</tr>
+<tr>
+<td>IsUriReference</td>
+<td>25.18 µs</td>
+<td>49.83 µs</td>
+<td>100.01 µs</td>
+<td>199.41 µs</td>
+<td>398.85 µs</td>
+<td>800.47 µs</td>
+<td>1595.42 µs</td>
+</tr>
+<tr>
+<td>IsUriTemplate</td>
+<td>12.31 µs</td>
+<td>25.00 µs</td>
+<td>49.77 µs</td>
+<td>95.77 µs</td>
+<td>200.25 µs</td>
+<td>398.54 µs</td>
+<td>767.38 µs</td>
+</tr>
+<tr>
+<td>IsUri</td>
+<td>21.59 µs</td>
+<td>42.40 µs</td>
+<td>84.44 µs</td>
+<td>169.03 µs</td>
+<td>338.28 µs</td>
+<td>673.81 µs</td>
+<td>1341.51 µs</td>
+</tr>
+<tr>
+<td>IsUrl</td>
+<td>4.04 µs</td>
+<td>7.82 µs</td>
+<td>15.45 µs</td>
+<td>30.69 µs</td>
+<td>61.12 µs</td>
+<td>122.84 µs</td>
+<td>243.70 µs</td>
+</tr>
+<tr>
+<td>IsUuid</td>
+<td>0.31 µs</td>
+<td>0.22 µs</td>
+<td>0.33 µs</td>
+<td>0.22 µs</td>
+<td>0.25 µs</td>
+<td>0.21 µs</td>
+<td>0.21 µs</td>
+</tr>
+</tbody></table>

@@ -26,11 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-/**
- * Returns true if the value is a valid Uniform Resource Locator
- * @specification https://datatracker.ietf.org/doc/html/rfc3986
- * @specification https://datatracker.ietf.org/doc/html/rfc3987
- */
+import * as Syntax from './syntax/index.ts'
+
+/** Returns true if the value is a valid URL. */
 export function IsUrl(value: string): boolean {
-  return URL.canParse(value)
+  return Syntax.FORMAT_URL.test(value)
 }

@@ -1,6 +1,6 @@
 # Format.IsTime
 
-Returns true if the string is an [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) time component.
+Returns true if the string is a time component defined by [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339).
 
 ## Function
 

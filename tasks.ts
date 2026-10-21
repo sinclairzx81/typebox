@@ -7,6 +7,7 @@ import * as Syntax from './task/syntax/index.ts'
 import * as Website from './task/website/website.ts'
 import * as Bench from './task/bench/index.ts'
 import * as Range from './task/range/index.ts'
+import * as linear from './task/linear/index.ts'
 import * as Metrics from './task/metrics/index.ts'
 import * as Build from './task/build/build.ts'
 import * as Test from './task/test/index.ts'
@@ -123,6 +124,10 @@ Task.run('automata', () => Scripts.Automata.Run())
 // Peano
 // ------------------------------------------------------------------
 Task.run('peano', () => Scripts.Peano.Run())
+// ------------------------------------------------------------------
+// Linear
+// ------------------------------------------------------------------
+Task.run('linear', () => linear.Check())
 // ------------------------------------------------------------------
 // Metrics
 // ------------------------------------------------------------------

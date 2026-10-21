@@ -1,32 +1,25 @@
-import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { Compile } from 'typebox/compile'
-import { Check } from 'typebox/value'
+import { Compile } from 'typebox/schema'
 import Ajv from 'ajv'
-import { Benchmark } from './benchmark/index.ts'
-import { Tests } from './cases.ts'
+
+import * as Harness from './harness/index.ts'
+import { StructuralTests } from './cases.ts'
 
 /** Runs Validate Benchmarks */
 export function ValidateTest() {
   const ajv = new Ajv.Ajv()
-  const benchmarks: Record<string, any> = {}
-  for(const test of Tests()) {
-    const tb0x = TypeCompiler.Compile(test.type)
+  const benchmarks: Record<string, Record<string, () => void>> = {}
+  for (const test of StructuralTests()) {
     const tb1x = Compile(test.type)
     const ajv8 = ajv.compile(test.type)
     benchmarks[test.name] = {
-      // 'TypeBox v1': () => typeboxV1.Check(test.value),
-      // 'TypeBox v2': () => typeboxV2.Check(test.value),
-      // 'Ajv': () => ajvCompiled(test.value),
-      // 'Dynamic v1': () => Value.Check(test.type, test.value),
-      // 'Dynamic v2': () => Check(test.type, test.value),
-      // 'TB0X': () => tb0x.Check(test.value),
-      'TB1X': () => tb1x.Check(test.value),
-      'AJV8': () => ajv8(test.value),
+      TB1X: () => tb1x.Check(test.value),
+      AJV8: () => ajv8(test.value),
     }
   }
-  const result = Benchmark.Run(5_000_000, benchmarks)
-  Benchmark.Print(result, {
+  const result = Harness.Run(5_000_000, benchmarks)
+  Harness.Print(result, {
     units: 'OperationsPerSecond',
-    formatResults: true
+    formatResults: true,
+    rowHeader: 'Validate',
   })
 }

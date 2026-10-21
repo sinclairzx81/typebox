@@ -2,6 +2,10 @@
 
 Returns true if the string is an internationalized email address described by [RFC 4952](https://datatracker.ietf.org/doc/html/rfc4952) and supported by the SMTP extension in [RFC 6531](https://datatracker.ietf.org/doc/html/rfc6531).
 
+## Maximum Length
+
+Inputs longer than 65,536 UTF-16 code units return false. Use JSON Schema's `maxLength` keyword to set a lower limit.
+
 ## Function
 
 Test with format function

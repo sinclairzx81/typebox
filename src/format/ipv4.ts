@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const IPv4 = /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/
+import * as Syntax from './syntax/index.ts'
 
 /**
  * Returns true if the value is an IPv4 address
  * @specification https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2
  */
 export function IsIPv4(value: string): boolean {
-  return IPv4.test(value)
+  return Syntax.FORMAT_IPV4.test(value)
 }

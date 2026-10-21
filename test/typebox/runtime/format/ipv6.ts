@@ -89,3 +89,15 @@ Test('Should IsIPv6 17', () => {
   // Segment contains a space
   Assert.IsFalse(Format.IsIPv6(''))
 })
+
+Test('Should IsIPv6 18', () => {
+  const address = 'ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255'
+  Assert.IsEqual(address.length, 45)
+  Assert.IsTrue(Format.IsIPv6(address))
+})
+
+Test('Should IsIPv6 19', () => {
+  const address = 'ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255'
+  Assert.IsFalse(Format.IsIPv6(`${address}0`))
+  Assert.IsFalse(Format.IsIPv6('0'.repeat(256)))
+})

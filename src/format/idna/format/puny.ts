@@ -26,8 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Pattern from '../pattern/pattern.ts'
-
 // ------------------------------------------------------------------
 // PunyCode (RFC 3492)
 // ------------------------------------------------------------------
@@ -109,27 +107,14 @@ export function Decode(value: string): string {
   return String.fromCodePoint(...output)
 }
 // ------------------------------------------------------------------
-// DigitToChar
-// ------------------------------------------------------------------
-function DigitToChar(digit: number): string {
-  return digit < 26 ? String.fromCharCode(digit + 0x61) : String.fromCharCode(digit - 26 + 0x30)
-}
-// ------------------------------------------------------------------
-// Encode
+// EncodedLength
 //
-// Encodes a Unicode string into its Punycode payload (the part that
-// follows the 'xn--' ACE prefix). Used to compute the true A-label
-// length of a U-label, since the 63-octet label length limit (RFC
-// 5891 §4.2.4) applies to the encoded form, not the code point count.
+// Counts the Punycode payload without constructing the encoded string.
 // ------------------------------------------------------------------
-const RE_REPLACE_NON_ASCII = new RegExp(Pattern.RE_NON_ASCII.source, 'gu')
-export function Encode(input: string): string {
-  // Extract basic ASCII characters and set initial output array state
-  const basic = input.replace(RE_REPLACE_NON_ASCII, '')
-  const basicLength = basic.length
-  const result = basicLength > 0 ? [basic, '-'] : []
-  // Extract unicode codepoints
-  const codePoints = Array.from(input, (char) => char.codePointAt(0)!)
+export function EncodedLength(codePoints: number[]): number {
+  let basicLength = 0
+  for (const cp of codePoints) if (cp < 0x80) basicLength++
+  let length = basicLength > 0 ? basicLength + 1 : 0
   let n = PUNYCODE_INITIAL_N
   let delta = 0
   let bias = PUNYCODE_INITIAL_BIAS
@@ -148,11 +133,10 @@ export function Encode(input: string): string {
         for (let k = PUNYCODE_BASE;; k += PUNYCODE_BASE) {
           const t = k <= bias ? PUNYCODE_TMIN : k >= bias + PUNYCODE_TMAX ? PUNYCODE_TMAX : k - bias
           if (q < t) break
-          const digit = t + ((q - t) % (PUNYCODE_BASE - t))
-          result.push(DigitToChar(digit))
+          length++
           q = Math.floor((q - t) / (PUNYCODE_BASE - t))
         }
-        result.push(DigitToChar(q))
+        length++
         bias = Adapt(delta, handledCPCount + 1, handledCPCount === basicLength)
         delta = 0
         handledCPCount++
@@ -161,5 +145,5 @@ export function Encode(input: string): string {
     delta++
     n++
   }
-  return result.join('')
+  return length
 }

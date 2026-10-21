@@ -26,14 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const IdnEmail =
-  /^(?:[A-Za-z0-9!#$%&'*+\/=?^_`{|}~\u{0080}-\u{10FFFF}-]+(?:\.[A-Za-z0-9!#$%&'*+\/=?^_`{|}~\u{0080}-\u{10FFFF}-]+)*|"(?:[^"\\]|\\.)*")@[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,62})(?<!-)(?:\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,62})(?<!-))*$/iu
+import * as Syntax from './syntax/index.ts'
+import * as Idna from './idna/index.ts'
 
 /**
- * Returns true if the value is an IdnEmail
+ * Returns true if the value is an internationalized email address.
  * @specification https://datatracker.ietf.org/doc/html/rfc4952
  * @specification https://datatracker.ietf.org/doc/html/rfc6531
  */
 export function IsIdnEmail(value: string): boolean {
-  return IdnEmail.test(value.normalize('NFC'))
+  if (value.length > Syntax.MAX_FORMAT_LENGTH) return false
+  const normalized = value.normalize('NFC')
+  const index = normalized.lastIndexOf('@')
+  return (
+    index !== -1 &&
+    Syntax.FORMAT_IDN_EMAIL_LOCAL.test(normalized.slice(0, index)) &&
+    Idna.IsIdnHostname(normalized.slice(index + 1))
+  )
 }

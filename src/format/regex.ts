@@ -27,8 +27,8 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 /**
- * Returns true if the value is a regular expression string pattern
- * @specification https://ecma-international.org/ecma-262
+ * Returns true if the value is a valid ECMAScript regular expression pattern.
+ * @specification https://tc39.es/ecma262/
  */
 export function IsRegex(value: string): boolean {
   try {

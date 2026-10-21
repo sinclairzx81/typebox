@@ -98,6 +98,10 @@ Test('Should IsIdnEmail 21', () => {
 Test('Should IsIdnEmail 22', () => {
   Assert.IsTrue(Format.IsIdnEmail('test@россия.рф'))
 })
+
+Test('Should IsIdnEmail 23', () => {
+  Assert.IsFalse(Format.IsIdnEmail('"a\r\nBcc: x"@example.com'))
+})
 Test('Should IsIdnEmail 23', () => {
   Assert.IsTrue(Format.IsIdnEmail('user@東京.jp'))
 })
@@ -135,4 +139,29 @@ Test('Should IsIdnEmail 32', () => {
 })
 Test('Should IsIdnEmail 33', () => {
   Assert.IsFalse(Format.IsIdnEmail('user@..例子.测试'))
+})
+
+Test('Should IsIdnEmail validate IDNA context rules', () => {
+  Assert.IsTrue(Format.IsIdnEmail('user@ll·l.com'))
+  Assert.IsFalse(Format.IsIdnEmail('user@l·a.com'))
+})
+
+Test('Should IsIdnEmail reject invalid Punycode labels', () => {
+  Assert.IsFalse(Format.IsIdnEmail('user@xn--a--b.com'))
+})
+
+const MAX_FORMAT_LENGTH = 65536
+
+Test('Should IsIdnEmail accept the maximum input length', () => {
+  const suffix = '@例子.测试'
+  const email = `${'a'.repeat(MAX_FORMAT_LENGTH - suffix.length)}${suffix}`
+  Assert.IsEqual(email.length, MAX_FORMAT_LENGTH)
+  Assert.IsTrue(Format.IsIdnEmail(email))
+})
+
+Test('Should IsIdnEmail return false for inputs over the maximum length', () => {
+  const suffix = '@例子.测试'
+  const email = `${'a'.repeat(MAX_FORMAT_LENGTH + 1 - suffix.length)}${suffix}`
+  Assert.IsEqual(email.length, MAX_FORMAT_LENGTH + 1)
+  Assert.IsFalse(Format.IsIdnEmail(email))
 })
