@@ -320,3 +320,60 @@ Test('Should Union 21', () => {
     Assert.IsEqual(E, { x: 1, y: 2 })
   })
 }
+// ------------------------------------------------------------------
+// Codec Before Null: Select Member on Unencoded Value
+// https://github.com/sinclairzx81/typebox/issues/1706
+// ------------------------------------------------------------------
+{
+  const StrictDate = Type.Codec(Type.String())
+    .Decode((value) => new Date(value))
+    .Encode((value) => {
+      if (!(value instanceof Date)) throw new Error('Date must be a Date object')
+      return value.toISOString()
+    })
+  const Passthrough = Type.Codec(Type.String())
+    .Decode((value) => JSON.parse(value))
+    .Encode((value) => JSON.stringify(value))
+  Test('Should Union 22', () => {
+    const T = Type.Union([StrictDate, Type.Null()])
+    const E = Value.Encode(T, null)
+    Assert.IsEqual(E, null)
+  })
+  Test('Should Union 23', () => {
+    const T = Type.Union([StrictDate, Type.Null()])
+    const E = Value.Encode(T, new Date('2024-01-01T00:00:00.000Z'))
+    Assert.IsEqual(E, '2024-01-01T00:00:00.000Z')
+  })
+  Test('Should Union 24', () => {
+    const T = Type.Union([Passthrough, Type.Null()])
+    const E = Value.Encode(T, null)
+    Assert.IsEqual(E, null)
+  })
+  Test('Should Union 25', () => {
+    const T = Type.Union([Passthrough, Type.Null()])
+    const E = Value.Encode(T, { page: 2 })
+    Assert.IsEqual(E, '{"page":2}')
+  })
+  Test('Should Union 26', () => {
+    const Shared = { x: 'a' }
+    const T = Type.Codec(Type.Union([Type.Object({ x: Passthrough }), Type.Null()]))
+      .Decode((value) => value).Encode(() => Shared)
+    Assert.IsEqual(Value.Encode(T, null), { x: '"a"' })
+    Assert.IsEqual(Shared, { x: 'a' })
+  })
+  Test('Should Union 27', () => {
+    const A = Type.Codec(Type.String()).Decode((value) => `a:${value}`)
+      .Encode((value) => (value.startsWith('a:') ? value.slice(2) : null) as never)
+    const B = Type.Codec(Type.String()).Decode((value) => `b:${value}`)
+      .Encode((value) => (value.startsWith('b:') ? value.slice(2) : null) as never)
+    Assert.IsEqual(Value.Encode(Type.Union([A, B]), 'b:x'), 'x')
+    Assert.IsEqual(Value.Encode(Type.Union([B, A]), 'b:x'), 'x')
+  })
+  Test('Should Union 28', () => {
+    let Calls = 0
+    const A = Type.Codec(Type.String()).Decode((value) => value)
+      .Encode(() => (++Calls === 1 ? null : 'wrong') as never)
+    Assert.IsEqual(Value.Encode(Type.Union([A, Type.Null()]), 'x'), 'x')
+    Assert.IsEqual(Calls, 1)
+  })
+}
