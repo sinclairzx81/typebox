@@ -126,6 +126,16 @@
         "valid": false
       },
       {
+        "description": "leading space is invalid",
+        "data": " example.com",
+        "valid": false
+      },
+      {
+        "description": "space inside a label is invalid",
+        "data": "ex ample.com",
+        "valid": false
+      },
+      {
         "description": "invalid non-ASCII KELVIN SIGN (U+212A)",
         "data": "Kelvin.example.com",
         "valid": false

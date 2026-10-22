@@ -337,6 +337,21 @@
         "valid": false
       },
       {
+        "description": "trailing newline is invalid",
+        "data": "example.com\n",
+        "valid": false
+      },
+      {
+        "description": "leading space is invalid",
+        "data": " example.com",
+        "valid": false
+      },
+      {
+        "description": "space inside a label is invalid",
+        "data": "ex ample.com",
+        "valid": false
+      },
+      {
         "description": "fullwidth digits are mapped to ASCII digits",
         "comment": "IdnaMappingTable.txt maps U+FF11 to 0031, so this label maps to 123",
         "data": "１２３",

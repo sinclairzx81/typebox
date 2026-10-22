@@ -241,6 +241,11 @@
         "description": "a trailing newline after a valid URI is invalid",
         "data": "http://foo.bar/\n",
         "valid": false
+      },
+      {
+        "description": "an IPv6 address without enclosing brackets is invalid",
+        "data": "http://2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+        "valid": false
       }
     ]
   }

@@ -54,6 +54,21 @@
         "description": "empty string",
         "data": "",
         "valid": false
+      },
+      {
+        "description": "trailing newline is invalid",
+        "data": "example.com\n",
+        "valid": false
+      },
+      {
+        "description": "leading space is invalid",
+        "data": " example.com",
+        "valid": false
+      },
+      {
+        "description": "space inside a label is invalid",
+        "data": "ex ample.com",
+        "valid": false
       }
     ]
   }
