@@ -263,6 +263,16 @@ Test('Should diff PROPERTY insert, update, and delete order preserved', () => {
   const E = [Insert('/a', 2), Insert('/b', 2), Insert('/c', 2), Update('/w', 2), Delete('/x'), Delete('/y'), Delete('/z')]
   Assert.IsEqual(D, E)
 })
+Test('Should round trip slash and tilde property keys', () => {
+  for (const key of ['a/b', 'a~b', 'a~1b', '~/']) {
+    for (const [A, B] of [[{}, { [key]: 1 }], [{ [key]: 1 }, { [key]: 2 }], [{ [key]: 1 }, {}]]) {
+      Assert.IsEqual(Value.Patch(A, Value.Diff(A, B)), B)
+      const nestedA = { outer: [A] }
+      const nestedB = { outer: [B] }
+      Assert.IsEqual(Value.Patch(nestedA, Value.Diff(nestedA, nestedB)), nestedB)
+    }
+  }
+})
 // ----------------------------------------------------
 // Object Nested
 // ----------------------------------------------------
