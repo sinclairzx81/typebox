@@ -29,12 +29,22 @@ THE SOFTWARE.
 import { IsDate } from './date.ts'
 import { IsTime } from './time.ts'
 
+// ------------------------------------------------------------------
+// RFC 9557 DATE_TIME_SUFFIX
+// ------------------------------------------------------------------
+const DATE_TIME_SUFFIX =
+  /^(?:\[!?(?:(?!\.{1,2}[/\]])[A-Za-z._][A-Za-z._0-9+-]{0,13}(?:\/(?!\.{1,2}[/\]])[A-Za-z._][A-Za-z._0-9+-]{0,13})*|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])\](?:\[!?[a-z_][a-z_0-9-]*=[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*\])*|(?:\[!?[a-z_][a-z_0-9-]*=[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*\])*)$/
+
 /**
- * Returns true if the value is a ISO8601 DateTime string
+ * Returns true if the string is an [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) date-time with optional [RFC 9557](https://datatracker.ietf.org/doc/html/rfc9557) suffix.
  * @specification https://datatracker.ietf.org/doc/html/rfc3339
+ * @specification https://datatracker.ietf.org/doc/html/rfc9557
  * @example `2020-12-12T20:20:40+00:00`
  */
 export function IsDateTime(value: string): boolean {
-  const dateTime: string[] = value.split(/T/i)
-  return dateTime.length === 2 && IsDate(dateTime[0]) && IsTime(dateTime[1])
+  const index = value.indexOf('[')
+  const datetime = index === -1 ? value : value.slice(0, index)
+  if (index !== -1 && !DATE_TIME_SUFFIX.test(value.slice(index))) return false
+  const split: string[] = datetime.split(/T/i)
+  return split.length === 2 && IsDate(split[0]) && IsTime(split[1])
 }
