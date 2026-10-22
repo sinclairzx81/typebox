@@ -109,10 +109,9 @@ function* FromArray(path: string, left: unknown[], right: unknown): IterableIter
 // ------------------------------------------------------------------
 function* FromTypedArray(path: string, left: GlobalsGuard.TTypeArray, right: unknown): IterableIterator<TEdit> {
   const typeLeft = globalThis.Object.getPrototypeOf(left).constructor.name
-  const typeRight = globalThis.Object.getPrototypeOf(right).constructor.name
   const predicate = GlobalsGuard.IsTypeArray(right)
     && Guard.IsEqual(left.length, right.length)
-    && Guard.IsEqual(typeLeft, typeRight)
+    && Guard.IsEqual(typeLeft, globalThis.Object.getPrototypeOf(right).constructor.name)
   if (predicate) {
     for (let index = 0; index < Math.min(left.length, right.length); index++) {
       yield* FromValue(`${path}/${index}`, left[index], right[index])
