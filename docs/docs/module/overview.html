@@ -1,0 +1,61 @@
+<h1>Module</h1>
+<p>High Performance Validation Modules</p>
+<h2>Overview</h2>
+<p>TypeBox includes an ESM module compiler that builds standalone validation modules from Types and JSON Schema definitions. Each module is self-contained and type annotated, including only the code required to validate and reflect its types at runtime. Modules provide an AOT alternative to JIT, where statically built modules can be deployed to JIT-restricted environments while ensuring the highest possible performance.</p>
+<p>The module compiler is available as an optional submodule.</p>
+<pre><code class="language-typescript">import Module from &#39;typebox/module&#39;
+</code></pre>
+<h3>Build</h3>
+<p>The following builds three types into a standalone validation module.</p>
+<pre><code class="language-typescript">import Module from &#39;typebox/module&#39;
+
+const Math = Type.Script(`
+  type Vector4 = { x: number, y: number, z: number, w: number }
+  type Vector3 = { x: number, y: number, z: number }
+  type Vector2 = { x: number, y: number }
+`)
+
+const Code = Module.Build(Math)                    // TypeScript String
+
+SaveToDisk(&#39;./math.ts&#39;, Code)                      // Everything
+                                                   // bundled:   2.74 KB
+                                                   // minified:  1.50 KB
+                                                   // gzipped:   0.48 KB
+</code></pre>
+<h3>Import</h3>
+<p>Module types can be imported in the following way.</p>
+<pre><code class="language-typescript">// index.ts
+
+import { Vector3 } from &#39;./math.ts&#39;                // Vector3 only
+                                                   // bundled:   1.49 KB
+                                                   // minified:  0.88 KB
+                                                   // gzipped:   0.43 KB
+
+// Static
+
+const input: Vector3 = { x: 1, y: 0, z: 0 }        // Vector3 is also a static type
+
+// Check
+
+const valid = Vector3.Check(input)                 // const valid: boolean
+
+// Parse
+
+const result = Vector3.Parse(input)                // const result: {
+                                                   //   x: number
+                                                   //   y: number
+                                                   //   z: number
+                                                   // } = { ... }
+
+// Reflect
+
+const schema = Vector3.Schema()                    // const schema: {
+                                                   //   type: &#39;object&#39;,
+                                                   //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+                                                   //   properties: {
+                                                   //     x: { type: &#39;number&#39; },
+                                                   //     y: { type: &#39;number&#39; },
+                                                   //     z: { type: &#39;number&#39; }
+                                                   //   }
+                                                   // }
+</code></pre>

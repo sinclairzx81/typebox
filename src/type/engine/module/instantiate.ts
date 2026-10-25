@@ -106,5 +106,5 @@ export function ModuleInstantiate<Context extends TProperties, State extends TSt
   (context: Context, _state: State, declarations: Declarations, options: TSchemaOptions):
   TModuleInstantiate<Context, State, Declarations> {
   const instantiatedModule = InstantiateModule(context, declarations, options)
-  return instantiatedModule as never
+  return instantiatedModule
 }

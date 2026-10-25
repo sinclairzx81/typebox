@@ -50,7 +50,7 @@ type T = Type.Static<typeof T>              // type T = {
 
 [Documentation](https://sinclairzx81.github.io/typebox/)
 
-TypeBox is a runtime type system that creates in-memory JSON Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript and runtime checked using standard JSON Schema validation.
+TypeBox is a runtime type system that builds in-memory JSON Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript and runtime checked using standard JSON Schema validation.
 
 This library is designed to allow JSON Schema to compose similar to how types compose within TypeScript's type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.
 
@@ -61,7 +61,8 @@ License: MIT
 - [Type](#Type)
 - [Script](#Script)
 - [Schema](#Schema)
-- [Versions](#Versions)
+- [Module](#Module)
+- [Bench](#Bench)
 - [Contribute](#Contribute)
 
 
@@ -164,7 +165,7 @@ The compiler is available via optional sub module import.
 import Schema from 'typebox/schema'
 ```
 
-### Compile
+### Example
 
 The compiler accepts TypeBox types as well as plain JSON Schema objects, and returns a Validator instance which can be used to check values. The following compiles a Vector type.
 
@@ -191,6 +192,88 @@ const result = Vector.Parse({ x: 1, y: 0, z: 0 })  // const result: {
                                                    //   z: number
                                                    // }
 ```
+
+<a name="Module"></a>
+
+## Module
+
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/module/overview)
+
+TypeBox includes an ESM module compiler that builds standalone validation modules from Types and JSON Schema definitions. Each module is self-contained and type annotated, including only the code required to validate and reflect its types at runtime. Modules provide an AOT alternative to JIT, where statically built modules can be deployed to JIT-restricted environments while ensuring the highest possible performance.
+
+The module compiler is available as an optional submodule.
+
+```typescript
+import Module from 'typebox/module'
+```
+
+### Build
+
+The following builds three types into a standalone validation module.
+
+```typescript
+import Module from 'typebox/module'
+
+const Math = Type.Script(`
+  type Vector4 = { x: number, y: number, z: number, w: number }
+  type Vector3 = { x: number, y: number, z: number }
+  type Vector2 = { x: number, y: number }
+`)
+
+const Code = Module.Build(Math)                    // TypeScript String
+
+SaveToDisk('./math.ts', Code)                      // Everything
+                                                   // bundled:   2.74 KB
+                                                   // minified:  1.50 KB
+                                                   // gzipped:   0.48 KB
+```
+
+### Import
+
+Module types can be imported in the following way.
+
+```typescript
+// index.ts
+
+import { Vector3 } from './math.ts'                // Vector3 only
+                                                   // bundled:   1.49 KB
+                                                   // minified:  0.88 KB
+                                                   // gzipped:   0.43 KB
+
+// Static
+
+const input: Vector3 = { x: 1, y: 0, z: 0 }        // Vector3 is also a static type
+
+// Check
+
+const valid = Vector3.Check(input)                 // const valid: boolean
+
+// Parse
+
+const result = Vector3.Parse(input)                // const result: {
+                                                   //   x: number
+                                                   //   y: number
+                                                   //   z: number
+                                                   // } = { ... }
+
+// Reflect
+
+const schema = Vector3.Schema()                    // const schema: {
+                                                   //   type: 'object',
+                                                   //   required: ['x', 'y', 'z'],
+                                                   //   properties: {
+                                                   //     x: { type: 'number' },
+                                                   //     y: { type: 'number' },
+                                                   //     z: { type: 'number' }
+                                                   //   }
+                                                   // }
+```
+
+<a name="Bench"></a>
+
+## Bench
+
+The following are performance and compatibility metrics for TypeBox.
 
 ### Compatibility
 
@@ -257,36 +340,36 @@ TypeBox tracks performance against AJV8 only as the defacto performance standard
 
 ### Compile
 
-The following table shows compile performance for various JSON Schema structures. These benchmarks measure the time required to build and runtime JIT schematics. Faster compilation results in faster application startup.
+The following table shows compile performance for various JSON Schema structures. These benchmarks measure the time required to build and JIT evaluate schemas, where faster compilation results in faster application startup. They also measure module build performance (AOT), where TypeBox serializes validation infrastructure to standalone ESM modules.
 
 ```python
-┌──────────────────────┬──────────────┬──────────────┐
-│ Compile              │ TB1X         │ AJV8         │
-├──────────────────────┼──────────────┼──────────────┤
-│ Boolean              │  54.9K ops/s │     7K ops/s │
-│ Number               │ 154.2K ops/s │   7.8K ops/s │
-│ String               │ 161.4K ops/s │   9.7K ops/s │
-│ Null                 │ 111.9K ops/s │   8.9K ops/s │
-│ Literal_String       │  34.6K ops/s │   7.5K ops/s │
-│ Literal_Number       │  78.1K ops/s │   7.6K ops/s │
-│ Literal_Boolean      │  79.7K ops/s │   8.4K ops/s │
-│ Pattern              │  92.1K ops/s │   6.1K ops/s │
-│ Object_Open          │  18.6K ops/s │   1.3K ops/s │
-│ Object_Close         │    17K ops/s │    975 ops/s │
-│ Object_Vector3       │  33.3K ops/s │   3.4K ops/s │
-│ Object_Basis3        │  18.9K ops/s │    858 ops/s │
-│ Intersect_And        │  63.5K ops/s │   3.6K ops/s │
-│ Intersect_Structural │  25.7K ops/s │   1.7K ops/s │
-│ Union_Or             │  58.2K ops/s │   3.3K ops/s │
-│ Union_Structural     │  33.7K ops/s │     2K ops/s │
-│ Tuple_Values         │  19.5K ops/s │     2K ops/s │
-│ Tuple_Objects        │     4K ops/s │    388 ops/s │
-│ Array_Numbers_4      │  90.7K ops/s │   4.3K ops/s │
-│ Array_Numbers_8      │ 121.8K ops/s │   3.8K ops/s │
-│ Array_Numbers_16     │ 116.6K ops/s │   3.9K ops/s │
-│ Array_Objects_Open   │  22.6K ops/s │    802 ops/s │
-│ Array_Objects_Close  │  18.4K ops/s │    930 ops/s │
-└──────────────────────┴──────────────┴──────────────┘
+┌──────────────────────┬──────────────┬──────────────┬──────────────┐
+│ Test                 │ TB1X JIT     │ TB1X AOT     │ AJV8         │
+├──────────────────────┼──────────────┼──────────────┼──────────────┤
+│ Boolean              │  73.9K ops/s │  23.9K ops/s │   6.9K ops/s │
+│ Number               │ 159.3K ops/s │  36.6K ops/s │   8.6K ops/s │
+│ String               │  99.9K ops/s │  39.9K ops/s │   8.5K ops/s │
+│ Null                 │ 154.2K ops/s │    31K ops/s │   8.8K ops/s │
+│ Literal_String       │  94.3K ops/s │    26K ops/s │     6K ops/s │
+│ Literal_Number       │ 149.9K ops/s │  37.4K ops/s │   7.1K ops/s │
+│ Literal_Boolean      │ 177.6K ops/s │  31.3K ops/s │   7.7K ops/s │
+│ Pattern              │ 108.2K ops/s │  26.1K ops/s │   5.9K ops/s │
+│ Object_Open          │  20.4K ops/s │   8.8K ops/s │   1.2K ops/s │
+│ Object_Close         │  20.2K ops/s │   9.8K ops/s │    965 ops/s │
+│ Object_Vector3       │  65.5K ops/s │    18K ops/s │   2.2K ops/s │
+│ Object_Basis3        │  14.6K ops/s │   9.8K ops/s │   1.1K ops/s │
+│ Intersect_And        │    59K ops/s │  24.9K ops/s │   4.3K ops/s │
+│ Intersect_Structural │  23.6K ops/s │  11.3K ops/s │   1.1K ops/s │
+│ Union_Or             │  60.4K ops/s │    19K ops/s │   2.2K ops/s │
+│ Union_Structural     │  35.7K ops/s │  13.2K ops/s │   1.6K ops/s │
+│ Tuple_Values         │  49.6K ops/s │    20K ops/s │   2.5K ops/s │
+│ Tuple_Objects        │   7.7K ops/s │   4.2K ops/s │    316 ops/s │
+│ Array_Numbers_4      │ 107.1K ops/s │  34.1K ops/s │   4.4K ops/s │
+│ Array_Numbers_8      │  99.1K ops/s │    35K ops/s │   3.7K ops/s │
+│ Array_Numbers_16     │ 119.8K ops/s │  24.9K ops/s │   3.7K ops/s │
+│ Array_Objects_Open   │  26.8K ops/s │   9.3K ops/s │    789 ops/s │
+│ Array_Objects_Close  │  19.3K ops/s │    10K ops/s │    814 ops/s │
+└──────────────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
 ### Validate

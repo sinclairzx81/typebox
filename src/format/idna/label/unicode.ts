@@ -48,7 +48,7 @@ function ExceedsMaxALabelLength(value: string): boolean {
 //
 // RFC 5891 §4.2.3.2: label must not start or end with a hyphen, and
 // must not have hyphens in the 3rd and 4th codepoint positions (the
-// ACE prefix reservation, e.g. "xn--"). Operates on `chars` (the
+// ACE prefix reservation, e.g. "xn--"). Operates on chars (the
 // per-codepoint string array) rather than raw string indices so
 // supplementary-plane characters earlier in the label don't throw
 // off the codepoint-position count.

@@ -58,6 +58,11 @@
       "import": "./src/guard/index.ts",
       "default": "./src/guard/index.ts"
     },
+    "./module": {
+      "types": "./src/module/index.ts",
+      "import": "./src/module/index.ts",
+      "default": "./src/module/index.ts"
+    },
     "./schema": {
       "types": "./src/schema/index.ts",
       "import": "./src/schema/index.ts",

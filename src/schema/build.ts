@@ -32,6 +32,7 @@ THE SOFTWARE.
 import { Arguments } from '../system/arguments/index.ts'
 import { Environment } from '../system/environment/index.ts'
 import { Hashing } from '../system/hashing/index.ts'
+import { Format } from '../format/index.ts'
 import { Guard } from '../guard/index.ts'
 
 import * as Engine from './engine/index.ts'
@@ -51,8 +52,8 @@ function CreateCode(build: BuildResult): string {
 // CreateEvaluatedCheck
 // ------------------------------------------------------------------
 function CreateEvaluatedCheck(build: BuildResult, code: string): CheckFunction {
-  const factory = Environment.Evaluate('CheckContext', 'Guard', 'Hashing', build.External().identifier, code)
-  return factory(Engine.CheckContext, Guard, Hashing, build.External().variables)
+  const factory = Environment.Evaluate('CheckContext', 'Guard', 'Hashing', 'Format', build.External().identifier, code)
+  return factory(Engine.CheckContext, Guard, Hashing, Format, build.External().variables)
 }
 // ------------------------------------------------------------------
 // CreateDynamicCheck

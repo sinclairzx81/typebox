@@ -41,10 +41,12 @@ import * as Schema from './types/index.ts'
 // ParseError
 // ------------------------------------------------------------------
 export class ParseError {
+  public context: Record<PropertyKey, Schema.XSchema>
   public schema: Schema.XSchema
   public value: unknown
   public errors: TLocalizedValidationError[]
-  constructor(schema: Schema.XSchema, value: unknown, errors: TLocalizedValidationError[]) {
+  constructor(context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, value: unknown, errors: TLocalizedValidationError[]) {
+    this.context = context
     this.schema = schema
     this.value = value
     this.errors = errors
@@ -57,7 +59,7 @@ export function ThrowParseError(context: Record<PropertyKey, Schema.XSchema>, sc
   EnableParseErrors()
   const result = Errors(context, schema, value)
   DisableParseErrors()
-  throw new ParseError(schema, value, result[1])
+  throw new ParseError(context, schema, value, result[1])
 }
 // ------------------------------------------------------------------
 // Parse

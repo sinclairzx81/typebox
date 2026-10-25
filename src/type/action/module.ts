@@ -50,7 +50,7 @@ export function ModuleDeferred<Declarations extends TProperties>(declarations: D
 // Type
 // ------------------------------------------------------------------
 /** Creates a Module with the given declarations */
-export type TModule<Declarations extends TProperties> = (
+export type TModule<Declarations extends TProperties = TProperties> = (
   TModuleInstantiate<{}, TState<[], []>, Declarations>
 )
 /** Creates a Module with the given declarations */

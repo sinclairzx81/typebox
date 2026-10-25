@@ -36,16 +36,20 @@ import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
-// Build (Remote)
+// Build
 // ------------------------------------------------------------------
-// export function BuildFormat(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XFormat, value: string): string {
-//   return E.Call(E.Member('Format', 'Test'), [E.Constant(schema.format), value])
-// }
-// ------------------------------------------------------------------
-// Build (Inline)
-// ------------------------------------------------------------------
+function BuildStandardFormat(format: string, value: string): string {
+  return E.Call(E.Member('Format', Format.Get(format)!.name), [value])
+}
+function BuildExtendedFormat(format: string, value: string): string {
+  return E.Call(Externals.CreateVariable(Format.Get(format)), [value])
+}
 export function BuildFormat(_stack: Stack.XStack, _context: BuildContext, schema: Schema.XFormat, value: string): string {
-  return Format.Has(schema.format) ? E.Call(Externals.CreateVariable(Format.Get(schema.format)), [value]) : E.Constant(true)
+  return (
+    Format.IsStandardFormat(schema.format) ? BuildStandardFormat(schema.format, value) :
+    Format.Has(schema.format) ? BuildExtendedFormat(schema.format, value) :
+    E.Constant(true)
+  )
 }
 // ------------------------------------------------------------------
 // Check

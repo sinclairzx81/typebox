@@ -50,10 +50,10 @@ const TOP_LEVEL_ORDER = [
   'overview',
   'type',
   'script',
+  'module',
   'schema',
-  'value',
   'format',
-  'compile',
+  'value',
   'system',
 ]
 // ------------------------------------------------------------------

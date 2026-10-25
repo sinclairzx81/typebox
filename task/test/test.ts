@@ -35,6 +35,9 @@ import * as Task from '../task.ts'
 export async function test(roots: string[], options: { filter?: string } = {}): Promise<void> {
   const manifest = await Manifest.write(roots)
   const args = ['node', '--test']
+  // const args = ['node', '--test', '--test-isolation=none']
+  // const args = ['node', '--test', `--test-concurrency=${Os.availableParallelism()}`]
+  // const args = ['node', '--test', '--test-isolation=none', `--test-concurrency=${Os.availableParallelism()}`]
   if (options.filter) args.push(`--test-name-pattern=${options.filter}`)
   args.push(manifest)
   const command = args.map((argument) => JSON.stringify(argument)).join(' ')

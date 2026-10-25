@@ -228,21 +228,21 @@ export function Values(value: Record<PropertyKey, unknown>): unknown[] {
 // ------------------------------------------------------------------
 // IsDeepEqual
 // ------------------------------------------------------------------
-function DeepEqualObject(left: Record<PropertyKey, unknown>, right: unknown): boolean {
+function IsDeepEqualObject(left: Record<PropertyKey, unknown>, right: unknown): boolean {
   if (!IsObject(right)) return false
   const keys = Keys(left)
   return IsEqual(keys.length, Keys(right).length) &&
     keys.every((key) => IsDeepEqual(left[key], right[key]))
 }
-function DeepEqualArray(left: unknown[], right: unknown): boolean {
+function IsDeepEqualArray(left: unknown[], right: unknown): boolean {
   return IsArray(right) && IsEqual(left.length, right.length) &&
     left.every((_, index) => IsDeepEqual(left[index], right[index]))
 }
 /** Returns true if left and right values are structurally equal */
 export function IsDeepEqual(left: unknown, right: unknown): boolean {
   return (
-    IsArray(left) ? DeepEqualArray(left, right) : 
-    IsObject(left) ? DeepEqualObject(left, right) : 
+    IsArray(left) ? IsDeepEqualArray(left, right) : 
+    IsObject(left) ? IsDeepEqualObject(left, right) : 
     IsEqual(left, right)
   )
 }

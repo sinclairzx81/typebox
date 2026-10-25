@@ -28,8 +28,16 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Unreachable } from '../unreachable/index.ts'
 import { GlobalsGuard, Guard } from '../../guard/index.ts'
+
+// ------------------------------------------------------------------
+// Unreachable
+// ------------------------------------------------------------------
+// deno-coverage-ignore-start - unreachable
+function Unreachable() {
+  throw globalThis.Error("Value cannot be hashed")
+}
+// deno-coverage-ignore-stop - unreachable
 
 // ------------------------------------------------------------------
 // InstanceKeys

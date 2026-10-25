@@ -1,0 +1,63 @@
+<h1>Module.Build</h1>
+<p>The Module.Build(...) function accepts any valid JSON Schema and compiles it into a standalone runtime validator. TypeBox supports two output module formats, Namespace and Type, where the format is determined by the structure of the schema.</p>
+<h2>Namespace</h2>
+<p>A namespace module is generated if the schema contains an isolated $defs with no other keywords.</p>
+<pre><code class="language-typescript">import Module from &#39;typebox/module&#39;
+
+// ------------------------------------------------------------------
+// Build
+// ------------------------------------------------------------------
+
+const Output = Module.Build({ 
+  $defs: {
+    A: { type: &#39;number&#39; },
+    B: { type: &#39;string&#39; },
+    C: { type: &#39;boolean&#39; }
+  }
+})
+
+SaveToDisk(&#39;./foo.ts&#39;, Output)
+
+// ------------------------------------------------------------------
+// Import
+// ------------------------------------------------------------------
+
+import Foo from &#39;./foo.ts&#39;
+
+const validA  = Foo.A.Check(1)               // const validA = true
+const validB  = Foo.B.Check(&#39;hello&#39;)         // const validB = true
+const validC  = Foo.C.Check(true)            // const validC = true
+
+const resultA = Foo.A.Parse(42)              // const resultA = true
+const resultB = Foo.B.Parse(&#39;hello&#39;)         // const resultB = true
+const resultC = Foo.C.Parse(true)            // const resultC = true
+</code></pre>
+<p>Type modules can also be passed to Module.Build(...):</p>
+<pre><code class="language-typescript">const Output = Module.Build(Type.Module({
+  A: Type.Number(),
+  B: Type.String(),
+  C: Type.Boolean()
+}))
+</code></pre>
+<h2>Type</h2>
+<p>The following builds an anonymous type.</p>
+<pre><code class="language-typescript">import Module from &#39;typebox/module&#39;
+
+// ------------------------------------------------------------------
+// Build
+// ------------------------------------------------------------------
+
+const Output = Module.Build({ type: &#39;string&#39; })
+
+SaveToDisk(&#39;./foo.ts&#39;, Output)
+
+// ------------------------------------------------------------------
+// Import
+// ------------------------------------------------------------------
+
+import Foo from &#39;./foo.ts&#39;
+
+const valid = Foo.Check(&#39;hello&#39;)                   // const valid = true
+
+const result = Foo.Parse(&#39;hello&#39;)                  // const result = &#39;hello&#39;
+</code></pre>

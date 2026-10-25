@@ -1,0 +1,64 @@
+<h1>Module.Errors</h1>
+<p>Module types throw a TypeError on Parse error, but do not include any error information indicating why a value was invalid. Modules are kept intentionally minimal to reduce bundle size while also ensuring the highest possible performance. They defer error generation to dedicated reporting infrastructure, which handles error formatting, localization and other presentational concerns. This section shows how to integrate Module types with TypeBox&#39;s Schema.Errors(...) reporter.</p>
+<h2>Error</h2>
+<p>Module types throw the following error on a failed Parse:</p>
+<pre><code class="language-typescript">import { Vector } from &#39;./math.ts&#39;
+
+Vector.Parse(null)                           // throw: TypeError {
+                                             //   type: &#39;Vector&#39;,
+                                             //   value: null
+                                             // }
+</code></pre>
+<h2>Report</h2>
+<p>The following shows a Report function that uses TypeBox&#39;s Schema submodule to handle error reporting on behalf of the compiled validator. Here, Schema.Errors() serves as a reporting device for the compiled validator.</p>
+<pre><code class="language-typescript">import { Errors, ParseError } from &#39;typebox/schema&#39;
+import { type Validator } from &#39;typebox/module&#39;
+import { Vector } from &#39;./math.ts&#39;
+
+// ------------------------------------------------------------------
+// Report
+// ------------------------------------------------------------------
+
+function Report&lt;Type extends Validator&gt;(type: Type, value: unknown): ReturnType&lt;Type[&#39;Parse&#39;]&gt; {
+  // 1. Return the value if it is valid.
+  if (type.Check(value)) return value as never
+  // 2. Call Errors(...) to gather diagnostics.
+  const [_, errors] = Errors(type.Context(), type.Schema(), value)
+  // 3. Throw the error.
+  throw new ParseError(type.Context(), type.Schema(), value, errors)
+}
+
+// ------------------------------------------------------------------
+// Usage
+// ------------------------------------------------------------------
+
+const result = Report(Vector, { x: null })   // Throws a ParseError {
+                                             //   context: {},
+                                             //   schema: {
+                                             //     type: &#39;object&#39;,
+                                             //     required: [ &#39;x&#39;, &#39;y&#39;, &#39;z&#39; ],
+                                             //     properties: {
+                                             //       x: { type: &#39;number&#39; },
+                                             //       y: { type: &#39;number&#39; },
+                                             //       z: { type: &#39;number&#39; }
+                                             //     }
+                                             //   },
+                                             //   value: { x: null },
+                                             //   errors: [
+                                             //     {
+                                             //       keyword: &#39;required&#39;,
+                                             //       schemaPath: &#39;#&#39;,
+                                             //       instancePath: &#39;&#39;,
+                                             //       params: { requiredProperties: [ &#39;y&#39;, &#39;z&#39; ] },
+                                             //       message: &#39;must have required properties y, z&#39;
+                                             //     },
+                                             //     {
+                                             //       keyword: &#39;type&#39;,
+                                             //       schemaPath: &#39;#/properties/x&#39;,
+                                             //       instancePath: &#39;/x&#39;,
+                                             //       params: { type: &#39;number&#39; },
+                                             //       message: &#39;must be number&#39;
+                                             //     }
+                                             //   ]
+                                             // }
+</code></pre>

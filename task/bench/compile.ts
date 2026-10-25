@@ -1,6 +1,6 @@
-import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { type TSchema } from '@sinclair/typebox'
-import { Compile } from 'typebox/compile'
+import Schema from 'typebox/schema'
+import Module from 'typebox/module'
+import Type from 'typebox'
 import Ajv from 'ajv'
 
 import { Benchmark } from './benchmark/index.ts'
@@ -9,10 +9,10 @@ import { Cases } from './cases.ts'
 const ajv8 = new Ajv.Ajv()
 const benchmarks: Record<string, any> = {}
 for(const key of Object.getOwnPropertyNames(Cases)) {
-  const test = Cases[key as never] as () => TSchema
+  const test = Cases[key as never] as () => Type.TSchema
   benchmarks[test.name] = {
-    //'TB0X': () => TypeCompiler.Compile(test()),
-    'TB1X': () => Compile(test()),
+    'TB1X JIT': () => Schema.Compile(test()),
+    'TB1X AOT': () => Module.Build(test()),
     'AJV8': () => ajv8.compile(test())
   }
 }

@@ -31,11 +31,11 @@ import * as G from './guard.ts'
 // ------------------------------------------------------------------
 // Identifier
 // ------------------------------------------------------------------
-const identifierRegExp = /^[\p{ID_Start}_$][\p{ID_Continue}_$\u200C\u200D]*$/u
+const Identifier = /^[\p{ID_Start}_$][\p{ID_Continue}_$\u200C\u200D]*$/u
 
 /** Returns true if this value is a valid JavaScript identifier */
 function IsIdentifier(value: string): boolean {
-  return identifierRegExp.test(value)
+  return Identifier.test(value)
 }
 // ------------------------------------------------------------------
 // Logical

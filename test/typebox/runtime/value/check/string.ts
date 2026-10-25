@@ -1,3 +1,4 @@
+import { Format } from 'typebox/format'
 import { Type } from 'typebox'
 import { Fail, Ok } from './~validate.ts'
 import { Assert } from 'test'
@@ -143,4 +144,25 @@ Test('Should validate pattern 3', () => {
 Test('Should validate pattern 4', () => {
   const T = Type.String({ pattern: '[\\d]{5}' })
   Ok(T, '12345')
+})
+// ------------------------------------------------------------------
+// Extended Formats
+// ------------------------------------------------------------------
+Test('Should validate extended format 1', () => {
+  Format.Set('foo', () => true)
+  const T = Type.String({ format: 'foo' })
+  Ok(T, '12345')
+  Format.Reset()
+})
+Test('Should validate extended format 2', () => {
+  Format.Set('foo', () => true)
+  const T = Type.String({ format: 'foo' })
+  Fail(T, 12345)
+  Format.Reset()
+})
+Test('Should validate extended format 3', () => {
+  Format.Set('foo', () => false)
+  const T = Type.String({ format: 'foo' })
+  Fail(T, '12345')
+  Format.Reset()
 })

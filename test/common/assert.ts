@@ -79,7 +79,14 @@ export function Throws(callback: globalThis.Function) {
   }
   throw Error('Expected throw')
 }
-
+export async function ThrowsAsync(callback: () => Promise<unknown>): Promise<void> {
+  try {
+    await callback()
+  } catch {
+    return
+  }
+  throw Error('Expected throw')
+}
 // ------------------------------------------------------------------
 // IsNeverExtends
 // ------------------------------------------------------------------

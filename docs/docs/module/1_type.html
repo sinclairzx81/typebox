@@ -1,0 +1,75 @@
+<h1>Module.Type</h1>
+<p>TypeBox modules are both runtime validators and static types. They can be used as standalone validators and as annotations for values and function arguments.</p>
+<h2>Usage</h2>
+<p>The following shows runtime and static usage of a compiled module type.</p>
+<pre><code class="language-typescript">import { Vector } from &#39;./geometry.ts&#39;
+
+// ------------------------------------------------------------------
+// Variable Annotation
+// ------------------------------------------------------------------
+
+const A: Vector = { x: 1, y: 2, z: 3 }
+
+// ------------------------------------------------------------------
+// Parameter and ReturnType Annotation
+// ------------------------------------------------------------------
+
+function add(a: Vector, b: Vector): Vector {
+  return Vector.Parse({
+    x: a.x + b.x,
+    y: a.y + b.y,
+    z: a.z + b.z,
+  })
+}
+
+// ------------------------------------------------------------------
+// Validator
+// ------------------------------------------------------------------
+
+const result = add(
+  Vector.Parse({ x: 1, y: 2, z: 3 }),
+  Vector.Parse({ x: 1, y: 2, z: 3 }),
+)
+</code></pre>
+<h2>Interface</h2>
+<p>All module types are implementations of the following Validator interface, which is available via submodule import.</p>
+<pre><code class="language-typescript">import { type Validator } from &#39;typebox/module&#39;
+</code></pre>
+<h2>Layout</h2>
+<p>The following shows the high-level layout and type organization of the geometry module. Each module embeds a structurally identical copy of the Validator interface, so the generated output has no dependency on TypeBox. Code is generated such that the static type name matches the Validator implementation name, which enables the type to be used in both runtime and annotation positions.</p>
+<pre><code class="language-typescript">// ------------------------------------------------------------------
+// Generated ESM Module
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+// Validator (Fixed)
+// ------------------------------------------------------------------
+export interface Validator&lt;Value extends unknown = unknown&gt; {
+  Context(): Record&lt;string, Record&lt;string, unknown&gt; | boolean&gt;
+  Schema(): Record&lt;string, unknown&gt; | boolean
+  Check(value: unknown): value is Value
+  Parse(value: unknown): Value
+}
+
+// ------------------------------------------------------------------
+// Vector (Generated)
+// ------------------------------------------------------------------
+
+declare namespace Namespace { export type Vector = { x: number, y: number, z: number } }
+export type Vector = Namespace.Vector
+export const Vector: Validator&lt;Vector&gt; = (() =&gt; {
+  return {
+    Context: () =&gt; {...},
+    Schema: () =&gt; {...},
+    Check: (value: unknown): value is Type =&gt; {...},
+    Parse: (value: unknown): Type =&gt; {...}
+  }
+})();
+
+// ------------------------------------------------------------------
+// Export (Generated)
+// ------------------------------------------------------------------
+
+const Namespace = { Vector }
+export default Namespace
+</code></pre>

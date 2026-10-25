@@ -4,6 +4,9 @@ export async function test() {
   await Bundle.metrics([
     'task/metrics/all.ts',
     'task/metrics/compile_all.ts',
+    'task/metrics/module_all.ts',
+    'task/metrics/type_realistic_dynamic.ts',
+    'task/metrics/type_realistic_compiled.ts',
     'task/metrics/format.ts',
     'task/metrics/schema_bench.ts',
     'task/metrics/schema_all.ts',
@@ -16,8 +19,6 @@ export async function test() {
     'task/metrics/type_barrel.ts',
     'task/metrics/type_builder.ts',
     'task/metrics/type_default.ts',
-    'task/metrics/type_realistic_dynamic.ts',
-    'task/metrics/type_realistic_compiled.ts',
     'task/metrics/type_script.ts',
     'task/metrics/value_all.ts',
     'task/metrics/value_check.ts',

@@ -78,7 +78,7 @@ Task.run('lint', () => Task.shell('deno lint src'))
 // ------------------------------------------------------------------
 // Start
 // ------------------------------------------------------------------
-Task.run('start', () => Task.shell('node --watch example/index.ts'))
+Task.run('start', () => Task.shell('node --import ./task/hooks/register.ts --watch example/index.ts'))
 // ------------------------------------------------------------------
 // Spec
 // ------------------------------------------------------------------

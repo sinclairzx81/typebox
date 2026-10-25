@@ -12,7 +12,7 @@ The compiler is available via optional sub module import.
 import Schema from 'typebox/schema'
 ```
 
-### Compile
+## Example
 
 The compiler accepts TypeBox types as well as plain JSON Schema objects, and returns a Validator instance which can be used to check values. The following compiles a Vector type.
 

@@ -31,6 +31,13 @@
     "url": "docs/format/url.html",
     "uuid": "docs/format/uuid.html"
   },
+  "module": {
+    "0_build": "docs/module/0_build.html",
+    "1_type": "docs/module/1_type.html",
+    "2_errors": "docs/module/2_errors.html",
+    "3_reflect": "docs/module/3_reflect.html",
+    "overview": "docs/module/overview.html"
+  },
   "overview": {
     "1_install": "docs/overview/1_install.html",
     "2_setup": "docs/overview/2_setup.html",

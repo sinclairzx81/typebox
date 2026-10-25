@@ -54,17 +54,42 @@ import { IsUuid } from './uuid.ts'
 export type TFormatCheckFunction = (value: string) => boolean
 
 // ------------------------------------------------------------------
+// Standard
+// ------------------------------------------------------------------
+const standard: Record<string, TFormatCheckFunction> = {
+  'date-time': IsDateTime,
+  'date': IsDate,
+  'duration': IsDuration,
+  'email': IsEmail,
+  'hostname': IsHostname,
+  'idn-email': IsIdnEmail,
+  'idn-hostname': IsIdnHostname,
+  'ipv4': IsIPv4,
+  'ipv6': IsIPv6,
+  'iri-reference': IsIriReference,
+  'iri': IsIri,
+  'json-pointer-uri-fragment': IsJsonPointerUriFragment,
+  'json-pointer': IsJsonPointer,
+  'regex': IsRegex,
+  'relative-json-pointer': IsRelativeJsonPointer,
+  'time': IsTime,
+  'uri-reference': IsUriReference,
+  'uri-template': IsUriTemplate,
+  'uri': IsUri,
+  'url': IsUrl,
+  'uuid': IsUuid
+}
+// ------------------------------------------------------------------
+// IsStandardFormat
+// ------------------------------------------------------------------
+/** Returns true if the format is a built-in standard format */
+export function IsStandardFormat(format: string): boolean {
+  return format in standard
+}
+// ------------------------------------------------------------------
 // Formats
 // ------------------------------------------------------------------
-const formats = new Map<string, TFormatCheckFunction>()
-
-// ------------------------------------------------------------------
-// Clear
-// ------------------------------------------------------------------
-/** Clears all entries */
-export function Clear(): void {
-  formats.clear()
-}
+const formats = new Map<string, TFormatCheckFunction>(Object.entries(standard))
 
 // ------------------------------------------------------------------
 // Entries
@@ -73,15 +98,14 @@ export function Clear(): void {
 export function Entries(): [string, TFormatCheckFunction][] {
   return [...formats.entries()]
 }
-
 // ------------------------------------------------------------------
 // Set
 // ------------------------------------------------------------------
 /** Sets a format */
 export function Set(format: string, check: TFormatCheckFunction): void {
+  if (formats.has(format)) throw new Error(`Format '${format}' is already registered`)
   formats.set(format, check)
 }
-
 // ------------------------------------------------------------------
 // Has
 // ------------------------------------------------------------------
@@ -89,7 +113,6 @@ export function Set(format: string, check: TFormatCheckFunction): void {
 export function Has(format: string): boolean {
   return formats.has(format)
 }
-
 // ------------------------------------------------------------------
 // Get
 // ------------------------------------------------------------------
@@ -104,33 +127,11 @@ export function Get(format: string): TFormatCheckFunction | undefined {
 export function Test(format: string, value: string): boolean {
   return formats.get(format)?.(value) ?? true
 }
-
 // ------------------------------------------------------------------
 // Reset
 // ------------------------------------------------------------------
 /** Resets all formats to defaults */
 export function Reset(): void {
-  Clear()
-  formats.set('date-time', IsDateTime)
-  formats.set('date', IsDate)
-  formats.set('duration', IsDuration)
-  formats.set('email', IsEmail)
-  formats.set('hostname', IsHostname)
-  formats.set('idn-email', IsIdnEmail)
-  formats.set('idn-hostname', IsIdnHostname)
-  formats.set('ipv4', IsIPv4)
-  formats.set('ipv6', IsIPv6)
-  formats.set('iri-reference', IsIriReference)
-  formats.set('iri', IsIri)
-  formats.set('json-pointer-uri-fragment', IsJsonPointerUriFragment)
-  formats.set('json-pointer', IsJsonPointer)
-  formats.set('regex', IsRegex)
-  formats.set('relative-json-pointer', IsRelativeJsonPointer)
-  formats.set('time', IsTime)
-  formats.set('uri-reference', IsUriReference)
-  formats.set('uri-template', IsUriTemplate)
-  formats.set('uri', IsUri)
-  formats.set('url', IsUrl)
-  formats.set('uuid', IsUuid)
+  formats.clear()
+  for (const [format, check] of Object.entries(standard)) formats.set(format, check)
 }
-Reset()

@@ -25,6 +25,7 @@
       "typebox/error": ["./src/error/index.ts"],
       "typebox/format": ["./src/format/index.ts"],
       "typebox/guard": ["./src/guard/index.ts"],
+      "typebox/module": ["./src/module/index.ts"],
       "typebox/schema": ["./src/schema/index.ts"],
       "typebox/system": ["./src/system/index.ts"],
       "typebox/type": ["./src/type/index.ts"],

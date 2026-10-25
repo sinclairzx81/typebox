@@ -1,0 +1,28 @@
+<h1>Module.Reflect</h1>
+<p>Module types are designed to be analogous to types in strongly typed languages like C#, where a type carries both static and runtime information. For module types, runtime type information is held in the JSON Schema that was used to compile the module.</p>
+<h2>Example</h2>
+<p>Given the following Vector type:</p>
+<pre><code class="language-typescript">const Output = Module.Build(Type.Script(`
+  type Vector = {
+    x: number
+    y: number
+    z: number
+  } with {
+    additionalProperties: false
+  }
+`))
+</code></pre>
+<p>We can read structural information using a type&#39;s Schema() function.</p>
+<pre><code class="language-typescript">import { Vector } from &#39;./geometry.ts&#39;
+
+console.log(Vector.Schema())                       // prints: {
+                                                   //   type: &#39;object&#39;,
+                                                   //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+                                                   //   properties: {
+                                                   //     x: { type: &#39;number&#39; },
+                                                   //     y: { type: &#39;number&#39; },
+                                                   //     z: { type: &#39;number&#39; }
+                                                   //   },
+                                                   //   additionalProperties: false
+                                                   // }
+</code></pre>

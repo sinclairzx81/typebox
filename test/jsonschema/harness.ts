@@ -140,18 +140,25 @@ function assertResult(name: string, test: Test, result: boolean): void {
 const remote = JSON.parse(Fs.readFileSync('./test/jsonschema/cases/remote.json', 'utf8')) as Record<string, Schema.XSchema>
 const context = { ...Schema.Meta, ...remote }
 
-type SpecCallback = (context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, value: unknown) => boolean
+type SpecResult = boolean | Promise<boolean>
+type SpecCallback = (context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, value: unknown) => SpecResult
 
 export function Spec(name: string, callback: SpecCallback): void {
   const Test = Assert.Context(name)
   for (const [draft, path] of drafts) {
     for (const test of enumerateTests(path)) {
       Test(`${draft} ${test.filename}: ${test.context}: ${test.description}`, () => {
-        let result: boolean
+        let result: SpecResult
         try {
           result = callback(context, test.schema, test.data)
         } catch (error) {
           assertThrow(name, test, error)
+        }
+        if (result instanceof Promise) {
+          return result.then(
+            (value) => assertResult(name, test, value),
+            (error) => assertThrow(name, test, error)
+          )
         }
         assertResult(name, test, result)
       })

@@ -40,13 +40,11 @@ import { ThrowParseError } from './parse.ts'
 // ------------------------------------------------------------------
 // Validator
 // ------------------------------------------------------------------
-export class Validator<const Schema extends Schema.XSchema = Schema.XSchema, 
-  Value extends unknown = Static<Schema>
->  {
+export class Validator<Value extends unknown = unknown>  {
   private readonly evaluateResult: Build.EvaluateResult
   private readonly context: Record<string, Schema.XSchema>
   private readonly schema: Schema.XSchema
-  constructor(context: Record<string, Schema.XSchema>, schema: Schema) {
+  constructor(context: Record<string, Schema.XSchema>, schema: Schema.XSchema) {
     this.evaluateResult = Build.Build(context, schema).Evaluate()
     this.context = context
     this.schema = schema
@@ -56,7 +54,7 @@ export class Validator<const Schema extends Schema.XSchema = Schema.XSchema,
     return this.evaluateResult.IsAccelerated()
   }
   /** Returns the underlying Schema used to construct this Validator. */
-  public Schema(): Schema {
+  public Schema(): Schema.XSchema {
     return this.schema as never
   }
   /** Performs a type-guard check on the provided value. */
@@ -77,9 +75,9 @@ export class Validator<const Schema extends Schema.XSchema = Schema.XSchema,
 // Compile
 // ------------------------------------------------------------------
 /** Compiles this schema into a high performance Validator */
-export function Compile<const Schema extends Schema.XSchema>(schema: Schema): Validator<Schema>
+export function Compile<const Schema extends Schema.XSchema>(schema: Schema): Validator<Static<Schema>>
 /** Compiles this schema into a high performance Validator */
-export function Compile<const Schema extends Schema.XSchema>(context: Record<PropertyKey, Schema.XSchema>, schema: Schema): Validator<Schema>
+export function Compile<const Schema extends Schema.XSchema>(context: Record<PropertyKey, Schema.XSchema>, schema: Schema): Validator<Static<Schema>>
 /** Compiles this schema into a high performance Validator */
 export function Compile(...args: unknown[]): unknown {
   const [context, schema] = Arguments.Match<[Record<PropertyKey, Schema.XSchema>, Schema.XSchema]>(args, {
