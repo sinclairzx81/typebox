@@ -1,7 +1,6 @@
 import { Deep } from '../../../../../src/system/memory/deep.ts'
 import { Assert } from 'test'
 import { Type } from 'typebox'
-import Guard from 'typebox/guard'
 
 // ------------------------------------------------------------------
 // System.Memory.Deep
@@ -118,42 +117,42 @@ Test('Should Deep 20', () => {
   Assert.IsTrue(A['~refine'][0].error === B['~refine'][0].error)
 })
 // ----------------------------------------------------------------
-// Pollution Guards: Ensure No Unsafe Property is Cloned
+// Preserve Own Keys Without Changing Object Prototypes
 //
 // https://github.com/sinclairzx81/typebox/pull/1593
 // ----------------------------------------------------------------
 Test('Should Deep 13', () => {
   const A = { value: 1, constructor: 2 }
   const B = Deep(A)
-  Assert.IsEqual(B, { value: 1 })
+  Assert.IsEqual(B, A)
 })
 Test('Should Deep 14', () => {
   const A = { value: 1, prototype: 2 }
   const B = Deep(A)
-  Assert.IsEqual(B, { value: 1 })
+  Assert.IsEqual(B, A)
 })
 Test('Should Deep 15', () => {
   const A = { value: 1 }
   Object.defineProperty(A, '__proto__', { value: 2, enumerable: true })
   const B = Deep(A)
-  Assert.IsEqual(B, { value: 1 })
+  Assert.IsEqual(B, A)
 })
 // Nested
 Test('Should Deep 16', () => {
   const A = { outer: { value: 1, constructor: 2 } }
   const B = Deep(A)
-  Assert.IsEqual(B, { outer: { value: 1 } })
+  Assert.IsEqual(B, A)
 })
 Test('Should Deep 17', () => {
   const A = { outer: { value: 1, prototype: 2 } }
   const B = Deep(A)
-  Assert.IsEqual(B, { outer: { value: 1 } })
+  Assert.IsEqual(B, A)
 })
 Test('Should Deep 18', () => {
   const A = { outer: { value: 1 } }
   Object.defineProperty(A.outer, '__proto__', { value: 2, enumerable: true })
   const B = Deep(A)
-  Assert.IsEqual(B, { outer: { value: 1 } })
+  Assert.IsEqual(B, A)
 })
 // ----------------------------------------------------------------
 // RegExp
@@ -166,7 +165,7 @@ Test('Should Deep 21', () => {
   Assert.IsEqual(B.flags, A.flags)
 })
 // ----------------------------------------------------------------
-// Unsafe Keys Are Not Cloned
+// Schema Objects Preserve Own Prototype-Named Keys
 // ----------------------------------------------------------------
 Test('Should Deep 22', () => {
   const A: Record<PropertyKey, unknown> = { type: 'string', '~kind': 'String' }
@@ -176,7 +175,6 @@ Test('Should Deep 22', () => {
   const B = Deep(A)
   Assert.IsEqual(B.type, 'string')
   Assert.IsEqual(B['~kind'], 'String')
-  Assert.IsFalse(Guard.HasPropertyKey(B, '__proto__'))
-  Assert.IsFalse(Guard.HasPropertyKey(B, 'constructor'))
-  Assert.IsFalse(Guard.HasPropertyKey(B, 'prototype'))
+  Assert.IsEqual(B, A)
+  Assert.IsEqual(Object.getPrototypeOf(B), Object.prototype)
 })

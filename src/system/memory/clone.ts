@@ -43,10 +43,14 @@ export function Clone<Value extends ObjectLike = ObjectLike>(value: Value): Valu
   Metrics.clone += 1
   const result = {} as ObjectLike
   for (const key of Keys(value)) {
-    if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
     const descriptor = Object.getOwnPropertyDescriptor(value, key)! // safe-name!
     if (Guard.IsEqual(descriptor.enumerable, true)) {
-      result[key] = descriptor.value
+      Object.defineProperty(result, key, {
+        value: descriptor.value,
+        enumerable: true,
+        writable: true,
+        configurable: true
+      })
     } else {
       Object.defineProperty(result, key, descriptor)
     }
