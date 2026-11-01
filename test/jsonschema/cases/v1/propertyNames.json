@@ -62,6 +62,38 @@
     ]
   },
   {
+    "description": "propertyNames validation with pattern",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "propertyNames": {
+        "pattern": "^a+$"
+      }
+    },
+    "tests": [
+      {
+        "description": "matching property names valid",
+        "data": {
+          "a": {},
+          "aa": {},
+          "aaa": {}
+        },
+        "valid": true
+      },
+      {
+        "description": "non-matching property name is invalid",
+        "data": {
+          "aaA": {}
+        },
+        "valid": false
+      },
+      {
+        "description": "object without properties is valid",
+        "data": {},
+        "valid": true
+      }
+    ]
+  },
+  {
     "description": "propertyNames with boolean schema true",
     "schema": {
       "$schema": "https://json-schema.org/v1",
@@ -93,6 +125,77 @@
         "description": "object with any properties is invalid",
         "data": {
           "foo": 1
+        },
+        "valid": false
+      },
+      {
+        "description": "empty object is valid",
+        "data": {},
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "propertyNames with const",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "propertyNames": {
+        "const": "foo"
+      }
+    },
+    "tests": [
+      {
+        "description": "object with property foo is valid",
+        "data": {
+          "foo": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "object with any other property is invalid",
+        "data": {
+          "bar": 1
+        },
+        "valid": false
+      },
+      {
+        "description": "empty object is valid",
+        "data": {},
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "propertyNames with enum",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "propertyNames": {
+        "enum": [
+          "foo",
+          "bar"
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "object with property foo is valid",
+        "data": {
+          "foo": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "object with property foo and bar is valid",
+        "data": {
+          "foo": 1,
+          "bar": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "object with any other property is invalid",
+        "data": {
+          "baz": 1
         },
         "valid": false
       },

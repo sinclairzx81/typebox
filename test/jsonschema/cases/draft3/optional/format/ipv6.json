@@ -32,7 +32,7 @@
       },
       {
         "description": "leading colons is valid",
-        "data": "::1",
+        "data": "::42:ff:1",
         "valid": true
       },
       {
