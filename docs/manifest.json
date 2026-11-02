@@ -146,7 +146,6 @@
     "equal": "docs/value/equal.html",
     "errors": "docs/value/errors.html",
     "hash": "docs/value/hash.html",
-    "mutate": "docs/value/mutate.html",
     "overview": "docs/value/overview.html",
     "parse": "docs/value/parse.html",
     "patch": "docs/value/patch.html",
