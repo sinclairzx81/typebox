@@ -40,7 +40,7 @@ export type StaticDependent<Stack extends string[], Direction extends StaticDire
   StaticIf extends unknown = StaticType<Stack, Direction, Context, This, If>,
   StaticThen extends unknown = StaticType<Stack, Direction, Context, This, Then>,
   StaticElse extends unknown = StaticType<Stack, Direction, Context, This, Else>,
-  Result extends unknown = (StaticIf & StaticThen) | Exclude<StaticElse, StaticIf>
+  Result extends unknown = (StaticIf & StaticThen) | ([StaticElse] extends [infer ElseValue] ? ElseValue extends StaticIf ? never : ElseValue : never)
 > = Result
 // ------------------------------------------------------------------
 // Type

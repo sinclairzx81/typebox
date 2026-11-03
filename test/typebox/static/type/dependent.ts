@@ -1,4 +1,4 @@
-import { type Static, Type } from 'typebox'
+import { type Static, type TSchema, Type } from 'typebox'
 import { Assert } from 'test'
 
 // ------------------------------------------------------------------
@@ -411,4 +411,21 @@ import { Assert } from 'test'
       })
     )
   >(true)
+}
+// ------------------------------------------------------------------
+// Union Else
+// ------------------------------------------------------------------
+{
+  const T = Type.Script('if string then 1 else (string | number | boolean)')
+  type T = Static<typeof T>
+  Assert.IsExtendsMutual<T, number | boolean>(true)
+}
+// ------------------------------------------------------------------
+// Generic Inference: https://github.com/sinclairzx81/typebox/issues/1732
+// ------------------------------------------------------------------
+{
+  function Infer<Type extends TSchema>(_type: Type, _callback: (value: Static<Type>) => void): void {}
+  Infer(Type.Object({ x: Type.Number() }), (value) => {
+    Assert.IsExtendsMutual<typeof value, { x: number }>(true)
+  })
 }
