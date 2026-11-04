@@ -84,3 +84,12 @@ Test('Should IsIriReference 17', () => {
   // Looks like malformed scheme/authority, but colon is present
   Assert.IsTrue(Format.IsIriReference('abc://example.com'))
 })
+
+Test('Should reject multiple at-signs in an IRI authority', () => {
+  Assert.IsFalse(Format.IsIriReference('//â@b@ƒøø.ßår/'))
+})
+
+Test('Should reject a colon in the first segment of a relative IRI path', () => {
+  Assert.IsFalse(Format.IsIriReference('â:b'))
+  Assert.IsTrue(Format.IsIriReference('./â:b'))
+})

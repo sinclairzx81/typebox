@@ -109,6 +109,27 @@
         "description": "lone percent sign is invalid",
         "data": "/%",
         "valid": false
+      },
+      {
+        "description": "a non-numeric port in a network-path reference is invalid",
+        "data": "//ƒøø.ßår:abc/p",
+        "valid": false
+      },
+      {
+        "description": "more than one at-sign in the authority is invalid",
+        "data": "//â@b@ƒøø.ßår/",
+        "valid": false
+      },
+      {
+        "description": "a colon in the first segment of a relative-path reference",
+        "comment": "RFC 3987, Section 2.2: the first segment of ipath-noscheme excludes colons, and â cannot start a scheme.",
+        "data": "â:b",
+        "valid": false
+      },
+      {
+        "description": "a colon in the first segment preceded by a dot-segment",
+        "data": "./â:b",
+        "valid": true
       }
     ]
   }

@@ -72,6 +72,26 @@
     ]
   },
   {
+    "description": "by very small number",
+    "comment": "A fixed epsilon larger than the divisor (e.g. 32-bit float epsilon) would accept every instance",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "multipleOf": 1e-8
+    },
+    "tests": [
+      {
+        "description": "4e-8 is multiple of 1e-8",
+        "data": 4e-8,
+        "valid": true
+      },
+      {
+        "description": "1.5e-8 is not multiple of 1e-8",
+        "data": 1.5e-8,
+        "valid": false
+      }
+    ]
+  },
+  {
     "description": "float division = inf",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",

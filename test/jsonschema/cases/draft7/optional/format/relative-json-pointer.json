@@ -131,6 +131,31 @@
         "valid": true
       },
       {
+        "description": "valid escaped slash (~1) in the json-pointer part",
+        "data": "0/a~1b",
+        "valid": true
+      },
+      {
+        "description": "valid escaped tilde (~0) in the json-pointer part",
+        "data": "0/m~0n",
+        "valid": true
+      },
+      {
+        "description": "multiple escaped characters in the json-pointer part",
+        "data": "0/~1~0~0~1~1",
+        "valid": true
+      },
+      {
+        "description": "- used as a member name in the json-pointer part",
+        "data": "1/foo/-",
+        "valid": true
+      },
+      {
+        "description": "multiple unescaped tildes in the json-pointer part",
+        "data": "0/~~",
+        "valid": false
+      },
+      {
         "description": "trailing newline after the non-negative integer",
         "data": "1\n",
         "valid": false

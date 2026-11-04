@@ -134,6 +134,37 @@
         "description": "a valid IRI with a supplementary-plane private-use char in query",
         "data": "http://ƒøø.ßår/?q=󰀀",
         "valid": true
+      },
+      {
+        "description": "non-ASCII character in scheme is invalid",
+        "comment": "RFC 3987, Section 2.2: scheme is ASCII-only, unlike the rest of an IRI.",
+        "data": "htτp://example.com",
+        "valid": false
+      },
+      {
+        "description": "scheme starting with a digit is invalid",
+        "data": "1http://example.com",
+        "valid": false
+      },
+      {
+        "description": "invalid character in scheme",
+        "data": "ht_tp://example.com",
+        "valid": false
+      },
+      {
+        "description": "non-numeric port is invalid",
+        "data": "http://ƒøø.ßår:abc/path",
+        "valid": false
+      },
+      {
+        "description": "more than one at-sign in the authority is invalid",
+        "data": "http://â@b@ƒøø.ßår/",
+        "valid": false
+      },
+      {
+        "description": "square brackets are not allowed in a path segment",
+        "data": "http://ƒøø.ßår/[::1]",
+        "valid": false
       }
     ]
   }

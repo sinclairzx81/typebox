@@ -26,5 +26,19 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "divisibleBy with integers above 2^53",
+    "comment": "Both instances are exact as doubles, but dividing by 3 rounds the quotient to an integer, so the check must not rely on the quotient",
+    "schema": {
+      "divisibleBy": 3
+    },
+    "tests": [
+      {
+        "description": "1e20 is not divisible by 3",
+        "data": 100000000000000000000,
+        "valid": false
+      }
+    ]
   }
 ]

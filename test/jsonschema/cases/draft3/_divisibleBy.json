@@ -37,5 +37,19 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "by very small number",
+    "comment": "A fixed epsilon larger than the divisor (e.g. 32-bit float epsilon) would accept every instance",
+    "schema": {
+      "divisibleBy": 1e-8
+    },
+    "tests": [
+      {
+        "description": "1.5e-8 is not divisible by 1e-8",
+        "data": 1.5e-8,
+        "valid": false
+      }
+    ]
   }
 ]
