@@ -28,10 +28,10 @@ THE SOFTWARE.
 
 // deno-lint-ignore-file no-control-regex
 
-// Rejects unencoded spaces (0x20), backslashes, control characters (0x00-0x1F, 0x7F), or malformed percent-encodings
-const InvalidIriChars = /[\x00-\x20\x7F\\]|%(?![0-9a-fA-F]{2})/
-// Detects malformed scheme/authority patterns lacking a colon (e.g. "httpx//example.com")
-const MalformedScheme = /^[a-zA-Z][a-zA-Z0-9+\-.]*\/\//
+const InvalidIriReferenceChars = /[\x00-\x20\x7f"<>\^`{|}\\]|%(?![0-9a-fA-F]{2})/
+const MalformedScheme = /^(?:[a-z][a-z\d+\-.]*\/\/|(?!(?:[a-z][a-z\d+\-.]*:))[^/?#]*:)/i
+const MultipleAuthorityAtSigns = /^(?:[a-z][a-z\d+\-.]*:)?\/\/[^/?#@]*@[^/?#@]*@/i
+const BracketedPath = /^(?:[a-z][a-z\d+\-.]*:\/\/[^/?#]*\/|\/\/[^/?#]*\/|[a-z][a-z\d+\-.]*:(?!\/\/)|(?![a-z][a-z\d+\-.]*:|\/\/))[^?#]*[\[\]]/i
 
 /**
  * Returns true if the value is an IRI reference
@@ -39,8 +39,10 @@ const MalformedScheme = /^[a-zA-Z][a-zA-Z0-9+\-.]*\/\//
  */
 export function IsIriReference(value: string): boolean {
   return (
-    !InvalidIriChars.test(value) &&
+    !InvalidIriReferenceChars.test(value) &&
     !MalformedScheme.test(value) &&
+    !MultipleAuthorityAtSigns.test(value) &&
+    !BracketedPath.test(value) &&
     URL.canParse(value, 'http://example.com')
   )
 }

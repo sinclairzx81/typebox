@@ -120,8 +120,12 @@ const URI_EXPRESSION = `\\{${URI_OPERATOR}?${URI_VAR_SPEC}(?:,${URI_VAR_SPEC})*\
 // ------------------------------------------------------------------
 const IRI_INVALID_CHARS = '[\\x00-\\x20\\x7f"<>\\^`{|}\\\\]'
 const IRI_INVALID_PERCENT_ENCODING = `%(?!${CHAR_HEX_PAIR})`
+const IRI_ABSOLUTE_SCHEME = `^${URI_SCHEME}:`
 const IRI_REFERENCE_INVALID_CHARS = `${IRI_INVALID_CHARS}|${IRI_INVALID_PERCENT_ENCODING}`
 const IRI_REFERENCE_MALFORMED_SCHEME = `^(?:${URI_SCHEME}\\/\\/|(?!(?:${URI_SCHEME}:))[^/?#]*:)`
+const IRI_REFERENCE_MULTIPLE_AUTHORITY_AT_SIGNS = `^(?:${URI_SCHEME}:)?\\/\\/[^/?#@]*@[^/?#@]*@`
+const IRI_REFERENCE_BRACKETED_PATH =
+  `^(?:${URI_SCHEME}:\\/\\/[^/?#]*\\/|\\/\\/[^/?#]*\\/|${URI_SCHEME}:(?!\\/\\/)|(?!${URI_SCHEME}:|\\/\\/))[^?#]*[\\[\\]]`
 // ------------------------------------------------------------------
 // URL
 // ------------------------------------------------------------------
@@ -174,7 +178,10 @@ export const FORMAT_URI = new RegExp(`^${URI_SCHEME}:${URI_HIER_PART}(?:\\?${URI
 export const FORMAT_URI_REFERENCE = new RegExp(`^(?:${URI_SCHEME}:${URI_HIER_PART}|${URI_RELATIVE_PART})(?:\\?${URI_QUERY_OR_FRAGMENT})?(?:#${URI_QUERY_OR_FRAGMENT})?$(?![\\s\\S])`, 'i')
 export const FORMAT_IRI_INVALID_CHARS = new RegExp(IRI_INVALID_CHARS)
 export const FORMAT_IRI_INVALID_PERCENT_ENCODING = new RegExp(IRI_INVALID_PERCENT_ENCODING)
+export const FORMAT_IRI_ABSOLUTE_SCHEME = new RegExp(IRI_ABSOLUTE_SCHEME, 'i')
 export const FORMAT_IRI_REFERENCE_INVALID_CHARS = new RegExp(IRI_REFERENCE_INVALID_CHARS)
 export const FORMAT_IRI_REFERENCE_MALFORMED_SCHEME = new RegExp(IRI_REFERENCE_MALFORMED_SCHEME, 'i')
+export const FORMAT_IRI_REFERENCE_MULTIPLE_AUTHORITY_AT_SIGNS = new RegExp(IRI_REFERENCE_MULTIPLE_AUTHORITY_AT_SIGNS, 'i')
+export const FORMAT_IRI_REFERENCE_BRACKETED_PATH = new RegExp(IRI_REFERENCE_BRACKETED_PATH, 'i')
 export const FORMAT_URL = new RegExp(`^${URL_SCHEME}:\\/\\/${URL_USER_INFO}${URL_HOST}${URL_PORT}${URL_PATH}$`, 'iu')
 export const FORMAT_UUID = new RegExp(`^${CHAR_HEX_DIGIT}{8}-(?:${CHAR_HEX_DIGIT}{4}-){3}${CHAR_HEX_DIGIT}{12}$`, 'i')

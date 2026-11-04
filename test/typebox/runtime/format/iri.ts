@@ -80,3 +80,11 @@ Test('Should isIri 16', () => {
   const longValidIri = `http://example.com/${'a'.repeat(5000)}`
   Assert.IsTrue(Format.IsIri(longValidIri))
 })
+
+Test('Should reject multiple at-signs in an IRI authority', () => {
+  Assert.IsFalse(Format.IsIri('http://â@b@ƒøø.ßår/'))
+})
+
+Test('Should reject square brackets in an IRI path segment', () => {
+  Assert.IsFalse(Format.IsIri('http://ƒøø.ßår/[::1]'))
+})
