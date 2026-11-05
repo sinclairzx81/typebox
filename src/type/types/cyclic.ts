@@ -33,16 +33,32 @@ import { Memory } from '../../system/memory/index.ts'
 import { type StaticType, type StaticDirection } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TProperties } from './properties.ts'
+import { type TAny } from './any.ts'
+import { type TUnknown } from './unknown.ts'
 
+// ------------------------------------------------------------------
+// TerminatingContext
+//
+// We support one level of recursive inference; anything past that
+// point is inferred as TAny. The transform to TCyclic here is
+// required to ensure re-dispatch via StaticType. The intent is to
+// keep TCyclic inference local to this module, and to prevent naive
+// inference via TRef, which would otherwise result in instantiation
+// depth errors.
+// ------------------------------------------------------------------
+type TerminatingContext<Defs extends TProperties, Ref extends string> = (
+  Ref extends keyof Defs
+    ? Defs[Ref] extends { terminate: true }
+      ? Omit<Defs, Ref> & { [_ in Ref]: TAny } // terminate with TAny
+      : Omit<Defs, Ref> & { [_ in Ref]: TCyclic<Defs & { [_ in Ref]: Defs[Ref] & { terminate: true } }, Ref> }
+    : Defs
+)
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticCyclic<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Defs extends TProperties, Ref extends string, 
-  Result extends unknown = (
-    Ref extends keyof Defs
-      ? StaticType<[...Stack, Ref], Direction, Defs, This, Defs[Ref]>
-      : never
-  )
+export type StaticCyclic<Direction extends StaticDirection, _Context extends TProperties, This extends TProperties, Defs extends TProperties, Ref extends string,
+  Target extends TSchema = Ref extends keyof Defs ? Defs[Ref] : TUnknown,
+  Result extends unknown = StaticType<Direction, TerminatingContext<Defs, Ref>, This, Target>
 > = Result
 // ------------------------------------------------------------------
 // Type

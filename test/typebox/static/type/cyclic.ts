@@ -32,11 +32,10 @@ import { Assert } from 'test'
   }, 'Deep')
   type Deep = Static<typeof Deep>
   // Invariant
-  Assert.IsExtends<{ deep: 1 }, Deep>(false)
-  Assert.IsExtends<{ deep: { deep: { deep: 1 } } }, Deep>(false)
-
-  // Extends
+  Assert.IsExtends<{ deep: 1 }, Deep>(false) // not deep enough
+  // Allowed
   Assert.IsExtends<{ deep: any }, Deep>(true)
+  Assert.IsExtends<{ deep: { deep: { deep: 1 } } }, Deep>(true)
   Assert.IsExtends<{ deep: { deep: { deep: any } } }, Deep>(true)
 }
 // ------------------------------------------------------------------
@@ -57,11 +56,18 @@ import { Assert } from 'test'
   }, 'JsonValue')
 
   type JsonValue = Static<typeof JsonValue>
+  const JsonObject = Type.Record(Type.String(), JsonValue)
+  const JsonArray = Type.Array(JsonValue)
+  type JsonObject = Static<typeof JsonObject>
+  type JsonArray = Static<typeof JsonArray>
+
   // Invariant
   Assert.IsExtends<bigint, JsonValue>(false)
   Assert.IsExtends<bigint[], JsonValue>(false)
   Assert.IsExtends<[bigint], JsonValue>(false)
   Assert.IsExtends<{ x: bigint }, JsonValue>(false)
+  Assert.IsExtends<{ x: bigint }, JsonObject>(false)
+  Assert.IsExtends<[bigint], JsonArray>(false)
 
   // Extends
   Assert.IsExtends<'A', JsonValue>(true)
@@ -71,4 +77,6 @@ import { Assert } from 'test'
   Assert.IsExtends<null[], JsonValue>(true)
   Assert.IsExtends<[null], JsonValue>(true)
   Assert.IsExtends<{ x: null }, JsonValue>(true)
+  Assert.IsExtends<{ x: null }, JsonObject>(true)
+  Assert.IsExtends<[null], JsonArray>(true)
 }

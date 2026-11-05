@@ -37,8 +37,8 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticCodec<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, Decoded extends unknown> = (
-  Direction extends 'Decode' ? Decoded : StaticType<Stack, Direction, Context, This, Omit<Type, '~codec'>> // prevent recurrent static
+export type StaticCodec<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, Decoded extends unknown> = (
+  Direction extends 'Decode' ? Decoded : StaticType<Direction, Context, This, Omit<Type, '~codec'>> // prevent recurrent static
 )
 // ------------------------------------------------------------------
 // Type

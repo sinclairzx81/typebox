@@ -9,6 +9,7 @@ import * as Bench from './task/bench/index.ts'
 import * as Range from './task/range/index.ts'
 import * as Metrics from './task/metrics/index.ts'
 import * as Build from './task/build/build.ts'
+import * as Static from './task/static/index.ts'
 import * as Test from './task/test/index.ts'
 import * as Spec from './task/spec/index.ts'
 import * as Task from './task/task.ts'
@@ -107,6 +108,14 @@ Task.run('challenge', (filter: string = '') => Test.test(['test/typescript'], { 
 // Website
 // ------------------------------------------------------------------
 Task.run('website', () => Website.serve('design/website', 'docs', 5000))
+// ------------------------------------------------------------------
+// Static
+// ------------------------------------------------------------------
+Task.run('static', () => Static.Static())
+// ------------------------------------------------------------------
+// Static-Build
+// ------------------------------------------------------------------
+Task.run('static-build', async () => { await BuildTo('target/build'); await Static.StaticBuild() })
 // ------------------------------------------------------------------
 // Syntax
 // ------------------------------------------------------------------
