@@ -31,6 +31,7 @@ THE SOFTWARE.
 import { Guard, GlobalsGuard } from '../../guard/index.ts'
 import { type TEdit, type TUpdate, type TInsert, type TDelete } from './edit.ts'
 import { Equal } from '../equal/index.ts'
+import { EncodeFragment } from '../../schema/engine/_pathing.ts'
 
 // ------------------------------------------------------------------
 // Factory
@@ -67,7 +68,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   for (const key of rightKeys) {
     if (Guard.HasPropertyKey(left, key)) continue
     if (Guard.IsUnsafePropertyKey(key)) continue
-    yield CreateInsert(`${path}/${key}`, right[key])
+    yield CreateInsert(`${path}/${EncodeFragment(key)}`, right[key])
   }
   // ----------------------------------------------------------------
   // Update
@@ -76,7 +77,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
     if (!Guard.HasPropertyKey(right, key)) continue
     if (Guard.IsUnsafePropertyKey(key)) continue
     if (Equal(left, right)) continue
-    yield* FromValue(`${path}/${key}`, left[key], right[key])
+    yield* FromValue(`${path}/${EncodeFragment(key)}`, left[key], right[key])
   }
   // ----------------------------------------------------------------
   // Delete
@@ -84,7 +85,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   for (const key of leftKeys) {
     if (Guard.HasPropertyKey(right, key)) continue
     if (Guard.IsUnsafePropertyKey(key)) continue
-    yield CreateDelete(`${path}/${key}`)
+    yield CreateDelete(`${path}/${EncodeFragment(key)}`)
   }
 }
 // ------------------------------------------------------------------
