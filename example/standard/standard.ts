@@ -44,6 +44,57 @@ function ErrorToIssue(error: TLocalizedValidationError): StandardSchemaV1.Issue 
   return { path, message: error.message }
 }
 // ------------------------------------------------------------------
+// ToDraft202012
+//
+// TypeBox emits Tuple as Draft 7 (items: [...] and additionalItems).
+// Draft 2020-12 expresses the same as prefixItems and items. The values
+// of data keywords are not schemas and are left as is.
+// ------------------------------------------------------------------
+const DataKeywords = ['const', 'default', 'enum', 'examples']
+const MapKeywords = ['$defs', 'definitions', 'dependencies', 'dependentSchemas', 'patternProperties', 'properties']
+function FromTuple(schema: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
+  const { items, additionalItems, ...rest } = schema
+  return Guard.IsUndefined(additionalItems)
+    ? { ...rest, prefixItems: items }
+    : { ...rest, prefixItems: items, items: additionalItems }
+}
+function FromMap(value: unknown): unknown {
+  return Guard.IsObject(value)
+    ? Object.fromEntries(Guard.Entries(value).map(([key, value]) => [key, ToDraft202012(value)]))
+    : value
+}
+function FromKeyword(key: string, value: unknown): unknown {
+  if (DataKeywords.includes(key)) {
+    return value
+  }
+  if (MapKeywords.includes(key)) {
+    return FromMap(value)
+  }
+  return ToDraft202012(value)
+}
+function ToDraft202012(value: unknown): unknown {
+  if (Guard.IsArray(value)) {
+    return value.map((value) => ToDraft202012(value))
+  }
+  if (!Guard.IsObject(value)) {
+    return value
+  }
+  const schema = Object.fromEntries(Guard.Entries(value).map(([key, value]) => [key, FromKeyword(key, value)]))
+  return Guard.IsArray(schema.items) ? FromTuple(schema) : schema
+}
+// ------------------------------------------------------------------
+// ToJsonSchema
+// ------------------------------------------------------------------
+function ToJsonSchema(schema: TSchema, options: StandardJSONSchemaV1.Options): Record<string, unknown> {
+  if (Guard.IsEqual(options.target, 'draft-07')) {
+    return schema as Record<string, unknown>
+  }
+  if (Guard.IsEqual(options.target, 'draft-2020-12')) {
+    return ToDraft202012(schema) as Record<string, unknown>
+  }
+  throw Error(`Unsupported JSON Schema target '${options.target}'`)
+}
+// ------------------------------------------------------------------
 // StandardSchemaProps
 // ------------------------------------------------------------------
 export class StandardSchemaProps<Value> implements StandardSchemaV1.Props<Value, Value>, StandardJSONSchemaV1.Props<Value, Value> {
@@ -55,8 +106,8 @@ export class StandardSchemaProps<Value> implements StandardSchemaV1.Props<Value,
   constructor(type: TSchema) {
     this.#validator = new Validator({}, type)
     this.jsonSchema = {
-      output: () => this.#validator.Schema() as Record<string, unknown>,
-      input: () => this.#validator.Schema() as Record<string, unknown>
+      output: (options) => ToJsonSchema(this.#validator.Schema(), options),
+      input: (options) => ToJsonSchema(this.#validator.Schema(), options)
     }
   }
   public validate = (value: unknown): StandardSchemaV1.Result<Value> | Promise<StandardSchemaV1.Result<Value>> => {
