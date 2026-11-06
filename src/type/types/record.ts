@@ -54,9 +54,9 @@ type StaticPropertyKey<Key extends string, Result extends PropertyKey = (
   Key extends `^${string}$` ? TTemplateLiteralStatic<Key> : 
   string
 )> = Result
-export type StaticRecord<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Key extends string, Value extends TSchema,
+export type StaticRecord<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Key extends string, Value extends TSchema,
   StaticKey extends PropertyKey = StaticPropertyKey<Key>,
-  StaticValue extends unknown = StaticType<Stack, Direction, Context, This, Value>,
+  StaticValue extends unknown = StaticType<Direction, Context, This, Value>,
   Result extends Record<PropertyKey, unknown> = Record<StaticKey, StaticValue>
 > = Result
 // -------------------------------------------------------------------

@@ -36,10 +36,10 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticDependent<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, If extends TSchema, Then extends TSchema, Else extends TSchema,
-  StaticIf extends unknown = StaticType<Stack, Direction, Context, This, If>,
-  StaticThen extends unknown = StaticType<Stack, Direction, Context, This, Then>,
-  StaticElse extends unknown = StaticType<Stack, Direction, Context, This, Else>,
+export type StaticDependent<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, If extends TSchema, Then extends TSchema, Else extends TSchema,
+  StaticIf extends unknown = StaticType<Direction, Context, This, If>,
+  StaticThen extends unknown = StaticType<Direction, Context, This, Then>,
+  StaticElse extends unknown = StaticType<Direction, Context, This, Else>,
   Result extends unknown = (StaticIf & StaticThen) | Exclude<StaticElse, StaticIf>
 > = Result
 // ------------------------------------------------------------------

@@ -33,7 +33,9 @@ import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TParameter } from '../../types/parameter.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
+
+import { type TState, State } from '../instantiate.ts'
+import { type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
 import { Extends, ExtendsResult } from '../../extends/index.ts'
 import { IsInfer } from '../../types/infer.ts'
@@ -65,8 +67,8 @@ function BindArgument<Context extends TProperties, State extends TState, Name ex
 // BindArguments
 // ------------------------------------------------------------------
 type TBindArguments<Context extends TProperties, State extends TState, ParameterLeft extends TParameter, ParameterRight extends TParameter[], Arguments extends TSchema[],
-  InstantiatedExtends extends TSchema = TInstantiateType<Context, State, ParameterLeft['extends']>,
-  InstantiatedEquals extends TSchema = TInstantiateType<Context, State, ParameterLeft['equals']>,
+  InstantiatedExtends extends TSchema = TInstantiateType<Context, TState<State['callstack'], []>, ParameterLeft['extends']>,
+  InstantiatedEquals extends TSchema = TInstantiateType<Context, TState<State['callstack'], []>, ParameterLeft['equals']>,
 > = (
     Arguments extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
     ? TBindParameters<TBindArgument<Context, State, ParameterLeft['name'], InstantiatedExtends, Left>, State, ParameterRight, Right>
@@ -75,8 +77,8 @@ type TBindArguments<Context extends TProperties, State extends TState, Parameter
 function BindArguments<Context extends TProperties, State extends TState, ParameterLeft extends TParameter, ParameterRight extends TParameter[], Arguments extends TSchema[]>
   (context: Context, state: State, parameterLeft: ParameterLeft, parameterRight: [...ParameterRight], arguments_: [...Arguments]):
     TBindArguments<Context, State, ParameterLeft, ParameterRight, Arguments> {
-  const instantiatedExtends = InstantiateType(context, state, parameterLeft.extends)
-  const instantiatedEquals = InstantiateType(context, state, parameterLeft.equals)
+  const instantiatedExtends = InstantiateType(context, State(state.callstack, []), parameterLeft.extends)
+  const instantiatedEquals = InstantiateType(context, State(state.callstack, []), parameterLeft.equals)
   return Guard.ShiftLeft(arguments_, (left, right) => 
     BindParameters(BindArgument(context, state, parameterLeft['name'], instantiatedExtends, left), state, parameterRight, right),
     () => BindParameters(BindArgument(context, state, parameterLeft['name'], instantiatedExtends, instantiatedEquals), state, parameterRight, [])

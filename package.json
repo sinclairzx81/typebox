@@ -26,6 +26,8 @@
     "test": "node tasks.ts test",
     "fast": "node tasks.ts fast",
     "report": "node tasks.ts report",
+    "static-build": "node tasks.ts static-build",
+    "static": "node tasks.ts static",
     "challenge": "node tasks.ts challenge",
     "turing": "node tasks.ts turing",
     "automata": "node tasks.ts automata",

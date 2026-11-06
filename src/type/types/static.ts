@@ -75,54 +75,67 @@ export type StaticDirection = 'Encode' | 'Decode'
 // ------------------------------------------------------------------
 // StaticType
 // ------------------------------------------------------------------
-export type StaticType<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema> = (
-  Type extends TCodec<infer Type extends TSchema, infer Decoded extends unknown> ? StaticCodec<Stack, Direction, Context, This, Type, Decoded> :
+export type StaticType<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema> = (
+  Type extends TCodec<infer Type extends TSchema, infer Decoded extends unknown> ? StaticCodec<Direction, Context, This, Type, Decoded> :
   Type extends TAny ? StaticAny :
-  Type extends TArray<infer Items extends TSchema> ? StaticArray<Stack, Direction, Context, This, Type, Items> :
+  Type extends TArray<infer Items extends TSchema> ? StaticArray<Direction, Context, This, Type, Items> :
   Type extends TBigInt ? StaticBigInt :
   Type extends TBoolean ? StaticBoolean :
-  Type extends TConstructor<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticConstructor<Stack, Direction, Context, This, Parameters, ReturnType> :
+  Type extends TConstructor<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticConstructor<Direction, Context, This, Parameters, ReturnType> :
   Type extends TEnum<infer Values extends TEnumValue[]> ? StaticEnum<Values> :
-  Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticFunction<Stack, Direction, Context, This, Parameters, ReturnType> :
-  Type extends TDependent<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? StaticDependent<Stack, Direction, Context, This, If, Then, Else> :
+  Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticFunction<Direction, Context, This, Parameters, ReturnType> :
+  Type extends TDependent<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? StaticDependent<Direction, Context, This, If, Then, Else> :
   Type extends TInteger ? StaticInteger :
-  Type extends TIntersect<infer Types extends TSchema[]> ? StaticIntersect<Stack, Direction, Context, This, Types> :
+  Type extends TIntersect<infer Types extends TSchema[]> ? StaticIntersect<Direction, Context, This, Types> :
   Type extends TLiteral<infer Value extends TLiteralValue> ? StaticLiteral<Value> :
   Type extends TNever ? StaticNever :
   Type extends TNull ? StaticNull :
   Type extends TNumber ? StaticNumber :
-  Type extends TObject<infer Properties extends TProperties> ? StaticObject<Stack, Direction, Context, This, Properties> :
-  Type extends TRecord<infer Key extends string, infer Value extends TSchema> ? StaticRecord<Stack, Direction, Context, This, Key, Value> :
-  Type extends TCyclic<infer Defs extends TProperties, infer Ref extends string> ? StaticCyclic<Stack, Direction, Context, This, Defs, Ref> :
-  Type extends TRef<infer Ref extends string> ? StaticRef<Stack, Direction, Context, This, Ref> :
+  Type extends TObject<infer Properties extends TProperties> ? StaticObject<Direction, Context, This, Properties> :
+  Type extends TRecord<infer Key extends string, infer Value extends TSchema> ? StaticRecord<Direction, Context, This, Key, Value> :
+  Type extends TCyclic<infer Defs extends TProperties, infer Ref extends string> ? StaticCyclic<Direction, Context, This, Defs, Ref> :
+  Type extends TRef<infer Ref extends string> ? StaticRef<Direction, Context, This, Ref> :
   Type extends TString ? StaticString :
   Type extends TSymbol ? StaticSymbol :
   Type extends TTemplateLiteral<infer Pattern extends string> ? StaticTemplateLiteral<Pattern> :
-  Type extends TThis ? StaticThis<Stack, Direction, Context, This> :
-  Type extends TTuple<infer Items extends TSchema[]> ? StaticTuple<Stack, Direction, Context, This, Type, Items> :
+  Type extends TThis ? StaticThis<Direction, Context, This> :
+  Type extends TTuple<infer Items extends TSchema[]> ? StaticTuple<Direction, Context, This, Type, Items> :
   Type extends TUndefined ? StaticUndefined :
-  Type extends TUnion<infer Types extends TSchema[]> ? StaticUnion<Stack, Direction, Context, This, Types> :
+  Type extends TUnion<infer Types extends TSchema[]> ? StaticUnion<Direction, Context, This, Types> :
   Type extends TUnknown ? StaticUnknown :
   Type extends TUnsafe<infer Type extends unknown> ? StaticUnsafe<Type> :
   Type extends TVoid ? StaticVoid :
   XStatic<Type>
 )
 // ------------------------------------------------------------------
+// StaticNoInfer
+//
+// Prevents the computed static type from becoming a candidate for
+// reverse inference. This type is used instead of NoInfer<T> as
+// TypeBox maintains support for TypeScript 5.0.4 and above, and
+// NoInfer<T> is only available from 5.4. This type can be replaced
+// with NoInfer<T> once the minimum supported TypeScript version is
+// raised to 5.4 or later. (review)
+//
+// ------------------------------------------------------------------
+export type StaticNoInfer<Type> = [Type][Type extends unknown ? 0 : never]
+
+// ------------------------------------------------------------------
 // Statics
 // ------------------------------------------------------------------
 /** Infers a static type from a TypeBox type using Parse logic. */
 export type StaticParse<Type extends TSchema, Context extends TProperties = {},
-  Result extends unknown = StaticType<[], 'Encode', Context, {}, Type>
-> = Result
+  Result extends unknown = StaticType<'Encode', Context, {}, Type>
+> = StaticNoInfer<Result>
 /** Infers a static type from a TypeBox type using Decode logic. */
 export type StaticDecode<Type extends TSchema, Context extends TProperties = {},
-  Result extends unknown = StaticType<[], 'Decode', Context, {}, Type>
-> = Result
+  Result extends unknown = StaticType<'Decode', Context, {}, Type>
+> = StaticNoInfer<Result>
 /** Infers a static type from a TypeBox type using Encode logic. */
 export type StaticEncode<Type extends TSchema, Context extends TProperties = {},
-  Result extends unknown = StaticType<[], 'Encode', Context, {}, Type>
-> = Result
+  Result extends unknown = StaticType<'Encode', Context, {}, Type>
+> = StaticNoInfer<Result>
 /** Infers a static type from a TypeBox type. */
 export type Static<Type extends TSchema, Context extends TProperties = {},
-  Result extends unknown = StaticType<[], 'Encode', Context, {}, Type>
-> = Result
+  Result extends unknown = StaticType<'Encode', Context, {}, Type>
+> = StaticNoInfer<Result>
