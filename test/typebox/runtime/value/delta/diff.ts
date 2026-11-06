@@ -452,3 +452,53 @@ Test('Should not generate edits for nested unsafe properties on INSERT', () => {
   const C = Value.Diff(A, B)
   Assert.IsEqual(C, [{ type: 'insert', path: '/outer/value', value: 1 }])
 })
+// ----------------------------------------------------------------
+// Ref: https://github.com/sinclairzx81/typebox/pull/1727
+// ----------------------------------------------------------------
+Test('Should diff Uint8Array with null', () => {
+  const A = new Uint8Array([1, 2])
+  const B = null
+  Assert.IsEqual(Value.Diff(A, B), [Update('', B)])
+  Assert.IsEqual(Value.Diff({ value: A }, { value: B }), [Update('/value', B)])
+})
+Test('Should diff Uint8Array with undefined', () => {
+  const A = new Uint8Array([1, 2])
+  const B = undefined
+  Assert.IsEqual(Value.Diff(A, B), [Update('', B)])
+  Assert.IsEqual(Value.Diff({ value: A }, { value: B }), [Update('/value', B)])
+})
+Test('Should diff Uint8Array with null-prototype objects', () => {
+  const A = new Uint8Array([1, 2])
+  const B = Object.create(null)
+  Assert.IsEqual(Value.Diff(A, B), [Update('', B)])
+  Assert.IsEqual(Value.Diff({ value: A }, { value: B }), [Update('/value', B)])
+})
+// ------------------------------------------------------------------
+// Ref: https://github.com/sinclairzx81/typebox/pull/1728
+// ------------------------------------------------------------------
+function AssertRoundTrip(A: unknown, B: unknown) {
+  Assert.IsEqual(Value.Patch(A, Value.Diff(A, B)), B)
+  const nestedA = { outer: [A] }
+  const nestedB = { outer: [B] }
+  Assert.IsEqual(Value.Patch(nestedA, Value.Diff(nestedA, nestedB)), nestedB)
+}
+Test('Should round trip property key with slash', () => {
+  AssertRoundTrip({}, { 'a/b': 1 })
+  AssertRoundTrip({ 'a/b': 1 }, { 'a/b': 2 })
+  AssertRoundTrip({ 'a/b': 1 }, {})
+})
+Test('Should round trip property key with tilde', () => {
+  AssertRoundTrip({}, { 'a~b': 1 })
+  AssertRoundTrip({ 'a~b': 1 }, { 'a~b': 2 })
+  AssertRoundTrip({ 'a~b': 1 }, {})
+})
+Test('Should round trip property key with escaped slash sequence', () => {
+  AssertRoundTrip({}, { 'a~1b': 1 })
+  AssertRoundTrip({ 'a~1b': 1 }, { 'a~1b': 2 })
+  AssertRoundTrip({ 'a~1b': 1 }, {})
+})
+Test('Should round trip property key with tilde and slash', () => {
+  AssertRoundTrip({}, { '~/': 1 })
+  AssertRoundTrip({ '~/': 1 }, { '~/': 2 })
+  AssertRoundTrip({ '~/': 1 }, {})
+})
