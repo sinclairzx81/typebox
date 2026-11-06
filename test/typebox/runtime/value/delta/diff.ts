@@ -384,6 +384,13 @@ Test('Should diff a Uint8Array (greater than requires full update)', () => {
   const E = [Update('', new Uint8Array([0, 9, 2, 3, 4]))]
   Assert.IsEqual(D, E)
 })
+Test('Should diff typed arrays to nullish and null-prototype values', () => {
+  for (const B of [null, undefined, Object.create(null)]) {
+    const A = new Uint8Array([1, 2])
+    Assert.IsEqual(Value.Diff(A, B), [Update('', B)])
+    Assert.IsEqual(Value.Diff({ value: A }, { value: B }), [Update('/value', B)])
+  }
+})
 // ----------------------------------------------------------------
 // https://github.com/sinclairzx81/typebox/issues/937
 // ----------------------------------------------------------------
