@@ -33,32 +33,59 @@ import { Memory } from '../../system/memory/index.ts'
 import { type StaticType, type StaticDirection } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TProperties } from './properties.ts'
-import { type TAny } from './any.ts'
+import { type TAny, type StaticAny } from './any.ts'
 import { type TUnknown } from './unknown.ts'
+import { type TRef } from './ref.ts'
+import { type TObject } from './object.ts'
 
 // ------------------------------------------------------------------
-// TerminatingContext
+// CyclicEntry
 //
-// We support one level of recursive inference; anything past that
-// point is inferred as TAny. The transform to TCyclic here is
-// required to ensure re-dispatch via StaticType. The intent is to
-// keep TCyclic inference local to this module, and to prevent naive
-// inference via TRef, which would otherwise result in instantiation
-// depth errors.
+// (A) The definition is already being expanded, we terminate with any.
+// (B) TypeScript defers recursive property inference, so recursive objects are safe to expand.
+// (C) Redispatched as a TCyclic. StaticCyclic follows the alias and marks it terminated as it goes.
+// (D) Redispatched as a TCyclic with the definition marked terminated. Detected on next pass.
 // ------------------------------------------------------------------
-type TerminatingContext<Defs extends TProperties, Ref extends string> = (
-  Ref extends keyof Defs
-    ? Defs[Ref] extends { terminate: true }
-      ? Omit<Defs, Ref> & { [_ in Ref]: TAny } // terminate with TAny
-      : Omit<Defs, Ref> & { [_ in Ref]: TCyclic<Defs & { [_ in Ref]: Defs[Ref] & { terminate: true } }, Ref> }
-    : Defs
-)
+type CyclicEntry<Defs extends TProperties, Key extends string, 
+  Target extends TSchema = Defs[Key],
+  Result extends TSchema = (
+    /* A */ Target extends { terminate: true } ? TAny :
+    /* B */ Target extends TObject ? Target :
+    /* C */ Target extends TRef ? TCyclic<Defs, Key> :
+    /* D */ TCyclic<Defs & { [_ in Key]: Target & { terminate: true } }, Key>
+)> = Result
+// ------------------------------------------------------------------
+// CyclicContext
+// ------------------------------------------------------------------
+type CyclicContext<Defs extends TProperties> = {
+  [Key in Extract<keyof Defs, string>]: CyclicEntry<Defs, Key>
+}
+// ------------------------------------------------------------------
+// CyclicTerminate
+// ------------------------------------------------------------------
+type CyclicTerminate<Defs extends TProperties, Key extends string,
+  Target extends TSchema = Defs[Key],
+  Result extends TProperties = Defs & { [_ in Key]: Target & { terminate: true } }
+> = Result
+// ------------------------------------------------------------------
+// CyclicScope
+// ------------------------------------------------------------------
+type CyclicScope<Defs extends TProperties, Marked extends TProperties, Target extends TSchema,
+  Result extends TProperties = Target extends TObject ? CyclicContext<Defs> : CyclicContext<Marked>
+> = Result
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticCyclic<Direction extends StaticDirection, _Context extends TProperties, This extends TProperties, Defs extends TProperties, Ref extends string,
-  Target extends TSchema = Ref extends keyof Defs ? Defs[Ref] : TUnknown,
-  Result extends unknown = StaticType<Direction, TerminatingContext<Defs, Ref>, This, Target>
+export type StaticCyclic<Direction extends StaticDirection, /* unused */ Context extends TProperties, This extends TProperties, Defs extends TProperties, Ref extends string,
+  Marked extends TProperties = Defs,
+  Target extends TSchema = Ref extends keyof Marked ? Marked[Ref] : TUnknown,
+  Result extends unknown = (
+    Target extends TRef<infer Alias extends string>
+      ? Target extends { terminate: true }
+        ? StaticAny
+        : StaticCyclic<Direction, Context, This, Defs, Alias, CyclicTerminate<Marked, Ref>>
+      : StaticType<Direction, CyclicScope<Defs, Marked, Target>, This, Target>
+  )
 > = Result
 // ------------------------------------------------------------------
 // Type
