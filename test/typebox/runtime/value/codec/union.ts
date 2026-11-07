@@ -320,3 +320,39 @@ Test('Should Union 21', () => {
     Assert.IsEqual(E, { x: 1, y: 2 })
   })
 }
+// ------------------------------------------------------------------
+// Compiled Member Check Cache (#1705)
+// ------------------------------------------------------------------
+{
+  const IsoDate = Type.Codec(Type.String())
+    .Decode((value) => new Date(value))
+    .Encode((value) => (value instanceof Date ? value.toISOString() : value as never))
+  const Call = Type.Object({
+    kind: Type.Literal('call'),
+    date: IsoDate
+  })
+  const Note = Type.Object({
+    kind: Type.Literal('note'),
+    text: Type.String()
+  })
+  const Activity = Type.Union([Call, Note])
+
+  Test('Should Union 22 (Compiled Member Check Cache)', () => {
+    const rawCall = { kind: 'call', date: '2026-01-01T00:00:00.000Z' }
+    const decodedCall = Value.Decode(Activity, rawCall) as { kind: string; date: unknown }
+    Assert.IsEqual(decodedCall.kind, 'call')
+    Assert.IsTrue(decodedCall.date instanceof Date)
+    const encodedCall = Value.Encode(Activity, decodedCall)
+    Assert.IsEqual(encodedCall, rawCall)
+
+    // With context: ensure fallback to interpreted Check preserves correct behavior
+    const RefSchema = Type.Ref('NoteType')
+    const UnionWithRef = Type.Union([Call, RefSchema])
+    const context = { NoteType: Note }
+    const rawNote = { kind: 'note', text: 'hello' }
+    const decodedNote = Value.Decode(context, UnionWithRef, rawNote)
+    Assert.IsEqual(decodedNote, rawNote)
+    const encodedNote = Value.Encode(context, UnionWithRef, decodedNote)
+    Assert.IsEqual(encodedNote, rawNote)
+  })
+}
