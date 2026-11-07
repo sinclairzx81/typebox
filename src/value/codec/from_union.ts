@@ -29,18 +29,34 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type TProperties, type TUnion } from '../../type/index.ts'
+import { type TProperties, type TUnion, type TSchema } from '../../type/index.ts'
 import { Callback } from './callback.ts'
 import { FromType } from './from_type.ts'
 import { Clone } from '../clone/index.ts'
 import { Check } from '../check/index.ts'
+import { Compile, type Validator } from '../../compile/index.ts'
+
+// ------------------------------------------------------------------
+// MemberCheck
+// ------------------------------------------------------------------
+const validators = new WeakMap<TSchema, Validator>()
+
+function MemberCheck(context: TProperties, schema: TSchema, value: unknown): boolean {
+  if (Guard.Keys(context).length > 0) return Check(context, schema, value)
+  let validator = validators.get(schema)
+  if (validator === undefined) {
+    validator = Compile(schema)
+    validators.set(schema, validator)
+  }
+  return validator.Check(value)
+}
 
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
 function Decode(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
   for (const schema of type.anyOf) {
-    if(!Check(context, schema, value)) continue
+    if (!MemberCheck(context, schema, value)) continue
     const variant = FromType(direction, context, schema, value)
     return Callback(direction, context, type, variant)
   }
@@ -53,7 +69,7 @@ function Encode(direction: string, context: TProperties, type: TUnion, value: un
   const exterior = Callback(direction, context, type, value)
   for (const schema of type.anyOf) {
     const variant = FromType(direction, context, schema, Clone(exterior))
-    if(!Check(context, schema, variant)) continue
+    if (!MemberCheck(context, schema, variant)) continue
     return variant
   }
   return exterior
