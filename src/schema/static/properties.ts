@@ -64,17 +64,21 @@ type XOptionalKeys<Properties extends Record<PropertyKey, XSchema>, RequiredArra
 > = Result
 // ------------------------------------------------------------------
 // Properties
+//
+// Explicit variance annotations: without them, relating two generic
+// Static types makes TypeScript measure the variance of each alias,
+// which walks XStaticSchema with marker types (~1s per program).
 // ------------------------------------------------------------------
-type XReadonlyOptionalProperties<Stack extends string[], Root extends XSchema, OptionalKeys extends PropertyKey, Properties extends Record<PropertyKey, XSchema>> = {
+type XReadonlyOptionalProperties<out Stack extends string[], out Root extends XSchema, in out OptionalKeys extends PropertyKey, out Properties extends Record<PropertyKey, XSchema>> = {
   readonly [Key in Extract<keyof Properties, OptionalKeys>]?: XStaticSchema<Stack, Root, Properties[Key]>
 }
-type XReadonlyRequiredProperties<Stack extends string[], Root extends XSchema, RequiredKeys extends PropertyKey, Properties extends Record<PropertyKey, XSchema>> = {
+type XReadonlyRequiredProperties<out Stack extends string[], out Root extends XSchema, in out RequiredKeys extends PropertyKey, out Properties extends Record<PropertyKey, XSchema>> = {
   readonly [Key in Extract<keyof Properties, RequiredKeys>]: XStaticSchema<Stack, Root, Properties[Key]>
 }
-type XOptionalProperties<Stack extends string[], Root extends XSchema, OptionalKeys extends PropertyKey, Properties extends Record<PropertyKey, XSchema>> = {
+type XOptionalProperties<out Stack extends string[], out Root extends XSchema, in out OptionalKeys extends PropertyKey, out Properties extends Record<PropertyKey, XSchema>> = {
   [Key in Extract<keyof Properties, OptionalKeys>]?: XStaticSchema<Stack, Root, Properties[Key]>
 }
-type XRequiredProperties<Stack extends string[], Root extends XSchema, RequiredKeys extends PropertyKey, Properties extends Record<PropertyKey, XSchema>> = {
+type XRequiredProperties<out Stack extends string[], out Root extends XSchema, in out RequiredKeys extends PropertyKey, out Properties extends Record<PropertyKey, XSchema>> = {
   [Key in Extract<keyof Properties, RequiredKeys>]: XStaticSchema<Stack, Root, Properties[Key]>
 }
 type XUnknownProperties<UnknownKeys extends PropertyKey> = {
