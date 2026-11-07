@@ -157,7 +157,14 @@ export function Keys(value: string): string {
   return `Object.getOwnPropertyNames(${value})`
 }
 export function HasPropertyKey(value: string, key: string): string {
-  const isProtoField = G.IsEqual(key, '"__proto__"') || G.IsEqual(key, '"constructor"')
+  // `prototype` is in Guard.IsUnsafePropertyKey's set but was missing here,
+  // so the compiled presence test used `in` where the interpreter required an
+  // own property. The two paths then disagreed on any value whose prototype
+  // chain carries a `prototype` member.
+  const isProtoField =
+    G.IsEqual(key, '"__proto__"') ||
+    G.IsEqual(key, '"constructor"') ||
+    G.IsEqual(key, '"prototype"')
   return isProtoField ? `Object.prototype.hasOwnProperty.call(${value}, ${key})` : `${key} in ${value}`
 }
 export function IsDeepEqual(left: string, right: string): string {

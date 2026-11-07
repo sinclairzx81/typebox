@@ -272,3 +272,17 @@ Test('Should Compile 10', () => {
     System.Settings.Reset()
   }
 })
+
+// ------------------------------------------------------------------
+// AdditionalProperties
+// ------------------------------------------------------------------
+Test('Should Compile AdditionalProperties 1', () => {
+  // an inherited required key plus an extra own key: the validator must
+  // reject it and Errors() must report the additional property
+  const type = Type.Object({ x: Type.Number() }, { additionalProperties: false })
+  const value = Object.create({ x: 1 }) as Record<string, unknown>
+  value.y = 2
+  const validator = Compile(type)
+  Assert.IsFalse(validator.Check(value))
+  Assert.IsTrue(validator.Errors(value).some((error) => error.keyword === 'additionalProperties'))
+})

@@ -78,21 +78,30 @@ function GetPropertiesPattern(schema: Schema.XSchemaObject): string {
 // - The schema uses only Properties (no PatternProperties),
 // - Required contains exactly the keys in Properties.
 //
+// A value is valid when every own property name is a declared
+// property name. The standard path tests that set with a regular
+// expression; this path tests the same set against a precomputed Set.
+// Counting own property names is not equivalent: required keys may be
+// inherited (Guard.HasPropertyKey tests `key in value`), so a value
+// can have fewer own names than required keys, or the same count with
+// an extra own key in place of an inherited required key.
 // ------------------------------------------------------------------
 function HasExactRequiredProperties(schema: Schema.XRequired & Schema.XProperties): boolean {
   const keys = G.Keys(schema.properties)
   return G.IsEqual(keys.length, schema.required.length)
     && G.Every(keys, 0, (key) => schema.required.includes(key))
 }
-function CanAdditionalPropertiesFast(_context: BuildContext, schema: Schema.XAdditionalProperties, _value: string): schema is Schema.XAdditionalProperties & Schema.XRequired {
+function CanAdditionalPropertiesFast(_context: BuildContext, schema: Schema.XAdditionalProperties, _value: string): schema is Schema.XAdditionalProperties & Schema.XRequired & Schema.XProperties {
   return Schema.IsRequired(schema)
     && Schema.IsProperties(schema)
     && !Schema.IsPatternProperties(schema)
     && G.IsEqual(schema.additionalProperties, false)
     && HasExactRequiredProperties(schema)
 }
-function BuildAdditionalPropertiesFast(_context: BuildContext, schema: Schema.XAdditionalProperties & Schema.XRequired, value: string): string {
-  return E.IsEqual(E.Member(E.Call(E.Member('Object', 'getOwnPropertyNames'), [value]), 'length'), E.Constant(schema.required.length))
+function BuildAdditionalPropertiesFast(schema: Schema.XAdditionalProperties & Schema.XRequired & Schema.XProperties, value: string): string {
+  const propertyKeys = Externals.CreateVariable(new Set(G.Keys(schema.properties)))
+  const [key, index] = [Unique.CreateUnique(), Unique.CreateUnique()]
+  return E.Every(E.Keys(value), E.Constant(0), [key, index], E.Call(E.Member(propertyKeys, 'has'), [key]))
 }
 // ------------------------------------------------------------------
 // BuildAdditionalPropertiesStandard
@@ -113,7 +122,7 @@ function BuildAdditionalPropertiesStandard(stack: Stack.XStack, context: BuildCo
 export function BuildAdditionalProperties(stack: Stack.XStack, context: BuildContext, schema: Schema.XAdditionalProperties, value: string): string {
   if (IsAdditionalPropertiesIgnored(context, schema.additionalProperties)) return E.Constant(true)
   return CanAdditionalPropertiesFast(context, schema, value)
-    ? BuildAdditionalPropertiesFast(context, schema, value)
+    ? BuildAdditionalPropertiesFast(schema, value)
     : BuildAdditionalPropertiesStandard(stack, context, schema, value)
 }
 // ------------------------------------------------------------------
