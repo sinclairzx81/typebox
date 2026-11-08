@@ -28,10 +28,10 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as Functions from './_functions.ts'
 import * as Schema from '../types/index.ts'
+import * as Resolve from '../resolve/index.ts'
+import * as Functions from './_functions.ts'
 import * as Stack from './_stack.ts'
-import { Resolve } from '../resolve/index.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 import { CheckSchema, ErrorSchema } from './schema.ts'

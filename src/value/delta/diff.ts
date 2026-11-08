@@ -29,9 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard, GlobalsGuard } from '../../guard/index.ts'
+import * as Pointer from '../../schema/pointer/index.ts'
 import { type TEdit, type TUpdate, type TInsert, type TDelete } from './edit.ts'
 import { Equal } from '../equal/index.ts'
-import { EncodeFragment } from '../../schema/engine/_pathing.ts'
 
 // ------------------------------------------------------------------
 // Factory
@@ -68,7 +68,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   for (const key of rightKeys) {
     if (Guard.HasPropertyKey(left, key)) continue
     if (Guard.IsUnsafePropertyKey(key)) continue
-    yield CreateInsert(`${path}/${EncodeFragment(key)}`, right[key])
+    yield CreateInsert(`${path}/${Pointer.EncodeFragment(key)}`, right[key])
   }
   // ----------------------------------------------------------------
   // Update
@@ -77,7 +77,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
     if (!Guard.HasPropertyKey(right, key)) continue
     if (Guard.IsUnsafePropertyKey(key)) continue
     if (Equal(left, right)) continue
-    yield* FromValue(`${path}/${EncodeFragment(key)}`, left[key], right[key])
+    yield* FromValue(`${path}/${Pointer.EncodeFragment(key)}`, left[key], right[key])
   }
   // ----------------------------------------------------------------
   // Delete
@@ -85,7 +85,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   for (const key of leftKeys) {
     if (Guard.HasPropertyKey(right, key)) continue
     if (Guard.IsUnsafePropertyKey(key)) continue
-    yield CreateDelete(`${path}/${EncodeFragment(key)}`)
+    yield CreateDelete(`${path}/${Pointer.EncodeFragment(key)}`)
   }
 }
 // ------------------------------------------------------------------

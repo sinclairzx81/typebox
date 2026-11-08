@@ -29,10 +29,10 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
+import * as Pointer from '../pointer/index.ts'
 import * as Stack from './_stack.ts'
 import * as Unique from './_unique.ts'
 import * as Externals from './_externals.ts'
-import * as Pathing from './_pathing.ts'
 import { UnicodeRegExp } from './_regexp.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
@@ -68,10 +68,10 @@ export function CheckPatternProperties(stack: Stack.XStack, context: CheckContex
 // ------------------------------------------------------------------
 export function ErrorPatternProperties(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.EveryAll(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
-    const nextSchemaPath = `${schemaPath}/patternProperties/${Pathing.EncodeFragment(pattern)}`
+    const nextSchemaPath = `${schemaPath}/patternProperties/${Pointer.EncodeFragment(pattern)}`
     const regexp = UnicodeRegExp(pattern)
     return G.EveryAll(G.Entries(value), 0, ([key, value]) => {
-      const nextInstancePath = `${instancePath}/${Pathing.EncodeFragment(key)}`
+      const nextInstancePath = `${instancePath}/${Pointer.EncodeFragment(key)}`
       const notKey = !regexp.test(key)
       return notKey || ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema, value) && context.AddKey(key)
     })

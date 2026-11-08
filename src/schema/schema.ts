@@ -26,14 +26,24 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// ------------------------------------------------------------------
+// Namespaces
+// ------------------------------------------------------------------
+export * as Pointer from './pointer/index.ts'
+export * as Resolve from './resolve/index.ts'
+
+// ------------------------------------------------------------------
+// Internals
+// ------------------------------------------------------------------
 export * from './engine/index.ts'
 export * from './intern/index.ts'
 export * from './meta/index.ts'
-export * from './pointer/index.ts'
-export * from './resolve/index.ts'
 export * from './static/index.ts'
 export * from './types/index.ts'
 
+// ------------------------------------------------------------------
+// Functions
+// ------------------------------------------------------------------
 export * from './build.ts'
 export * from './compile.ts'
 export * from './check.ts'

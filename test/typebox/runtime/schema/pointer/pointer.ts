@@ -4,83 +4,83 @@ import Schema from 'typebox/schema'
 const Test = Assert.Context('Schema.Pointer')
 
 Test('Should Indices 1', () => {
-  const R = [...Schema.Pointer.Indices('')]
+  const R = [...Schema.Pointer.Fragments('')]
   Assert.IsEqual(R, [])
 })
 Test('Should Indices 2', () => {
-  const R = [...Schema.Pointer.Indices('a')]
+  const R = [...Schema.Pointer.Fragments('a')]
   Assert.IsEqual(R, ['a'])
 })
 Test('Should Indices 3', () => {
-  const R = [...Schema.Pointer.Indices('/')]
+  const R = [...Schema.Pointer.Fragments('/')]
   Assert.IsEqual(R, [''])
 })
 Test('Should Indices 4', () => {
-  const R = [...Schema.Pointer.Indices('/x')]
+  const R = [...Schema.Pointer.Fragments('/x')]
   Assert.IsEqual(R, ['x'])
 })
 Test('Should Indices 5', () => {
-  const R = [...Schema.Pointer.Indices('/x/')]
+  const R = [...Schema.Pointer.Fragments('/x/')]
   Assert.IsEqual(R, ['x', ''])
 })
 Test('Should Indices 6', () => {
-  const R = [...Schema.Pointer.Indices('/x//')]
+  const R = [...Schema.Pointer.Fragments('/x//')]
   Assert.IsEqual(R, ['x', '', ''])
 })
 Test('Should Indices 7', () => {
-  const R = [...Schema.Pointer.Indices('/x//y')]
+  const R = [...Schema.Pointer.Fragments('/x//y')]
   Assert.IsEqual(R, ['x', '', 'y'])
 })
 Test('Should Indices 8', () => {
-  const R = [...Schema.Pointer.Indices('/x//y/')]
+  const R = [...Schema.Pointer.Fragments('/x//y/')]
   Assert.IsEqual(R, ['x', '', 'y', ''])
 })
 Test('Should Indices 9', () => {
-  const R = [...Schema.Pointer.Indices('/x/~0')]
+  const R = [...Schema.Pointer.Fragments('/x/~0')]
   Assert.IsEqual(R, ['x', '~'])
 })
 Test('Should Indices 10', () => {
-  const R = [...Schema.Pointer.Indices('/x/~1')]
+  const R = [...Schema.Pointer.Fragments('/x/~1')]
   Assert.IsEqual(R, ['x', '/'])
 })
 Test('Should Indices 11', () => {
-  const R = [...Schema.Pointer.Indices('/x/~0/')]
+  const R = [...Schema.Pointer.Fragments('/x/~0/')]
   Assert.IsEqual(R, ['x', '~', ''])
 })
 Test('Should Indices 12', () => {
-  const R = [...Schema.Pointer.Indices('/x/~1/')]
+  const R = [...Schema.Pointer.Fragments('/x/~1/')]
   Assert.IsEqual(R, ['x', '/', ''])
 })
 Test('Should Indices 13', () => {
-  const R = [...Schema.Pointer.Indices('/x/a~0b')]
+  const R = [...Schema.Pointer.Fragments('/x/a~0b')]
   Assert.IsEqual(R, ['x', 'a~b'])
 })
 Test('Should Indices 14', () => {
-  const R = [...Schema.Pointer.Indices('/x/a~1b')]
+  const R = [...Schema.Pointer.Fragments('/x/a~1b')]
   Assert.IsEqual(R, ['x', 'a/b'])
 })
 Test('Should Indices 15', () => {
-  const R = [...Schema.Pointer.Indices('/x/a~0b/')]
+  const R = [...Schema.Pointer.Fragments('/x/a~0b/')]
   Assert.IsEqual(R, ['x', 'a~b', ''])
 })
 Test('Should Indices 16', () => {
-  const R = [...Schema.Pointer.Indices('/x/a~1b/')]
+  const R = [...Schema.Pointer.Fragments('/x/a~1b/')]
   Assert.IsEqual(R, ['x', 'a/b', ''])
 })
 Test('Should Indices 17', () => {
-  const R = [...Schema.Pointer.Indices('/x/a~0b///y')]
+  const R = [...Schema.Pointer.Fragments('/x/a~0b///y')]
   Assert.IsEqual(R, ['x', 'a~b', '', '', 'y'])
 })
 Test('Should Indices 18', () => {
-  const R = [...Schema.Pointer.Indices('/x/a~1b///y')]
+  const R = [...Schema.Pointer.Fragments('/x/a~1b///y')]
   Assert.IsEqual(R, ['x', 'a/b', '', '', 'y'])
 })
 Test('Should Indices 19', () => {
-  const R = [...Schema.Pointer.Indices('/x/a~0b///')]
+  const R = [...Schema.Pointer.Fragments('/x/a~0b///')]
   Assert.IsEqual(R, ['x', 'a~b', '', '', ''])
 })
 Test('Should Indices 20', () => {
-  const R = [...Schema.Pointer.Indices('/x/a~1b///')]
+  const R = [...Schema.Pointer.Fragments('/x/a~1b///')]
   Assert.IsEqual(R, ['x', 'a/b', '', '', ''])
 })
 //-------------------------------------------------------------------

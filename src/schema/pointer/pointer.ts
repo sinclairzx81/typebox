@@ -43,20 +43,35 @@ function ThrowCannotSetRoot(): never {
   Throw('Cannot set value')
 }
 // ------------------------------------------------------------------
-// Indices
+// EncodeFragment
 // ------------------------------------------------------------------
-export function Indices(pointer: string): string[] {
-  const indices = pointer.split('/').map(index => index.replace(/~1/g, '/').replace(/~0/g, '~'))
-  return indices[0] === '' ? indices.slice(1) : indices
+/** Encodes a JSON Pointer fragment */
+export function EncodeFragment(fragment: string): string {
+  return fragment.replace(/~/g, '~0').replace(/\//g, '~1')
+}
+// ------------------------------------------------------------------
+// DecodeFragment
+// ------------------------------------------------------------------
+/** Decodes a JSON Pointer fragment */
+export function DecodeFragment(fragment: string): string {
+  return fragment.replace(/~1/g, '/').replace(/~0/g, '~')
+}
+// ------------------------------------------------------------------
+// Fragments
+// ------------------------------------------------------------------
+/** Returns the decoded fragments of a JSON Pointer */
+export function Fragments(pointer: string): string[] {
+  const fragments = pointer.split('/').map(DecodeFragment)
+  return fragments[0] === '' ? fragments.slice(1) : fragments
 }
 // ------------------------------------------------------------------
 // Has
 // ------------------------------------------------------------------
 export function Has(value: unknown, pointer: string): boolean {
   let current = value
-  for (const index of Indices(pointer)) {
-    if (!Guard.IsObject(current) || !Guard.HasPropertyKey(current, index)) return false
-    current = current[index]
+  for (const fragment of Fragments(pointer)) {
+    if (!Guard.IsObject(current) || !Guard.HasPropertyKey(current, fragment)) return false
+    current = current[fragment]
   }
   return true
 }
@@ -65,20 +80,20 @@ export function Has(value: unknown, pointer: string): boolean {
 // ------------------------------------------------------------------
 export function Get(value: unknown, pointer: string): unknown {
   let current = value
-  for (const index of Indices(pointer)) {
-    if (!Guard.IsObject(current) || Guard.IsUnsafePropertyKey(index)) return undefined
-    current = current[index]
+  for (const fragment of Fragments(pointer)) {
+    if (!Guard.IsObject(current) || Guard.IsUnsafePropertyKey(fragment)) return undefined
+    current = current[fragment]
   }
   return current
 }
 // ------------------------------------------------------------------
-// Get
+// Parent
 // ------------------------------------------------------------------
-function Parent(value: unknown, indices: string[], last: string): Record<string, unknown> {
+function Parent(value: unknown, fragments: string[], last: string): Record<string, unknown> {
   let current = value
-  for (const index of indices) {
-    if (Guard.IsUnsafePropertyKey(index)) ThrowUnsafePropertyKey()
-    current = Guard.IsObject(current) ? current[index] : undefined
+  for (const fragment of fragments) {
+    if (Guard.IsUnsafePropertyKey(fragment)) ThrowUnsafePropertyKey()
+    current = Guard.IsObject(current) ? current[fragment] : undefined
   }
   if (Guard.IsUnsafePropertyKey(last)) ThrowUnsafePropertyKey()
   if (!Guard.IsObject(current)) ThrowCannotSetRoot()
@@ -88,20 +103,20 @@ function Parent(value: unknown, indices: string[], last: string): Record<string,
 // Set
 // ------------------------------------------------------------------
 export function Set(value: unknown, pointer: string, next: unknown): unknown {
-  const indices = Indices(pointer)
-  const last = indices.pop()
+  const fragments = Fragments(pointer)
+  const last = fragments.pop()
   if (Guard.IsUndefined(last)) ThrowCannotSetRoot()
-  Parent(value, indices, last)[last] = next
+  Parent(value, fragments, last)[last] = next
   return value
 }
 // ------------------------------------------------------------------
 // Delete
 // ------------------------------------------------------------------
 export function Delete(value: unknown, pointer: string): unknown {
-  const indices = Indices(pointer)
-  const last = indices.pop()
+  const fragments = Fragments(pointer)
+  const last = fragments.pop()
   if (Guard.IsUndefined(last)) ThrowCannotSetRoot()
-  const parent = Parent(value, indices, last)
+  const parent = Parent(value, fragments, last)
   if (Guard.IsArray(parent) && /^(0|[1-9]\d*)$/.test(last)) {
     parent.splice(Number(last), 1)
   } else {

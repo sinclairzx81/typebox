@@ -29,8 +29,8 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
+import * as Pointer from '../pointer/index.ts'
 import * as Stack from './_stack.ts'
-import * as Pathing from './_pathing.ts'
 import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
@@ -55,7 +55,7 @@ export function CheckPropertyNames(stack: Stack.XStack, context: CheckContext, s
 export function ErrorPropertyNames(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPropertyNames, value: Record<PropertyKey, unknown>): boolean {
   const propertyNames: string[] = []
   const isPropertyNames = G.EveryAll(G.Keys(value), 0, (key, _index) => {
-    const nextInstancePath = `${instancePath}/${Pathing.EncodeFragment(key)}`
+    const nextInstancePath = `${instancePath}/${Pointer.EncodeFragment(key)}`
     const nextSchemaPath = `${schemaPath}/propertyNames`
     const isPropertyName = ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema.propertyNames, key)
     if (!isPropertyName) propertyNames.push(key)

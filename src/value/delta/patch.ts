@@ -29,10 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Clone } from '../clone/index.ts'
-import { Pointer } from '../pointer/index.ts'
-
+import * as Pointer from '../../schema/pointer/index.ts'
 import { type TEdit, type TUpdate } from './edit.ts'
 
+// ------------------------------------------------------------------
+// Guards
+// ------------------------------------------------------------------
 function IsRoot(edits: TEdit[]): edits is [TUpdate] {
   return edits.length > 0 && edits[0].path === '' && edits[0].type === 'update'
 }

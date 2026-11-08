@@ -14,7 +14,7 @@ import * as Test from './task/test/index.ts'
 import * as Spec from './task/spec/index.ts'
 import * as Task from './task/task.ts'
 
-const Version = '1.4.5'
+const Version = '1.4.6'
 
 // ------------------------------------------------------------------
 // BuildTo

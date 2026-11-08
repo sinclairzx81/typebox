@@ -1,11 +1,11 @@
 import { Assert } from 'test'
-import { type XPointerGet } from 'typebox/schema'
+import { Pointer } from 'typebox/schema'
 
 // ------------------------------------------------------------------
 // Drill Down
 // ------------------------------------------------------------------
 Assert.IsExtendsMutual<
-  XPointerGet<{
+  Pointer.XPointerGet<{
     x: {
       y: {
         z: [1, 2, 3, { name: string }]
@@ -21,7 +21,7 @@ Assert.IsExtendsMutual<
   }
 >(true)
 Assert.IsExtendsMutual<
-  XPointerGet<{
+  Pointer.XPointerGet<{
     x: {
       y: {
         z: [1, 2, 3, { name: string }]
@@ -35,7 +35,7 @@ Assert.IsExtendsMutual<
   }
 >(true)
 Assert.IsExtendsMutual<
-  XPointerGet<{
+  Pointer.XPointerGet<{
     x: {
       y: {
         z: [1, 2, 3, { name: string }]
@@ -47,7 +47,7 @@ Assert.IsExtendsMutual<
   }
 >(true)
 Assert.IsExtendsMutual<
-  XPointerGet<{
+  Pointer.XPointerGet<{
     x: {
       y: {
         z: [1, 2, 3, { name: string }]
@@ -57,7 +57,7 @@ Assert.IsExtendsMutual<
   [1, 2, 3, { name: string }]
 >(true)
 Assert.IsExtendsMutual<
-  XPointerGet<{
+  Pointer.XPointerGet<{
     x: {
       y: {
         z: [1, 2, 3, { name: string }]
@@ -67,7 +67,7 @@ Assert.IsExtendsMutual<
   2
 >(true)
 Assert.IsExtendsMutual<
-  XPointerGet<{
+  Pointer.XPointerGet<{
     x: {
       y: {
         z: [1, 2, 3, { name: string }]
@@ -80,7 +80,7 @@ Assert.IsExtendsMutual<
 // Unresolvable
 // ------------------------------------------------------------------
 Assert.IsExtendsMutual<
-  XPointerGet<{
+  Pointer.XPointerGet<{
     x: {
       'hello': 12345
     }
@@ -91,7 +91,7 @@ Assert.IsExtendsMutual<
 // Escape
 // ------------------------------------------------------------------
 Assert.IsExtendsMutual<
-  XPointerGet<{
+  Pointer.XPointerGet<{
     x: {
       'hello~world': 12345
     }
@@ -100,7 +100,7 @@ Assert.IsExtendsMutual<
 >(true)
 
 Assert.IsExtendsMutual<
-  XPointerGet<{
+  Pointer.XPointerGet<{
     x: {
       'hello/world': 12345
     }

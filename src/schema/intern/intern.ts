@@ -28,12 +28,11 @@ THE SOFTWARE.
 
 import { Arguments } from '../../system/arguments/index.ts'
 import { Hashing, Memory } from '../../system/index.ts'
-
 import * as Schema from '../types/index.ts'
 import * as Stack from '../engine/_stack.ts'
+import * as Resolve from '../resolve/index.ts'
 import { type XStatic } from '../static/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { Resolve } from '../resolve/index.ts'
 
 // ----------------------------------------------------------------
 // (Internal) RefContext
