@@ -26,4 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from '../../schema/pointer/index.ts'
+export * as Pointer from '../../schema/pointer/index.ts'

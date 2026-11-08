@@ -29,8 +29,8 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
+import * as Pointer from '../pointer/index.ts'
 import * as Stack from './_stack.ts'
-import * as Pathing from './_pathing.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
@@ -64,7 +64,7 @@ export function CheckDependentSchemas(stack: Stack.XStack, context: CheckContext
 export function ErrorDependentSchemas(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDependentSchemas, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
   const isEvery = G.EveryAll(G.Entries(schema.dependentSchemas), 0, ([key, schema]) => {
-    const nextSchemaPath = `${schemaPath}/dependentSchemas/${Pathing.EncodeFragment(key)}`
+    const nextSchemaPath = `${schemaPath}/dependentSchemas/${Pointer.EncodeFragment(key)}`
     return !G.HasPropertyKey(value, key) ||
       ErrorSchema(stack, context, nextSchemaPath, instancePath, schema, value)
   })

@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { Guard } from '../../guard/index.ts'
-import { Pointer } from '../pointer/index.ts'
+import * as Pointer from '../pointer/index.ts'
 import * as Schema from '../types/index.ts'
 import * as Stack from '../engine/_stack.ts'
 

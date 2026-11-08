@@ -29,10 +29,10 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
+import * as Pointer from '../pointer/index.ts'
 import * as Stack from './_stack.ts'
 import * as Unique from './_unique.ts'
 import * as Externals from './_externals.ts'
-import * as Pathing from './_pathing.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { UnicodeRegExp } from './_regexp.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
@@ -135,7 +135,7 @@ export function ErrorAdditionalProperties(stack: Stack.XStack, context: ErrorCon
   const additionalProperties: string[] = []
   const isAdditionalProperties = G.EveryAll(G.Keys(value), 0, (key, _index) => {
     const nextSchemaPath = `${schemaPath}/additionalProperties`
-    const nextInstancePath = `${instancePath}/${Pathing.EncodeFragment(key)}`
+    const nextInstancePath = `${instancePath}/${Pointer.EncodeFragment(key)}`
     const isAdditionalProperty = regexp.test(key) ||
       (ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema.additionalProperties, value[key]) && context.AddKey(key))
 
