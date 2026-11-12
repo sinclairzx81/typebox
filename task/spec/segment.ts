@@ -30,6 +30,8 @@ import * as Clone from './clone.ts'
 import * as Report from './report.ts'
 import * as Model from './model.ts'
 
+const SUITE_TEST_DIRECTORY = 'validation/tests'
+
 // ------------------------------------------------------------------
 // Segment Types
 // ------------------------------------------------------------------
@@ -45,7 +47,6 @@ interface SegmentedDocuments {
   passing: Map<string, Model.TestGroup[]>
   failing: Map<string, Model.TestGroup[]>
 }
-const ValidationTestsDirectory = 'validation/tests'
 // ------------------------------------------------------------------
 // IsRecord
 // ------------------------------------------------------------------
@@ -203,6 +204,6 @@ function SegmentSuite(callback: ValidationCallback, sourceDirectory: string, opt
 export async function Segment(callback: ValidationCallback, options: SegmentOptions): Promise<Report.SegmentReport> {
   const cloneDirectory = Path.resolve(options.cloneDirectory)
   await Clone.CloneTestSuite(cloneDirectory)
-  const sourceDirectory = Path.join(cloneDirectory, ValidationTestsDirectory)
+  const sourceDirectory = Path.join(cloneDirectory, SUITE_TEST_DIRECTORY)
   return SegmentSuite(callback, sourceDirectory, options)
 }

@@ -40,36 +40,6 @@ Test('Should Resolve.Ref 4', () => {
   const C = Schema.Resolve.Ref(B, { $ref: 'https://example.com/remote.json#/$defs/A' }).schema
   Assert.IsEqual(C, { type: 'boolean' })
 })
-Test('Should use context key as the implicit resource id', () => {
-  const uri = 'https://example.com/remote.json'
-  const context = {
-    ...Schema.Meta,
-    [uri]: {
-      $defs: {
-        foo: { $dynamicRef: '#detached' },
-        detached: { $dynamicAnchor: 'detached', type: 'integer' }
-      }
-    }
-  }
-  const schema = { $schema: 'https://json-schema.org/draft/2020-12/schema', $ref: `${uri}#/$defs/foo` }
-  Assert.IsTrue(Schema.Check(context, schema, 1))
-  Assert.IsFalse(Schema.Check(context, schema, 'a'))
-})
-Test('Should prefer external resource id over context key', () => {
-  const uri = 'https://example.com/context/remote.json'
-  const context = {
-    ...Schema.Meta,
-    [uri]: {
-      $id: 'https://example.com/override/remote.json',
-      $defs: { foo: { $ref: 'child.json' } }
-    },
-    'https://example.com/override/child.json': { type: 'integer' },
-    'https://example.com/context/child.json': { type: 'string' }
-  }
-  const schema = { $schema: 'https://json-schema.org/draft/2020-12/schema', $ref: `${uri}#/$defs/foo` }
-  Assert.IsTrue(Schema.Check(context, schema, 1))
-  Assert.IsFalse(Schema.Check(context, schema, 'a'))
-})
 // ------------------------------------------------------------------
 // Resolve.RecursiveRef
 // ------------------------------------------------------------------
@@ -171,4 +141,81 @@ Test('Should Resolve.Ref Urn 2', () => {
   const B = Schema.Stack({}, A)
   const C = Schema.Resolve.Ref(B, { $ref: '#/$defs/A' }).schema
   Assert.IsEqual(C, { type: 'string' })
+})
+// ------------------------------------------------------------------
+// Context: Implicit ID based on Context Key
+//
+// Note: Some of the JSON Schema Test Suite tests contain context keys
+// for schemas that don't have an $id. In these scenarios, we use the
+// context key as the implicit $id. These tests check for this behavior
+// but may be incorrect. If these tests conflict with updates to the
+// test suite, we may need to remove them and adhere to the asserted
+// test behaviors. (review)
+// ------------------------------------------------------------------
+Test('Should Resolve.Context Key as Implicit ID 1', () => {
+  const context = {
+    'https://example.com/A': { $defs: { B: { $ref: 'C' } } },
+    'https://example.com/C': { type: 'integer' }
+  }
+  const schema = { $ref: 'https://example.com/A#/$defs/B' }
+  Assert.IsTrue(Schema.Check(context, schema, 1))
+  Assert.IsFalse(Schema.Check(context, schema, 'a'))
+})
+Test('Should Resolve.Context Key as Implicit ID 2', () => {
+  const context = {
+    'https://example.com/A': { $defs: { B: { $recursiveRef: 'C' } } },
+    'https://example.com/C': { type: 'integer' }
+  }
+  const schema = { $ref: 'https://example.com/A#/$defs/B' }
+  Assert.IsTrue(Schema.Check(context, schema, 1))
+  Assert.IsFalse(Schema.Check(context, schema, 'a'))
+})
+Test('Should Resolve.Context Key as Implicit ID 3', () => {
+  const context = {
+    'https://example.com/A': { $defs: { B: { $dynamicRef: 'C' } } },
+    'https://example.com/C': { type: 'integer' }
+  }
+  const schema = { $ref: 'https://example.com/A#/$defs/B' }
+  Assert.IsTrue(Schema.Check(context, schema, 1))
+  Assert.IsFalse(Schema.Check(context, schema, 'a'))
+})
+// ------------------------------------------------------------------
+// Context: Schema $id Overrides Context Key
+//
+// Note: Some of the JSON Schema Test Suite tests contain context keys
+// for schemas that also declare an $id. In these scenarios, the
+// schema's $id overrides the context key when resolving references.
+// These tests check for this behavior but may be incorrect. If these
+// tests conflict with updates to the test suite, we may need to remove
+// them and adhere to the asserted test behaviors. (review)
+// ------------------------------------------------------------------
+Test('Should Resolve.Context Key as Override ID 1', () => {
+  const context = {
+    'https://example.com/context/A': { $id: 'https://example.com/override/B', $defs: { C: { $ref: 'D' } } },
+    'https://example.com/override/D': { type: 'integer' },
+    'https://example.com/context/D': { type: 'string' }
+  }
+  const schema = { $ref: 'https://example.com/context/A#/$defs/C' }
+  Assert.IsTrue(Schema.Check(context, schema, 1))
+  Assert.IsFalse(Schema.Check(context, schema, 'a'))
+})
+Test('Should Resolve.Context Key as Override ID 2', () => {
+  const context = {
+    'https://example.com/context/A': { $id: 'https://example.com/override/B', $defs: { C: { $recursiveRef: 'D' } } },
+    'https://example.com/override/D': { type: 'integer' },
+    'https://example.com/context/D': { type: 'string' }
+  }
+  const schema = { $ref: 'https://example.com/context/A#/$defs/C' }
+  Assert.IsTrue(Schema.Check(context, schema, 1))
+  Assert.IsFalse(Schema.Check(context, schema, 'a'))
+})
+Test('Should Resolve.Context Key as Override ID 3', () => {
+  const context = {
+    'https://example.com/context/A': { $id: 'https://example.com/override/B', $defs: { C: { $dynamicRef: 'D' } } },
+    'https://example.com/override/D': { type: 'integer' },
+    'https://example.com/context/D': { type: 'string' }
+  }
+  const schema = { $ref: 'https://example.com/context/A#/$defs/C' }
+  Assert.IsTrue(Schema.Check(context, schema, 1))
+  Assert.IsFalse(Schema.Check(context, schema, 'a'))
 })

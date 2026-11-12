@@ -28,7 +28,7 @@ import * as Proc from 'node:child_process'
 import * as Path from 'node:path'
 import * as Fs from 'node:fs'
 
-const TestSuiteRepository = 'https://github.com/json-schema-org/JSON-Schema-Test-Suite.git'
+const TEST_SUITE_REPOSITORY = 'https://github.com/json-schema-org/JSON-Schema-Test-Suite.git'
 
 // ------------------------------------------------------------------
 // CloneTestSuite
@@ -39,7 +39,7 @@ export async function CloneTestSuite(directory: string): Promise<void> {
   if (Fs.existsSync(directory) && !isRepository && Fs.readdirSync(directory).length > 0) {
     throw new Error(`Clone directory is not empty and is not a Git repository: ${directory}`)
   }
-  const args = isRepository ? ['-C', directory, 'pull', '--ff-only'] : ['clone', '--depth', '1', TestSuiteRepository, directory]
+  const args = isRepository ? ['-C', directory, 'pull', '--ff-only'] : ['clone', '--depth', '1', TEST_SUITE_REPOSITORY, directory]
   const command = isRepository ? 'pull' : 'clone'
   await new Promise<void>((resolve, reject) => {
     const proc = Proc.spawn('git', args, { stdio: 'inherit' })
