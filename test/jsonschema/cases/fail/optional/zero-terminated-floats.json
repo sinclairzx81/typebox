@@ -1,0 +1,16 @@
+[
+  {
+    "description": "some languages do not distinguish between different types of numeric value",
+    "compatibility": "3,<=4",
+    "schema": {
+      "type": "integer"
+    },
+    "tests": [
+      {
+        "description": "a float is not an integer even without fractional part",
+        "data": 1,
+        "valid": false
+      }
+    ]
+  }
+]

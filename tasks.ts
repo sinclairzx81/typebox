@@ -14,7 +14,7 @@ import * as Test from './task/test/index.ts'
 import * as Spec from './task/spec/index.ts'
 import * as Task from './task/task.ts'
 
-const Version = '1.4.6'
+const Version = '1.4.7'
 
 // ------------------------------------------------------------------
 // BuildTo
@@ -83,7 +83,7 @@ Task.run('start', () => Task.shell('node --watch example/index.ts'))
 // ------------------------------------------------------------------
 // Spec
 // ------------------------------------------------------------------
-Task.run('spec', () => Spec.refresh('test/jsonschema/cases'))
+Task.run('spec', () => Spec.Upgrade())
 // ------------------------------------------------------------------
 // Fast
 // ------------------------------------------------------------------

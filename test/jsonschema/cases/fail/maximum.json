@@ -1,0 +1,17 @@
+[
+  {
+    "description": "exclusiveMaximum validation (boolean form)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "maximum": 3,
+      "exclusiveMaximum": true
+    },
+    "tests": [
+      {
+        "description": "boundary point is invalid",
+        "data": 3,
+        "valid": false
+      }
+    ]
+  }
+]

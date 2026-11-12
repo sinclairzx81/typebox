@@ -4,10 +4,8 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the 'Software'), to deal
+of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -16,7 +14,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -26,98 +24,105 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import type { JSONSchemaTestSuite } from './types.ts'
-
 // ------------------------------------------------------------------
-// Draft ordering for table columns
+// Report Types
 // ------------------------------------------------------------------
-const DRAFT_ORDER = ['draft3', 'draft4', 'draft6', 'draft7', 'draft2019-09', 'draft2020-12', 'v1'] as const
-const DRAFT_LABELS: Record<string, string> = {
-  'draft3': '3',
-  'draft4': '4',
-  'draft6': '6',
-  'draft7': '7',
-  'draft2019-09': '2019-09',
-  'draft2020-12': '2020-12',
-  'v1': 'v1'
+interface ReportDialect {
+  id: string
+  label: string
 }
-// ------------------------------------------------------------------
-// Normalize keyword
-// ------------------------------------------------------------------
-function normalizeKeyword(keyword: string): string {
-  if (/^format\//.test(keyword)) return `optional/${keyword}`
-  return keyword
-}
-// ------------------------------------------------------------------
-// Cell value: '✅' | 'X/Y' | '-'
-// ------------------------------------------------------------------
-function cell(entry: { passed: number; total: number } | undefined): string {
-  if (entry === undefined) return '-'
-  if (entry.passed === entry.total) return '✅'
-  return `${entry.passed}/${entry.total}`
-}
-// ------------------------------------------------------------------
-// Render a markdown table
-//
-// rows: Map of displayName -> { [draft]: { passed, total } }
-// ------------------------------------------------------------------
-function renderTable(rows: Map<string, Partial<Record<string, { passed: number; total: number }>>>): string {
-  const drafts = DRAFT_ORDER.filter((d) => [...rows.values()].some((r) => r[d] !== undefined))
-  const header = `| Spec | ${drafts.map((d) => DRAFT_LABELS[d] ?? d).join(' | ')} |`
-  const divider = `|:-----|${drafts.map(() => ':--').join('|')}|`
-  const lines = [header, divider]
-  for (const [name, draftMap] of [...rows.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-    const cells = drafts.map((d) => cell(draftMap[d])).join(' | ')
-    lines.push(`| ${name} | ${cells} |`)
-  }
-  return lines.join('\n')
+export interface PassRate {
+  passed: number
+  failed: number
+  total: number
+  rate: number | null
+  allPassed: boolean
 }
 export interface ReportOptions {
-  ignore?: string[]
+  ignoreRequired?: string[]
+  ignoreOptional?: string[]
+}
+export interface SegmentReport {
+  drafts: Record<string, PassRate>
+  total: PassRate
+  required: string
+  optional: string
+}
+type KeywordStatistics = { passed: number; failed: number }
+// ------------------------------------------------------------------
+// CreatePassRate
+// ------------------------------------------------------------------
+function CreatePassRate(passed: number, failed: number): PassRate {
+  const total = passed + failed
+  return { passed, failed, total, rate: total === 0 ? null : Math.round((passed / total) * 10000) / 100, allPassed: total > 0 && failed === 0 }
 }
 // ------------------------------------------------------------------
-// ReportRequired
-//
-// Only includes top-level keywords (no '/' in keyword).
-// Display name is the keyword itself.
+// ReadStatistics
 // ------------------------------------------------------------------
-export function reportRequired(suite: JSONSchemaTestSuite, options: ReportOptions = { ignore: [] }): string {
-  const ignored = new Set(options.ignore)
-  const rows = new Map<string, Partial<Record<string, { passed: number; total: number }>>>()
-  for (const [path, stats] of Object.entries(suite.report)) {
-    const slash = path.indexOf('/')
-    const draft = path.slice(0, slash)
-    const keyword = path.slice(slash + 1)
-    if (keyword.includes('/')) continue // skip optional/* and subdirs
-    if (ignored.has(keyword)) continue // skip ignored keywords
-    const row = rows.get(keyword) ?? {}
-    row[draft] = { passed: stats.passed, total: stats.total }
-    rows.set(keyword, row)
+function ReadStatistics(statistics: Record<string, KeywordStatistics>, draft: string): PassRate {
+  let passed = 0
+  let failed = 0
+  for (const [key, value] of Object.entries(statistics)) {
+    if (!key.startsWith(`${draft}/`)) continue
+    passed += value.passed
+    failed += value.failed
   }
-  return renderTable(rows)
+  return CreatePassRate(passed, failed)
 }
 // ------------------------------------------------------------------
-// ReportOptional
-//
-// Only includes keywords under subdirectories (keyword contains '/').
-// Normalizes paths so v1/format/* aligns with other drafts' optional/format/*.
-// Display name strips the leading 'optional/' prefix for readability.
+// RenderTable
 // ------------------------------------------------------------------
-export function reportOptional(suite: JSONSchemaTestSuite, options: ReportOptions = { ignore: [] }): string {
-  const ignored = new Set(options.ignore)
-  const rows = new Map<string, Partial<Record<string, { passed: number; total: number }>>>()
-  for (const [path, stats] of Object.entries(suite.report)) {
-    const slash = path.indexOf('/')
-    const draft = path.slice(0, slash)
-    const keyword = path.slice(slash + 1)
-    if (!keyword.includes('/')) continue // skip required top-level keywords
-    const normalized = normalizeKeyword(keyword)
-    const displayName = normalized.replace(/^optional\//, '')
-    if (ignored.has(displayName)) continue // skip ignored keywords (matched against display name)
-    const row = rows.get(displayName) ?? {}
-    row[draft] = { passed: stats.passed, total: stats.total }
-    rows.set(displayName, row)
+function NormalizeKeyword(keyword: string): string {
+  return /^format\//.test(keyword) ? `optional/${keyword}` : keyword
+}
+function RenderTable(statistics: Record<string, KeywordStatistics>, dialects: readonly ReportDialect[], optional: boolean, ignored: readonly string[]): string {
+  const rows = new Map<string, Record<string, KeywordStatistics>>()
+  for (const key of Object.keys(statistics)) {
+    const separator = key.indexOf('/')
+    const draft = key.slice(0, separator)
+    const keyword = key.slice(separator + 1)
+    if (optional !== keyword.includes('/')) continue
+    const normalized = NormalizeKeyword(keyword)
+    const display = normalized.replace(/^optional\//, '')
+    if (ignored.includes(display)) continue
+    const row = rows.get(display) ?? {}
+    const counts = statistics[key]
+    const entry = row[draft] ?? { passed: 0, failed: 0 }
+    entry.passed += counts.passed
+    entry.failed += counts.failed
+    row[draft] = entry
+    rows.set(display, row)
   }
-
-  return renderTable(rows)
+  const header = `| Spec | ${dialects.map((dialect) => dialect.label).join(' | ')} |`
+  const separator = `|:-----|${dialects.map(() => ':--').join('|')}|`
+  const output = [...rows].sort(([left], [right]) => left.localeCompare(right)).map(([keyword, entries]) => {
+    const values = dialects.map((dialect) => {
+      const counts = entries[dialect.id]
+      if (!counts || counts.passed + counts.failed === 0) return '-'
+      if (counts.failed === 0) return '✅'
+      return `${counts.passed}/${counts.passed + counts.failed}`
+    })
+    return `| ${keyword} | ${values.join(' | ')} |`
+  })
+  return [header, separator, ...output].join('\n')
+}
+// ------------------------------------------------------------------
+// CreateReport
+// ------------------------------------------------------------------
+export function CreateReport(statistics: Record<string, KeywordStatistics>, dialects: readonly ReportDialect[], options: ReportOptions): SegmentReport {
+  const drafts: Record<string, PassRate> = {}
+  let passed = 0
+  let failed = 0
+  for (const dialect of dialects) {
+    const rate = ReadStatistics(statistics, dialect.id)
+    drafts[dialect.id] = rate
+    passed += rate.passed
+    failed += rate.failed
+  }
+  return {
+    drafts,
+    total: CreatePassRate(passed, failed),
+    required: RenderTable(statistics, dialects, false, options.ignoreRequired ?? []),
+    optional: RenderTable(statistics, dialects, true, options.ignoreOptional ?? [])
+  }
 }

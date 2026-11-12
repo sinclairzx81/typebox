@@ -1,0 +1,19 @@
+[
+  {
+    "description": "duration format annotation",
+    "compatibility": "2019",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "duration"
+    },
+    "tests": [
+      {
+        "description": "invalid duration string is only an annotation by default",
+        "data": "PT1D",
+        "valid": true
+      }
+    ]
+  }
+]

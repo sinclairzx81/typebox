@@ -1,0 +1,18 @@
+[
+  {
+    "description": "ipv6 format",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "ipv6"
+    },
+    "tests": [
+      {
+        "description": "invalid ipv6 string is only an annotation by default",
+        "data": "12345::",
+        "valid": true
+      }
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "description": "idn-hostname format annotation",
+    "compatibility": "7",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "idn-hostname"
+    },
+    "tests": [
+      {
+        "description": "invalid idn-hostname string is only an annotation by default",
+        "data": "〮실례.테스트",
+        "valid": true
+      }
+    ]
+  }
+]

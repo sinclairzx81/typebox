@@ -1,0 +1,69 @@
+[
+  {
+    "description": "refs to historic drafts are processed as historic drafts (7)",
+    "compatibility": "2019",
+    "schema": {
+      "type": "object",
+      "allOf": [
+        {
+          "properties": {
+            "foo": true
+          }
+        },
+        {
+          "$ref": "http://localhost:1234/draft7/ignore-dependentRequired.json"
+        }
+      ]
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft7/ignore-dependentRequired.json": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "dependentRequired": {
+          "foo": [
+            "bar"
+          ]
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "missing bar is valid",
+        "comment": "if the implementation is not processing the $ref as a draft 7 schema, this test will fail",
+        "data": {
+          "foo": "any value"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "refs to historic drafts are processed as historic drafts (2019)",
+    "compatibility": "2020",
+    "schema": {
+      "type": "array",
+      "$ref": "http://localhost:1234/draft2019-09/ignore-prefixItems.json"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft2019-09/ignore-prefixItems.json": {
+        "$schema": "https://json-schema.org/draft/2019-09/schema",
+        "prefixItems": [
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "first item not a string is valid",
+        "comment": "if the implementation is not processing the $ref as a 2019-09 schema, this test will fail",
+        "data": [
+          1,
+          2,
+          3
+        ],
+        "valid": true
+      }
+    ]
+  }
+]

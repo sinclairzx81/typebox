@@ -1,0 +1,74 @@
+[
+  {
+    "description": "divisibleby int",
+    "compatibility": "=3",
+    "schema": {
+      "divisibleBy": 2
+    },
+    "tests": [
+      {
+        "description": "int by int fail",
+        "data": 7,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "divisibleBy number",
+    "compatibility": "=3",
+    "schema": {
+      "divisibleBy": 1.5
+    },
+    "tests": [
+      {
+        "description": "35 is not divisible by 1.5",
+        "data": 35,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "divisibleBy small number",
+    "compatibility": "=3",
+    "schema": {
+      "divisibleBy": 0.0001
+    },
+    "tests": [
+      {
+        "description": "0.00751 is not divisible by 0.0001",
+        "data": 0.00751,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "divisibleBy very small number",
+    "comment": "A fixed epsilon larger than the divisor (e.g. 32-bit float epsilon) would accept every instance",
+    "compatibility": "=3",
+    "schema": {
+      "divisibleBy": 1e-8
+    },
+    "tests": [
+      {
+        "description": "1.5e-8 is not divisible by 1e-8",
+        "data": 1.5e-8,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "divisibleBy when float division = inf",
+    "compatibility": "=3",
+    "schema": {
+      "type": "integer",
+      "divisibleBy": 0.123456789
+    },
+    "tests": [
+      {
+        "description": "invalid, but naive implementations may raise an overflow error",
+        "data": 1e+308,
+        "valid": false
+      }
+    ]
+  }
+]

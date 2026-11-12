@@ -1,0 +1,18 @@
+[
+  {
+    "description": "date-time annotation",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "date-time"
+    },
+    "tests": [
+      {
+        "description": "invalid date-time string is only an annotation by default",
+        "data": "1990-02-31T15:59:60.123-08:00",
+        "valid": true
+      }
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "description": "uuid format annotation",
+    "compatibility": "2019",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "uuid"
+    },
+    "tests": [
+      {
+        "description": "invalid uuid string is only an annotation by default",
+        "data": "2eb8aa08-aa98-11ea-b4aa-73b441d1638",
+        "valid": true
+      }
+    ]
+  }
+]

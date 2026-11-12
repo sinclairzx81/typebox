@@ -1,0 +1,80 @@
+[
+  {
+    "description": "time format (hh:mm:ss)",
+    "compatibility": "=3",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "time"
+    },
+    "tests": [
+      {
+        "description": "invalid time string is only an annotation by default",
+        "data": "08:30:06 PST",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of time strings (hh:mm:ss)",
+    "compatibility": "=3",
+    "tags": [
+      "format-assertion"
+    ],
+    "schema": {
+      "format": "time"
+    },
+    "tests": [
+      {
+        "description": "a valid time string",
+        "data": "08:30:06",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "time format",
+    "compatibility": "7",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "time"
+    },
+    "tests": [
+      {
+        "description": "invalid time string is only an annotation by default",
+        "data": "08:30:06 PST",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "leap seconds are not valid times",
+    "compatibility": "9999",
+    "tags": [
+      "format-assertion"
+    ],
+    "schema": {
+      "format": "time"
+    },
+    "tests": [
+      {
+        "description": "a leap second is not a valid time",
+        "data": "23:59:60Z",
+        "valid": false
+      },
+      {
+        "description": "a leap second with a positive time-offset is not a valid time",
+        "data": "01:29:60+01:30",
+        "valid": false
+      },
+      {
+        "description": "a leap second with a negative time-offset is not a valid time",
+        "data": "15:59:60-08:00",
+        "valid": false
+      }
+    ]
+  }
+]

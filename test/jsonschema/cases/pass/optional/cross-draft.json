@@ -1,0 +1,87 @@
+[
+  {
+    "description": "refs to future drafts are processed as future drafts (2019)",
+    "compatibility": "=7",
+    "schema": {
+      "type": "object",
+      "allOf": [
+        {
+          "properties": {
+            "foo": true
+          }
+        },
+        {
+          "$ref": "http://localhost:1234/draft2019-09/dependentRequired.json"
+        }
+      ]
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft2019-09/dependentRequired.json": {
+        "$schema": "https://json-schema.org/draft/2019-09/schema",
+        "dependentRequired": {
+          "foo": [
+            "bar"
+          ]
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "missing bar is invalid",
+        "comment": "if the implementation is not processing the $ref as a 2019-09 schema, this test will fail",
+        "data": {
+          "foo": "any value"
+        },
+        "valid": false
+      },
+      {
+        "description": "present bar is valid",
+        "data": {
+          "foo": "any value",
+          "bar": "also any value"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "refs to future drafts are processed as future drafts (2020)",
+    "compatibility": "7,<=2019",
+    "schema": {
+      "type": "array",
+      "$ref": "http://localhost:1234/draft2020-12/prefixItems.json"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft2020-12/prefixItems.json": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "prefixItems": [
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "first item not a string is invalid",
+        "comment": "if the implementation is not processing the $ref as a 2020-12 schema, this test will fail",
+        "data": [
+          1,
+          2,
+          3
+        ],
+        "valid": false
+      },
+      {
+        "description": "first item is a string is valid",
+        "data": [
+          "a string",
+          1,
+          2,
+          3
+        ],
+        "valid": true
+      }
+    ]
+  }
+]

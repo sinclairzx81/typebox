@@ -1,0 +1,84 @@
+[
+  {
+    "description": "validation of host names",
+    "compatibility": "=3",
+    "tags": [
+      "format-assertion"
+    ],
+    "schema": {
+      "format": "host-name"
+    },
+    "tests": [
+      {
+        "description": "empty string",
+        "data": "",
+        "valid": false
+      },
+      {
+        "description": "single dot",
+        "data": ".",
+        "valid": false
+      },
+      {
+        "description": "leading dot",
+        "data": ".example",
+        "valid": false
+      },
+      {
+        "description": "trailing dot",
+        "data": "example.",
+        "valid": false
+      },
+      {
+        "description": "IDN label separator",
+        "data": "example．com",
+        "valid": false
+      },
+      {
+        "description": "starts with hyphen",
+        "data": "-hostname",
+        "valid": false
+      },
+      {
+        "description": "ends with hyphen",
+        "data": "hostname-",
+        "valid": false
+      },
+      {
+        "description": "contains underscore",
+        "data": "host_name",
+        "valid": false
+      },
+      {
+        "description": "exceeds maximum overall length (256)",
+        "data": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com",
+        "valid": false
+      },
+      {
+        "description": "exceeds maximum label length (63)",
+        "data": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com",
+        "valid": false
+      },
+      {
+        "description": "trailing newline is invalid",
+        "data": "example.com\n",
+        "valid": false
+      },
+      {
+        "description": "leading space is invalid",
+        "data": " example.com",
+        "valid": false
+      },
+      {
+        "description": "space inside a label is invalid",
+        "data": "ex ample.com",
+        "valid": false
+      },
+      {
+        "description": "invalid non-ASCII KELVIN SIGN (U+212A)",
+        "data": "Kelvin.example.com",
+        "valid": false
+      }
+    ]
+  }
+]

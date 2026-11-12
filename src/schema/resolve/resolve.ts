@@ -81,9 +81,6 @@ function Base(schema: Schema.XSchema, base: string, target: Schema.XSchema): str
 function RefRoot(stack: Stack.XStack, ref: Schema.XRef): Schema.XSchema {
   return (ref.$ref.startsWith('#') || stack.enteredResource) ? stack.lexicalSchema : stack.schema
 }
-function IsPointerFragment(fragment: string): boolean {
-  return fragment.startsWith('#/')
-}
 // ------------------------------------------------------------------
 // Search
 //
@@ -214,7 +211,8 @@ function FindDeferredResourceLegacy(stack: Stack.XStack, ref: Schema.XRef, schem
 function FindDeferredResourceModern(stack: Stack.XStack, canonical: string, schema: Schema.XSchemaObject): XDeferredResource | undefined {
   const remoteRoot = stack.context[canonical]
   if (!Schema.IsSchemaObject(remoteRoot)) return undefined
-  return { target: schema, base: canonical, root: remoteRoot }
+  const base = RelativeBase(remoteRoot, new URL(canonical)).href
+  return { target: schema, base, root: remoteRoot }
 }
 function FindDeferredResource(stack: Stack.XStack, ref: Schema.XRef, schema: Schema.XSchemaObject, canonical: string, isRemote: boolean): XDeferredResource | undefined {
   const remote = isRemote ? FindDeferredResourceModern(stack, canonical, schema) : undefined
@@ -331,32 +329,36 @@ export function RecursiveRef(stack: Stack.XStack, recursiveRef: Schema.XRecursiv
 // ------------------------------------------------------------------
 // DynamicRef: Draft 2020-12
 //
+// DynamicRefName extracts the anchor name from a $dynamicRef. A ref
+// with no '#' is a bare name and is used as-is; otherwise the name is
+// the decoded fragment of the resolved URI (a leading '/' means the
+// fragment is a JSON pointer, not an anchor name).
+//
 // FindScopedDynamicAnchor checks anchors tracked on the stack first,
 // then falls back to a full tree search. If RefInternal finds a target
 // directly, DynamicRefWhenFound only continues the scoped search when
-// that target itself has a $dynamicAnchor. If RefInternal finds nothing,
-// DynamicRefWhenNotFound goes straight to a scoped anchor search
-// by name.
+// that target itself has a $dynamicAnchor and the ref is not a pointer.
+// If RefInternal finds nothing, the scoped anchor search by name is
+// used directly.
 // ------------------------------------------------------------------
-function DynamicRefFragment(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef): string {
-  return Stack.NextUri(dynamicRef.$dynamicRef, AbsoluteBase(stack.lexicalBase).href).hash
+function DynamicRefName(stack: Stack.XStack, ref: string): string {
+  // Standard: $dynamicRef is not a URI in V1
+  if (!ref.includes('#')) return ref
+  const uri = Stack.NextUri(ref, AbsoluteBase(stack.lexicalBase).href)
+  return decodeURIComponent(uri.hash.slice(1))
 }
 function FindScopedDynamicAnchor(stack: Stack.XStack, name: string): Schema.XDynamicAnchor | undefined {
-  return stack.dynamicAnchors.find((anchor) => Guard.IsEqual(anchor.$dynamicAnchor, name)) ?? SearchDynamicAnchor(stack.schema, name)
+  return stack.dynamicAnchors.find((anchor) => Guard.IsEqual(anchor.$dynamicAnchor, name)) ??
+    SearchDynamicAnchor(stack.lexicalSchema, name) ??
+    SearchDynamicAnchor(stack.schema, name)
 }
-function DynamicRefWhenFound(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef, fragmentTarget: Schema.XSchema): Schema.XSchema | undefined {
+function DynamicRefWhenFound(stack: Stack.XStack, name: string, fragmentTarget: Schema.XSchema): Schema.XSchema | undefined {
   if (!Schema.IsSchemaObject(fragmentTarget) || !Schema.IsDynamicAnchor(fragmentTarget)) return fragmentTarget
-  const fragment = DynamicRefFragment(stack, dynamicRef)
-  return IsPointerFragment(fragment) ? fragmentTarget : FindScopedDynamicAnchor(stack, fragmentTarget.$dynamicAnchor)
-}
-function DynamicRefWhenNotFound(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
-  const fragment = DynamicRefFragment(stack, dynamicRef)
-  // (review): We never observe this condition, but should be able to reach here in coverage.
-  // if (IsPointerFragment(fragment) || !fragment.startsWith('#')) return undefined
-  return FindScopedDynamicAnchor(stack, decodeURIComponent(fragment.slice(1)))
+  return name.startsWith('/') ? fragmentTarget : FindScopedDynamicAnchor(stack, fragmentTarget.$dynamicAnchor)
 }
 export function DynamicRef(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
+  const name = DynamicRefName(stack, dynamicRef.$dynamicRef)
   const fragmentRoot = dynamicRef.$dynamicRef.startsWith('#') ? stack.lexicalSchema : stack.schema
   const fragmentTarget = RefInternal(stack.context, fragmentRoot, stack.lexicalBase, dynamicRef.$dynamicRef)
-  return Guard.IsUndefined(fragmentTarget) ? DynamicRefWhenNotFound(stack, dynamicRef) : DynamicRefWhenFound(stack, dynamicRef, fragmentTarget)
+  return Guard.IsUndefined(fragmentTarget) ? FindScopedDynamicAnchor(stack, name) : DynamicRefWhenFound(stack, name, fragmentTarget)
 }

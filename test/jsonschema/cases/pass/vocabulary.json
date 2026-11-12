@@ -1,0 +1,178 @@
+[
+  {
+    "description": "schema that uses custom metaschema with no validation vocabulary (recursive anchor)",
+    "compatibility": "=2019",
+    "schema": {
+      "$schema": "http://localhost:1234/draft2019-09/metaschema-no-validation.json",
+      "properties": {
+        "badProperty": false,
+        "numberProperty": {
+          "minimum": 10
+        }
+      }
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft2019-09/metaschema-no-validation.json": {
+        "$schema": "https://json-schema.org/draft/2019-09/schema",
+        "$id": "http://localhost:1234/draft2019-09/metaschema-no-validation.json",
+        "$vocabulary": {
+          "https://json-schema.org/draft/2019-09/vocab/core": true,
+          "https://json-schema.org/draft/2019-09/vocab/applicator": true
+        },
+        "$recursiveAnchor": true,
+        "allOf": [
+          {
+            "$ref": "https://json-schema.org/draft/2019-09/meta/applicator"
+          },
+          {
+            "$ref": "https://json-schema.org/draft/2019-09/meta/core"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "applicator vocabulary still works",
+        "data": {
+          "badProperty": "this property should not exist"
+        },
+        "valid": false
+      },
+      {
+        "description": "no validation: valid number",
+        "data": {
+          "numberProperty": 20
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "ignore unrecognized optional vocabulary",
+    "compatibility": "=2019",
+    "schema": {
+      "$schema": "http://localhost:1234/draft2019-09/metaschema-optional-vocabulary.json",
+      "type": "number"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft2019-09/metaschema-optional-vocabulary.json": {
+        "$schema": "https://json-schema.org/draft/2019-09/schema",
+        "$id": "http://localhost:1234/draft2019-09/metaschema-optional-vocabulary.json",
+        "$vocabulary": {
+          "https://json-schema.org/draft/2019-09/vocab/core": true,
+          "https://json-schema.org/draft/2019-09/vocab/validation": true,
+          "http://localhost:1234/draft/2019-09/vocab/custom": false
+        },
+        "$recursiveAnchor": true,
+        "allOf": [
+          {
+            "$ref": "https://json-schema.org/draft/2019-09/meta/validation"
+          },
+          {
+            "$ref": "https://json-schema.org/draft/2019-09/meta/core"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "string value",
+        "data": "foobar",
+        "valid": false
+      },
+      {
+        "description": "number value",
+        "data": 20,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "schema that uses custom metaschema with no validation vocabulary",
+    "compatibility": "=2020",
+    "schema": {
+      "$schema": "http://localhost:1234/draft2020-12/metaschema-no-validation.json",
+      "properties": {
+        "badProperty": false,
+        "numberProperty": {
+          "minimum": 10
+        }
+      }
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft2020-12/metaschema-no-validation.json": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "http://localhost:1234/draft2020-12/metaschema-no-validation.json",
+        "$vocabulary": {
+          "https://json-schema.org/draft/2020-12/vocab/core": true,
+          "https://json-schema.org/draft/2020-12/vocab/applicator": true
+        },
+        "$dynamicAnchor": "meta",
+        "allOf": [
+          {
+            "$ref": "https://json-schema.org/draft/2020-12/meta/applicator"
+          },
+          {
+            "$ref": "https://json-schema.org/draft/2020-12/meta/core"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "applicator vocabulary still works",
+        "data": {
+          "badProperty": "this property should not exist"
+        },
+        "valid": false
+      },
+      {
+        "description": "no validation: valid number",
+        "data": {
+          "numberProperty": 20
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "ignore unrecognized optional vocabulary (dynamic anchor)",
+    "compatibility": "=2020",
+    "schema": {
+      "$schema": "http://localhost:1234/draft2020-12/metaschema-optional-vocabulary.json",
+      "type": "number"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft2020-12/metaschema-optional-vocabulary.json": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "http://localhost:1234/draft2020-12/metaschema-optional-vocabulary.json",
+        "$vocabulary": {
+          "https://json-schema.org/draft/2020-12/vocab/core": true,
+          "https://json-schema.org/draft/2020-12/vocab/validation": true,
+          "http://localhost:1234/draft/2020-12/vocab/custom": false
+        },
+        "$dynamicAnchor": "meta",
+        "allOf": [
+          {
+            "$ref": "https://json-schema.org/draft/2020-12/meta/validation"
+          },
+          {
+            "$ref": "https://json-schema.org/draft/2020-12/meta/core"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "string value",
+        "data": "foobar",
+        "valid": false
+      },
+      {
+        "description": "number value",
+        "data": 20,
+        "valid": true
+      }
+    ]
+  }
+]

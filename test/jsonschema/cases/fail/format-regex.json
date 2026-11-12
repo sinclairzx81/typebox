@@ -1,0 +1,19 @@
+[
+  {
+    "description": "regex format",
+    "compatibility": "=3,7",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "regex"
+    },
+    "tests": [
+      {
+        "description": "invalid regex string is only an annotation by default",
+        "data": "^(abc]",
+        "valid": true
+      }
+    ]
+  }
+]

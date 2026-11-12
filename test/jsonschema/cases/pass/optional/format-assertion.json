@@ -1,0 +1,84 @@
+[
+  {
+    "description": "schema that uses custom metaschema with format-assertion: false",
+    "compatibility": "=2020",
+    "comment": "The true/false boolean in $vocabulary only controls behavior for implementations that do not recognize the vocabulary. For implementations that do understand format-assertion, the boolean has no impact on validation behavior — hence both test groups produce identical results.",
+    "schema": {
+      "$id": "https://schema/using/format-assertion/false",
+      "$schema": "http://localhost:1234/draft2020-12/format-assertion-false.json",
+      "format": "ipv4"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft2020-12/format-assertion-false.json": {
+        "$id": "http://localhost:1234/draft2020-12/format-assertion-false.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$vocabulary": {
+          "https://json-schema.org/draft/2020-12/vocab/core": true,
+          "https://json-schema.org/draft/2020-12/vocab/format-assertion": false
+        },
+        "$dynamicAnchor": "meta",
+        "allOf": [
+          {
+            "$ref": "https://json-schema.org/draft/2020-12/meta/core"
+          },
+          {
+            "$ref": "https://json-schema.org/draft/2020-12/meta/format-assertion"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "format-assertion: false: valid string",
+        "data": "127.0.0.1",
+        "valid": true
+      },
+      {
+        "description": "format-assertion: false: invalid string",
+        "comment": "valid: false is intentional — the false value in $vocabulary only affects unknown vocabulary handling, not validation behavior itself",
+        "data": "not-an-ipv4",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "schema that uses custom metaschema with format-assertion: true",
+    "compatibility": "=2020",
+    "schema": {
+      "$id": "https://schema/using/format-assertion/true",
+      "$schema": "http://localhost:1234/draft2020-12/format-assertion-true.json",
+      "format": "ipv4"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/draft2020-12/format-assertion-true.json": {
+        "$id": "http://localhost:1234/draft2020-12/format-assertion-true.json",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$vocabulary": {
+          "https://json-schema.org/draft/2020-12/vocab/core": true,
+          "https://json-schema.org/draft/2020-12/vocab/format-assertion": true
+        },
+        "$dynamicAnchor": "meta",
+        "allOf": [
+          {
+            "$ref": "https://json-schema.org/draft/2020-12/meta/core"
+          },
+          {
+            "$ref": "https://json-schema.org/draft/2020-12/meta/format-assertion"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "format-assertion: true: valid string",
+        "data": "127.0.0.1",
+        "valid": true
+      },
+      {
+        "description": "format-assertion: true: invalid string",
+        "data": "not-an-ipv4",
+        "valid": false
+      }
+    ]
+  }
+]
