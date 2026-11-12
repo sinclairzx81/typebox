@@ -53,3 +53,11 @@ Test('Should Convert 7', () => {
   const R = Value.Convert(T, { x: undefined })
   Assert.IsEqual(R, { x: undefined })
 })
+// ------------------------------------------------------------------
+// Property keys are matched literally (not as regular expressions)
+// ------------------------------------------------------------------
+Test('Should Convert 8', () => {
+  const T = Type.Object({ 'a.b': Type.Number(), '$c': Type.Number(), 'd(': Type.Number() })
+  const R = Value.Convert(T, { 'a.b': '1', 'axb': '2', '$c': '3', 'c': '4', 'd(': '5' })
+  Assert.IsEqual(R, { 'a.b': 1, 'axb': '2', '$c': 3, 'c': '4', 'd(': 5 })
+})

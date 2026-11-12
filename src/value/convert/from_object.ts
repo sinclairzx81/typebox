@@ -39,18 +39,16 @@ import { IsOptionalUndefined } from '../shared/optional_undefined.ts'
 // FromProperties
 // ------------------------------------------------------------------
 function FromProperties(context: TProperties, type: TObject, value: Record<PropertyKey, unknown>): unknown {
-  const entries = Guard.EntriesRegExp(type.properties) as [RegExp, TSchema][]
-  const keys = Guard.Keys(value)
-  for(const [regexp, property] of entries) {
-    for(const key of keys) {
-      // Ignore for non-present or optional-undefined
-      if(!regexp.test(key) || IsOptionalUndefined(property, key, value)) continue
-      value[key] = FromType(context, property, value[key])
-    }
+  const keys = new Set(Guard.Keys(value))
+  for(const key of Guard.Keys(type.properties)) {
+    const property = type.properties[key]
+    // Ignore for non-present or optional-undefined
+    if(!keys.has(key) || IsOptionalUndefined(property, key, value)) continue
+    value[key] = FromType(context, property, value[key])
   }
   return (
     Guard.HasPropertyKey(type, 'additionalProperties') && Guard.IsObject(type.additionalProperties)
-      ? FromAdditionalProperties(context, entries, type.additionalProperties, value)
+      ? FromAdditionalProperties(context, Guard.EntriesRegExp(type.properties) as [RegExp, TSchema][], type.additionalProperties, value)
       : value
   )
 }
