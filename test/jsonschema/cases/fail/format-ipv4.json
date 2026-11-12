@@ -1,0 +1,19 @@
+[
+  {
+    "description": "ipv4 format annotation",
+    "compatibility": "4",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "ipv4"
+    },
+    "tests": [
+      {
+        "description": "invalid ipv4 string is only an annotation by default",
+        "data": "127.0.0.0.1",
+        "valid": true
+      }
+    ]
+  }
+]

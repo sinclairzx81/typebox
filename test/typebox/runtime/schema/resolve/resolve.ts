@@ -40,6 +40,36 @@ Test('Should Resolve.Ref 4', () => {
   const C = Schema.Resolve.Ref(B, { $ref: 'https://example.com/remote.json#/$defs/A' }).schema
   Assert.IsEqual(C, { type: 'boolean' })
 })
+Test('Should use context key as the implicit resource id', () => {
+  const uri = 'https://example.com/remote.json'
+  const context = {
+    ...Schema.Meta,
+    [uri]: {
+      $defs: {
+        foo: { $dynamicRef: '#detached' },
+        detached: { $dynamicAnchor: 'detached', type: 'integer' }
+      }
+    }
+  }
+  const schema = { $schema: 'https://json-schema.org/draft/2020-12/schema', $ref: `${uri}#/$defs/foo` }
+  Assert.IsTrue(Schema.Check(context, schema, 1))
+  Assert.IsFalse(Schema.Check(context, schema, 'a'))
+})
+Test('Should prefer external resource id over context key', () => {
+  const uri = 'https://example.com/context/remote.json'
+  const context = {
+    ...Schema.Meta,
+    [uri]: {
+      $id: 'https://example.com/override/remote.json',
+      $defs: { foo: { $ref: 'child.json' } }
+    },
+    'https://example.com/override/child.json': { type: 'integer' },
+    'https://example.com/context/child.json': { type: 'string' }
+  }
+  const schema = { $schema: 'https://json-schema.org/draft/2020-12/schema', $ref: `${uri}#/$defs/foo` }
+  Assert.IsTrue(Schema.Check(context, schema, 1))
+  Assert.IsFalse(Schema.Check(context, schema, 'a'))
+})
 // ------------------------------------------------------------------
 // Resolve.RecursiveRef
 // ------------------------------------------------------------------

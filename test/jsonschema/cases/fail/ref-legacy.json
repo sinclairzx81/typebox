@@ -1,0 +1,32 @@
+[
+  {
+    "description": "ref overrides any sibling keywords",
+    "compatibility": "3,<=7",
+    "schema": {
+      "definitions": {
+        "reffed": {
+          "type": "array"
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/reffed",
+          "maxItems": 2
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "ref valid, maxItems ignored",
+        "data": {
+          "foo": [
+            1,
+            2,
+            3
+          ]
+        },
+        "valid": true
+      }
+    ]
+  }
+]

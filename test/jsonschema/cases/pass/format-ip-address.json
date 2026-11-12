@@ -1,0 +1,79 @@
+[
+  {
+    "description": "validation of non-string ip-address values",
+    "compatibility": "<=3",
+    "schema": {
+      "format": "ip-address"
+    },
+    "tests": [
+      {
+        "description": "all string formats ignore integers",
+        "data": 12,
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore floats",
+        "data": 13.7,
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore objects",
+        "data": {},
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore arrays",
+        "data": [],
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore booleans",
+        "data": false,
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore nulls",
+        "data": null,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of IP addresses",
+    "compatibility": "<=3",
+    "tags": [
+      "format-assertion"
+    ],
+    "comment": "RFC 2673, Section 3.2: dotted-quad = decbyte \".\" decbyte \".\" decbyte \".\" decbyte. A 'decbyte' (1*3DIGIT) restricts semantic values to 0-255, allows leading zeros, and strictly forbids symbols, alpha/hex, whitespace, and non-ASCII characters.",
+    "schema": {
+      "format": "ip-address"
+    },
+    "tests": [
+      {
+        "description": "a valid IP address",
+        "data": "192.168.0.1",
+        "valid": true
+      },
+      {
+        "description": "minimum valid IPv4 address",
+        "data": "0.0.0.0",
+        "valid": true
+      },
+      {
+        "description": "maximum valid IPv4 address",
+        "data": "255.255.255.255",
+        "valid": true
+      },
+      {
+        "description": "valid IPv4 with an octet in the 200 to 249 range",
+        "data": "200.0.0.0",
+        "valid": true
+      },
+      {
+        "description": "valid IPv4 with two-digit octets",
+        "data": "10.20.30.40",
+        "valid": true
+      }
+    ]
+  }
+]

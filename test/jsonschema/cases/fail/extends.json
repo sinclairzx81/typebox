@@ -1,0 +1,110 @@
+[
+  {
+    "description": "extends",
+    "compatibility": "<=3",
+    "schema": {
+      "properties": {
+        "bar": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "extends": {
+        "properties": {
+          "foo": {
+            "type": "string",
+            "required": true
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "mismatch extends",
+        "data": {
+          "foo": "baz"
+        },
+        "valid": false
+      },
+      {
+        "description": "mismatch extended",
+        "data": {
+          "bar": 2
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "multiple extends",
+    "compatibility": "<=3",
+    "schema": {
+      "properties": {
+        "bar": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "extends": [
+        {
+          "properties": {
+            "foo": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "properties": {
+            "baz": {
+              "type": "null",
+              "required": true
+            }
+          }
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "mismatch first extends",
+        "data": {
+          "bar": 2,
+          "baz": null
+        },
+        "valid": false
+      },
+      {
+        "description": "mismatch second extends",
+        "data": {
+          "foo": "quux",
+          "bar": 2
+        },
+        "valid": false
+      },
+      {
+        "description": "mismatch both",
+        "data": {
+          "bar": 2
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "extends simple types",
+    "compatibility": "<=3",
+    "schema": {
+      "minimum": 20,
+      "extends": {
+        "maximum": 30
+      }
+    },
+    "tests": [
+      {
+        "description": "mismatch extends",
+        "data": 35,
+        "valid": false
+      }
+    ]
+  }
+]

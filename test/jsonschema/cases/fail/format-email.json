@@ -1,0 +1,18 @@
+[
+  {
+    "description": "email format annotation",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "email"
+    },
+    "tests": [
+      {
+        "description": "invalid email string is only an annotation by default",
+        "data": "2962",
+        "valid": true
+      }
+    ]
+  }
+]

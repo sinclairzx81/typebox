@@ -1,0 +1,280 @@
+[
+  {
+    "description": "Location-independent identifier",
+    "compatibility": "2019",
+    "schema": {
+      "$ref": "#foo",
+      "$defs": {
+        "A": {
+          "$anchor": "foo",
+          "type": "integer"
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": 1,
+        "description": "match",
+        "valid": true
+      },
+      {
+        "data": "a",
+        "description": "mismatch",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "Location-independent identifier with absolute URI",
+    "compatibility": "2019",
+    "schema": {
+      "$ref": "http://localhost:1234/bar#foo",
+      "$defs": {
+        "A": {
+          "$id": "http://localhost:1234/bar",
+          "$anchor": "foo",
+          "type": "integer"
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": 1,
+        "description": "match",
+        "valid": true
+      },
+      {
+        "data": "a",
+        "description": "mismatch",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "Location-independent identifier with base URI change in subschema",
+    "compatibility": "2019",
+    "schema": {
+      "$id": "http://localhost:1234/root",
+      "$ref": "http://localhost:1234/nested.json#foo",
+      "$defs": {
+        "A": {
+          "$id": "nested.json",
+          "$defs": {
+            "B": {
+              "$anchor": "foo",
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": 1,
+        "description": "match",
+        "valid": true
+      },
+      {
+        "data": "a",
+        "description": "mismatch",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "same $anchor with different base uri",
+    "compatibility": "2019",
+    "schema": {
+      "$id": "http://localhost:1234/foobar",
+      "$defs": {
+        "A": {
+          "$id": "child1",
+          "allOf": [
+            {
+              "$id": "child2",
+              "$anchor": "my_anchor",
+              "type": "number"
+            },
+            {
+              "$anchor": "my_anchor",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "$ref": "child1#my_anchor"
+    },
+    "tests": [
+      {
+        "description": "$ref resolves to /$defs/A/allOf/1",
+        "data": "a",
+        "valid": true
+      },
+      {
+        "description": "$ref does not resolve to /$defs/A/allOf/0",
+        "data": 1,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "Reference an anchor with a non-relative URI",
+    "compatibility": "2019",
+    "schema": {
+      "$id": "https://example.com/schema-with-anchor",
+      "allOf": [
+        {
+          "$ref": "https://example.com/schema-with-anchor#foo"
+        }
+      ],
+      "$defs": {
+        "A": {
+          "$anchor": "foo",
+          "type": "integer"
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": 1,
+        "description": "match",
+        "valid": true
+      },
+      {
+        "data": "a",
+        "description": "mismatch",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with URN and anchor ref",
+    "compatibility": "2019",
+    "schema": {
+      "$id": "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed",
+      "properties": {
+        "foo": {
+          "$ref": "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed#something"
+        }
+      },
+      "$defs": {
+        "bar": {
+          "$anchor": "something",
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "anchor within remote ref",
+    "compatibility": "2019",
+    "schema": {
+      "$ref": "http://localhost:1234/locationIndependentIdentifier.json#foo"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/locationIndependentIdentifier.json": {
+        "$defs": {
+          "refToInteger": {
+            "$ref": "#foo"
+          },
+          "A": {
+            "$anchor": "foo",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "remote anchor valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "remote anchor invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "Location-independent identifier in remote ref",
+    "compatibility": "2019",
+    "schema": {
+      "$ref": "http://localhost:1234/locationIndependentIdentifier.json#/$defs/refToInteger"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/locationIndependentIdentifier.json": {
+        "$defs": {
+          "refToInteger": {
+            "$ref": "#foo"
+          },
+          "A": {
+            "$anchor": "foo",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "integer is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "string is invalid",
+        "data": "foo",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$ref to $ref finds detached $anchor",
+    "compatibility": "2019",
+    "schema": {
+      "$ref": "http://localhost:1234/detached-ref.json#/$defs/foo"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/detached-ref.json": {
+        "$defs": {
+          "foo": {
+            "$ref": "#detached"
+          },
+          "detached": {
+            "$anchor": "detached",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "non-number is invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  }
+]

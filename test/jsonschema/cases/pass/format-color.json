@@ -1,0 +1,68 @@
+[
+  {
+    "description": "validation of non-string color values",
+    "compatibility": "<=3",
+    "schema": {
+      "format": "color"
+    },
+    "tests": [
+      {
+        "description": "all string formats ignore integers",
+        "data": 12,
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore floats",
+        "data": 13.7,
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore objects",
+        "data": {},
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore arrays",
+        "data": [],
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore booleans",
+        "data": false,
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore nulls",
+        "data": null,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of CSS colors",
+    "compatibility": "<=3",
+    "tags": [
+      "format-assertion"
+    ],
+    "schema": {
+      "format": "color"
+    },
+    "tests": [
+      {
+        "description": "a valid CSS color name",
+        "data": "fuchsia",
+        "valid": true
+      },
+      {
+        "description": "a valid six-digit CSS color code",
+        "data": "#CC8899",
+        "valid": true
+      },
+      {
+        "description": "a valid three-digit CSS color code",
+        "data": "#C89",
+        "valid": true
+      }
+    ]
+  }
+]

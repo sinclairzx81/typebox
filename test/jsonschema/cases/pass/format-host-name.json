@@ -1,0 +1,110 @@
+[
+  {
+    "description": "validation of non-string host-name values",
+    "compatibility": "=3",
+    "schema": {
+      "format": "host-name"
+    },
+    "tests": [
+      {
+        "description": "all string formats ignore integers",
+        "data": 12,
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore floats",
+        "data": 13.7,
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore objects",
+        "data": {},
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore arrays",
+        "data": [],
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore booleans",
+        "data": false,
+        "valid": true
+      },
+      {
+        "description": "all string formats ignore nulls",
+        "data": null,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "host-name format",
+    "compatibility": "=3",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "host-name"
+    },
+    "tests": [
+      {
+        "description": "invalid host-name string is only an annotation by default",
+        "data": "-a-host-name-that-starts-with--",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of host names",
+    "compatibility": "=3",
+    "tags": [
+      "format-assertion"
+    ],
+    "schema": {
+      "format": "host-name"
+    },
+    "tests": [
+      {
+        "description": "a valid host name",
+        "data": "www.example.com",
+        "valid": true
+      },
+      {
+        "description": "single label",
+        "data": "hostname",
+        "valid": true
+      },
+      {
+        "description": "single label with digits",
+        "data": "h0stn4me",
+        "valid": true
+      },
+      {
+        "description": "single label starting with digit",
+        "data": "1host",
+        "valid": true
+      },
+      {
+        "description": "single label ending with digit",
+        "data": "hostnam3",
+        "valid": true
+      },
+      {
+        "description": "single label with hyphen",
+        "data": "host-name",
+        "valid": true
+      },
+      {
+        "description": "maximum label length (63)",
+        "data": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com",
+        "valid": true
+      },
+      {
+        "description": "consecutive hyphens inside a label",
+        "data": "a--b.com",
+        "valid": true
+      }
+    ]
+  }
+]

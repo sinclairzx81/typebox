@@ -1,0 +1,18 @@
+[
+  {
+    "description": "uri format annotation",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "uri"
+    },
+    "tests": [
+      {
+        "description": "invalid uri string is only an annotation by default",
+        "data": "//foo.bar/?baz=qux#quux",
+        "valid": true
+      }
+    ]
+  }
+]

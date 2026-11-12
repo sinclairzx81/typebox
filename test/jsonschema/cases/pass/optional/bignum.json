@@ -1,0 +1,262 @@
+[
+  {
+    "description": "integer",
+    "schema": {
+      "type": "integer"
+    },
+    "tests": [
+      {
+        "description": "a bignum is an integer",
+        "data": 1.2345678910111214e+52,
+        "valid": true
+      },
+      {
+        "description": "a negative bignum is an integer",
+        "data": -1.2345678910111214e+52,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "number",
+    "schema": {
+      "type": "number"
+    },
+    "tests": [
+      {
+        "description": "a bignum is a number",
+        "data": 9.824928374923492e+52,
+        "valid": true
+      },
+      {
+        "description": "a negative bignum is a number",
+        "data": -9.824928374923492e+52,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "string",
+    "schema": {
+      "type": "string"
+    },
+    "tests": [
+      {
+        "description": "a bignum is not a string",
+        "data": 9.824928374923492e+52,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "maximum integer comparison",
+    "schema": {
+      "maximum": 18446744073709552000
+    },
+    "tests": [
+      {
+        "description": "comparison works for high numbers",
+        "data": 18446744073709552000,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "float comparison with high precision (boolean)",
+    "compatibility": "<=4",
+    "schema": {
+      "maximum": 9.727837981879871e+26,
+      "exclusiveMaximum": true
+    },
+    "tests": [
+      {
+        "description": "below the exclusive maximum is valid",
+        "data": 9.727837981879871e+26,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "float comparison with high precision",
+    "compatibility": "6",
+    "schema": {
+      "exclusiveMaximum": 9.727837981879871e+26
+    },
+    "tests": [
+      {
+        "description": "comparison works for high numbers",
+        "data": 9.727837981879871e+26,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "minimum integer comparison",
+    "schema": {
+      "minimum": -18446744073709552000
+    },
+    "tests": [
+      {
+        "description": "comparison works for very negative numbers",
+        "data": -18446744073709552000,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "float comparison with high precision on negative numbers (boolean)",
+    "compatibility": "<=4",
+    "schema": {
+      "minimum": -9.727837981879871e+26,
+      "exclusiveMinimum": true
+    },
+    "tests": [
+      {
+        "description": "above the exclusive minimum is valid",
+        "data": -9.727837981879871e+26,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "float comparison with high precision on negative numbers",
+    "compatibility": "6",
+    "schema": {
+      "exclusiveMinimum": -9.727837981879871e+26
+    },
+    "tests": [
+      {
+        "description": "comparison works for very negative numbers",
+        "data": -9.727837981879871e+26,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "enum comparison with high precision",
+    "schema": {
+      "enum": [
+        0.12345678912345678
+      ]
+    },
+    "tests": [
+      {
+        "description": "the exact decimal is valid",
+        "data": 0.12345678912345678,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "const comparison with high precision",
+    "compatibility": "6",
+    "schema": {
+      "const": 0.12345678912345678
+    },
+    "tests": [
+      {
+        "description": "the exact decimal is valid",
+        "data": 0.12345678912345678,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "all integers are multiples of 0.5, if overflow is handled",
+    "compatibility": "4",
+    "schema": {
+      "type": "number",
+      "multipleOf": 0.5
+    },
+    "tests": [
+      {
+        "description": "valid if optional overflow handling is implemented",
+        "data": 1e+308,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "uniqueItems comparison with high precision",
+    "schema": {
+      "uniqueItems": true
+    },
+    "tests": [
+      {
+        "description": "the same high-precision decimal is not unique",
+        "data": [
+          0.12345678912345678,
+          0.12345678912345678
+        ],
+        "valid": false
+      },
+      {
+        "description": "trailing zeroes do not make decimals unique",
+        "data": [
+          0.12345678912345678,
+          0.12345678912345678
+        ],
+        "valid": false
+      },
+      {
+        "description": "arrays containing the same decimal are not unique",
+        "data": [
+          [
+            0.12345678912345678
+          ],
+          [
+            0.12345678912345678
+          ]
+        ],
+        "valid": false
+      },
+      {
+        "description": "objects containing the same decimal are not unique",
+        "data": [
+          {
+            "value": 0.12345678912345678
+          },
+          {
+            "value": 0.12345678912345678
+          }
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "multipleOf with integers above 2^53",
+    "comment": "Both instances are exact as doubles, but dividing by 3 rounds the quotient to an integer, so the check must not rely on the quotient",
+    "compatibility": "4",
+    "schema": {
+      "multipleOf": 3
+    },
+    "tests": [
+      {
+        "description": "3e20 is multiple of 3",
+        "data": 300000000000000000000,
+        "valid": true
+      },
+      {
+        "description": "1e20 is not multiple of 3",
+        "data": 100000000000000000000,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "divisibleBy with integers above 2^53",
+    "comment": "Both instances are exact as doubles, but dividing by 3 rounds the quotient to an integer, so the check must not rely on the quotient",
+    "compatibility": "=3",
+    "schema": {
+      "divisibleBy": 3
+    },
+    "tests": [
+      {
+        "description": "3e20 is divisible by 3",
+        "data": 300000000000000000000,
+        "valid": true
+      }
+    ]
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "description": "validation of string-encoded content based on media type",
+    "compatibility": "=7",
+    "schema": {
+      "contentMediaType": "application/json"
+    },
+    "tests": [
+      {
+        "description": "an invalid JSON document",
+        "data": "{:}",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "validation of binary string-encoding",
+    "compatibility": "=7",
+    "schema": {
+      "contentEncoding": "base64"
+    },
+    "tests": [
+      {
+        "description": "an invalid base64 string (% is not a valid character)",
+        "data": "eyJmb28iOi%iYmFyIn0K",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "validation of binary-encoded media type documents",
+    "compatibility": "=7",
+    "schema": {
+      "contentMediaType": "application/json",
+      "contentEncoding": "base64"
+    },
+    "tests": [
+      {
+        "description": "a validly-encoded invalid JSON document",
+        "data": "ezp9Cg==",
+        "valid": false
+      },
+      {
+        "description": "an invalid base64 string that is valid JSON",
+        "data": "{}",
+        "valid": false
+      }
+    ]
+  }
+]

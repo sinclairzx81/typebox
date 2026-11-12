@@ -1,0 +1,1464 @@
+[
+  {
+    "description": "base URI change",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "http://localhost:1234/",
+      "items": {
+        "id": "baseUriChange/",
+        "items": {
+          "$ref": "folderInteger.json"
+        }
+      }
+    },
+    "externalSchemas": {
+      "http://localhost:1234/baseUriChange/folderInteger.json": {
+        "type": "integer"
+      }
+    },
+    "tests": [
+      {
+        "description": "base URI change ref invalid",
+        "data": [
+          [
+            "a"
+          ]
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "base URI change - change folder",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "http://localhost:1234/scope_change_defs1.json",
+      "type": "object",
+      "properties": {
+        "list": {
+          "$ref": "#/definitions/baz"
+        }
+      },
+      "definitions": {
+        "baz": {
+          "$id": "baseUriChangeFolder/",
+          "type": "array",
+          "items": {
+            "$ref": "folderInteger.json"
+          }
+        }
+      }
+    },
+    "externalSchemas": {
+      "http://localhost:1234/baseUriChangeFolder/folderInteger.json": {
+        "type": "integer"
+      }
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": {
+          "list": [
+            1
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "string is invalid",
+        "data": {
+          "list": [
+            "a"
+          ]
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "base URI change - change folder (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "http://localhost:1234/scope_change_defs1.json",
+      "type": "object",
+      "properties": {
+        "list": {
+          "$ref": "#/definitions/baz"
+        }
+      },
+      "definitions": {
+        "baz": {
+          "id": "baseUriChangeFolder/",
+          "type": "array",
+          "items": {
+            "$ref": "folderInteger.json"
+          }
+        }
+      }
+    },
+    "externalSchemas": {
+      "http://localhost:1234/baseUriChangeFolder/folderInteger.json": {
+        "type": "integer"
+      }
+    },
+    "tests": [
+      {
+        "description": "string is invalid",
+        "data": {
+          "list": [
+            "a"
+          ]
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "base URI change - change folder in subschema",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "http://localhost:1234/scope_change_defs2.json",
+      "type": "object",
+      "properties": {
+        "list": {
+          "$ref": "#/definitions/baz/definitions/bar"
+        }
+      },
+      "definitions": {
+        "baz": {
+          "$id": "baseUriChangeFolderInSubschema/",
+          "definitions": {
+            "bar": {
+              "type": "array",
+              "items": {
+                "$ref": "folderInteger.json"
+              }
+            }
+          }
+        }
+      }
+    },
+    "externalSchemas": {
+      "http://localhost:1234/baseUriChangeFolderInSubschema/folderInteger.json": {
+        "type": "integer"
+      }
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": {
+          "list": [
+            1
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "string is invalid",
+        "data": {
+          "list": [
+            "a"
+          ]
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "base URI change - change folder in subschema (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "http://localhost:1234/scope_change_defs2.json",
+      "type": "object",
+      "properties": {
+        "list": {
+          "$ref": "#/definitions/baz/definitions/bar"
+        }
+      },
+      "definitions": {
+        "baz": {
+          "id": "baseUriChangeFolderInSubschema/",
+          "definitions": {
+            "bar": {
+              "type": "array",
+              "items": {
+                "$ref": "folderInteger.json"
+              }
+            }
+          }
+        }
+      }
+    },
+    "externalSchemas": {
+      "http://localhost:1234/baseUriChangeFolderInSubschema/folderInteger.json": {
+        "type": "integer"
+      }
+    },
+    "tests": [
+      {
+        "description": "string is invalid",
+        "data": {
+          "list": [
+            "a"
+          ]
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$ref prevents a sibling $id from changing the base uri",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "http://localhost:1234/sibling_id/base/",
+      "definitions": {
+        "foo": {
+          "$id": "http://localhost:1234/sibling_id/foo.json",
+          "type": "string"
+        },
+        "base_foo": {
+          "$comment": "this canonical uri is http://localhost:1234/sibling_id/base/foo.json",
+          "$id": "foo.json",
+          "type": "number"
+        }
+      },
+      "allOf": [
+        {
+          "$comment": "$ref resolves to http://localhost:1234/sibling_id/base/foo.json, not http://localhost:1234/sibling_id/foo.json",
+          "$id": "http://localhost:1234/sibling_id/",
+          "$ref": "foo.json"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "$ref resolves to /definitions/base_foo, data does not validate",
+        "data": "a",
+        "valid": false
+      },
+      {
+        "description": "$ref resolves to /definitions/base_foo, data validates",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$ref prevents a sibling id from changing the base uri",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "http://localhost:1234/sibling_id/base/",
+      "definitions": {
+        "foo": {
+          "id": "http://localhost:1234/sibling_id/foo.json",
+          "type": "string"
+        },
+        "base_foo": {
+          "$comment": "this canonical uri is http://localhost:1234/sibling_id/base/foo.json",
+          "id": "foo.json",
+          "type": "number"
+        }
+      },
+      "properties": {
+        "foo": {
+          "$comment": "$ref resolves to http://localhost:1234/sibling_id/base/foo.json, not http://localhost:1234/sibling_id/foo.json",
+          "id": "http://localhost:1234/sibling_id/",
+          "$ref": "foo.json"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "$ref resolves to /definitions/base_foo, data does not validate",
+        "data": {
+          "foo": "a"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "refs with relative uris and defs",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "http://example.com/schema-relative-uri-defs1.json",
+      "properties": {
+        "foo": {
+          "$id": "schema-relative-uri-defs2.json",
+          "definitions": {
+            "inner": {
+              "properties": {
+                "bar": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/inner"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "schema-relative-uri-defs2.json"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "invalid on inner field",
+        "data": {
+          "foo": {
+            "bar": 1
+          },
+          "bar": "a"
+        },
+        "valid": false
+      },
+      {
+        "description": "invalid on outer field",
+        "data": {
+          "foo": {
+            "bar": "a"
+          },
+          "bar": 1
+        },
+        "valid": false
+      },
+      {
+        "description": "valid on both fields",
+        "data": {
+          "foo": {
+            "bar": "a"
+          },
+          "bar": "a"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "refs with relative uris and defs (id)",
+    "compatibility": "=4",
+    "schema": {
+      "id": "http://example.com/schema-relative-uri-defs1.json",
+      "properties": {
+        "foo": {
+          "id": "schema-relative-uri-defs2.json",
+          "definitions": {
+            "inner": {
+              "properties": {
+                "bar": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/inner"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "schema-relative-uri-defs2.json"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "invalid on inner field",
+        "data": {
+          "foo": {
+            "bar": 1
+          },
+          "bar": "a"
+        },
+        "valid": false
+      },
+      {
+        "description": "invalid on outer field",
+        "data": {
+          "foo": {
+            "bar": "a"
+          },
+          "bar": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "relative refs with absolute uris and defs",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "http://example.com/schema-refs-absolute-uris-defs1.json",
+      "properties": {
+        "foo": {
+          "$id": "http://example.com/schema-refs-absolute-uris-defs2.json",
+          "definitions": {
+            "inner": {
+              "properties": {
+                "bar": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/inner"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "schema-refs-absolute-uris-defs2.json"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "invalid on inner field",
+        "data": {
+          "foo": {
+            "bar": 1
+          },
+          "bar": "a"
+        },
+        "valid": false
+      },
+      {
+        "description": "invalid on outer field",
+        "data": {
+          "foo": {
+            "bar": "a"
+          },
+          "bar": 1
+        },
+        "valid": false
+      },
+      {
+        "description": "valid on both fields",
+        "data": {
+          "foo": {
+            "bar": "a"
+          },
+          "bar": "a"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "relative refs with absolute uris and defs (id)",
+    "compatibility": "=4",
+    "schema": {
+      "id": "http://example.com/schema-refs-absolute-uris-defs1.json",
+      "properties": {
+        "foo": {
+          "id": "http://example.com/schema-refs-absolute-uris-defs2.json",
+          "definitions": {
+            "inner": {
+              "properties": {
+                "bar": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/inner"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "schema-refs-absolute-uris-defs2.json"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "invalid on inner field",
+        "data": {
+          "foo": {
+            "bar": 1
+          },
+          "bar": "a"
+        },
+        "valid": false
+      },
+      {
+        "description": "invalid on outer field",
+        "data": {
+          "foo": {
+            "bar": "a"
+          },
+          "bar": 1
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$id must be resolved against nearest parent, not just immediate parent",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "http://example.com/a.json",
+      "definitions": {
+        "x": {
+          "$id": "http://example.com/b/c.json",
+          "not": {
+            "definitions": {
+              "y": {
+                "$id": "d.json",
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "http://example.com/b/d.json"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "non-number is invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "id must be resolved against nearest parent, not just immediate parent",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "http://example.com/a.json",
+      "definitions": {
+        "x": {
+          "id": "http://example.com/b/c.json",
+          "items": {
+            "definitions": {
+              "y": {
+                "id": "d.json",
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "http://example.com/b/d.json"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "non-number is invalid",
+        "data": {
+          "foo": "a"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "simple URN base URI with $ref via the URN (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$comment": "URIs do not have to have HTTP(s) schemes",
+      "id": "urn:uuid:deadbeef-1234-ffff-ffff-4321feebdaed",
+      "minimum": 30,
+      "properties": {
+        "foo": {
+          "$ref": "urn:uuid:deadbeef-1234-ffff-ffff-4321feebdaed"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "invalid under the URN IDed schema",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "simple tag URI base URI with $ref via the tag URI (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$comment": "URIs do not have to have HTTP(s) schemes",
+      "id": "tag:foo.example,2025:bar/baz",
+      "minimum": 30,
+      "properties": {
+        "foo": {
+          "$ref": "tag:foo.example,2025:bar/baz"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "invalid under the tag URI IDed schema",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "simple base URI using an arbitrary URI scheme with $ref to that URI (id)",
+    "compatibility": "3,<=4",
+    "comment": "foo is a made up scheme. Any URI scheme is allowed in a base URI, not only well known ones like http, urn or tag, so implementations need to support arbitrary schemes rather than special casing the ones they know.",
+    "schema": {
+      "$comment": "URIs do not have to have HTTP(s) schemes",
+      "id": "foo:bar/baz",
+      "minimum": 30,
+      "properties": {
+        "foo": {
+          "$ref": "foo:bar/baz"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "invalid under the arbitrary scheme IDed schema",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "simple URN base URI with JSON pointer",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$comment": "URIs do not have to have HTTP(s) schemes",
+      "$id": "urn:uuid:deadbeef-1234-00ff-ff00-4321feebdaed",
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "simple URN base URI with JSON pointer (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$comment": "URIs do not have to have HTTP(s) schemes",
+      "id": "urn:uuid:deadbeef-1234-00ff-ff00-4321feebdaed",
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with NSS",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$comment": "RFC 8141 §2.2",
+      "$id": "urn:example:1/406/47452/2",
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with NSS (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$comment": "RFC 8141 §2.2",
+      "id": "urn:example:1/406/47452/2",
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with r-component",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$comment": "RFC 8141 §2.3.1",
+      "$id": "urn:example:foo-bar-baz-qux?+CCResolve:cc=uk",
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with r-component (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$comment": "RFC 8141 §2.3.1",
+      "id": "urn:example:foo-bar-baz-qux?+CCResolve:cc=uk",
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with q-component",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$comment": "RFC 8141 §2.3.2",
+      "$id": "urn:example:weather?=op=map&lat=39.56&lon=-104.85&datetime=1969-07-21T02:56:15Z",
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with q-component (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$comment": "RFC 8141 §2.3.2",
+      "id": "urn:example:weather?=op=map&lat=39.56&lon=-104.85&datetime=1969-07-21T02:56:15Z",
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with URN and JSON pointer ref",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "urn:uuid:deadbeef-1234-0000-0000-4321feebdaed",
+      "properties": {
+        "foo": {
+          "$ref": "urn:uuid:deadbeef-1234-0000-0000-4321feebdaed#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with URN and JSON pointer ref (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "urn:uuid:deadbeef-1234-0000-0000-4321feebdaed",
+      "properties": {
+        "foo": {
+          "$ref": "urn:uuid:deadbeef-1234-0000-0000-4321feebdaed#/definitions/bar"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "ref with absolute-path-reference",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "http://example.com/ref/absref.json",
+      "definitions": {
+        "a": {
+          "$id": "http://example.com/ref/absref/foobar.json",
+          "type": "number"
+        },
+        "b": {
+          "$id": "http://example.com/absref/foobar.json",
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "/absref/foobar.json"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": "foo",
+        "valid": true
+      },
+      {
+        "description": "an integer is invalid",
+        "data": 12,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "ref with absolute-path-reference (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "http://example.com/ref/absref.json",
+      "definitions": {
+        "a": {
+          "id": "http://example.com/ref/absref/foobar.json",
+          "type": "number"
+        },
+        "b": {
+          "id": "http://example.com/absref/foobar.json",
+          "type": "string"
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "/absref/foobar.json"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "an integer is invalid",
+        "data": {
+          "foo": 12
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$id with file URI still resolves pointers - *nix",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "file:///folder/file.json",
+      "definitions": {
+        "foo": {
+          "type": "number"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/foo"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "non-number is invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "id with file URI still resolves pointers - *nix",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "file:///folder/file.json",
+      "definitions": {
+        "foo": {
+          "type": "number"
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/foo"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": {
+          "foo": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "non-number is invalid",
+        "data": {
+          "foo": "a"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$id with file URI still resolves pointers - windows",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$id": "file:///c:/folder/file.json",
+      "definitions": {
+        "foo": {
+          "type": "number"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/definitions/foo"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "non-number is invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "id with file URI still resolves pointers - windows",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "file:///c:/folder/file.json",
+      "definitions": {
+        "foo": {
+          "type": "number"
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/foo"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": {
+          "foo": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "non-number is invalid",
+        "data": {
+          "foo": "a"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN ref with nested pointer ref",
+    "compatibility": "6,<=7",
+    "schema": {
+      "allOf": [
+        {
+          "$ref": "urn:uuid:deadbeef-4321-ffff-ffff-1234feebdaed"
+        }
+      ],
+      "definitions": {
+        "foo": {
+          "$id": "urn:uuid:deadbeef-4321-ffff-ffff-1234feebdaed",
+          "definitions": {
+            "bar": {
+              "type": "string"
+            }
+          },
+          "allOf": [
+            {
+              "$ref": "#/definitions/bar"
+            }
+          ]
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": "bar",
+        "valid": true
+      },
+      {
+        "description": "a non-string is invalid",
+        "data": 12,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "URN ref with nested pointer ref (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "properties": {
+        "foo": {
+          "$ref": "urn:uuid:deadbeef-4321-ffff-ffff-1234feebdaed"
+        }
+      },
+      "definitions": {
+        "foo": {
+          "id": "urn:uuid:deadbeef-4321-ffff-ffff-1234feebdaed",
+          "definitions": {
+            "bar": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "bar": {
+              "$ref": "#/definitions/bar"
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a non-string is invalid",
+        "data": {
+          "foo": {
+            "bar": 12
+          }
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "remote HTTP ref with different $id",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$ref": "http://localhost:1234/different-id-ref-string.json"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/different-id-ref-string.json": {
+        "$id": "http://localhost:1234/real-id-ref-string.json",
+        "definitions": {
+          "bar": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/definitions/bar"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "number is invalid",
+        "data": 1,
+        "valid": false
+      },
+      {
+        "description": "string is valid",
+        "data": "foo",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "remote HTTP ref with different id",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$ref": "http://localhost:1234/different-id-ref-string.json"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/different-id-ref-string.json": {
+        "id": "http://localhost:1234/real-id-ref-string.json",
+        "definitions": {
+          "bar": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "bar": {
+            "$ref": "#/definitions/bar"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is invalid",
+        "data": {
+          "bar": 1
+        },
+        "valid": false
+      },
+      {
+        "description": "string is valid",
+        "data": {
+          "bar": "foo"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "remote HTTP ref with different URN $id",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$ref": "http://localhost:1234/urn-ref-string.json"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/urn-ref-string.json": {
+        "$id": "urn:uuid:feebdaed-ffff-0000-2020-1200deadbeef",
+        "definitions": {
+          "bar": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/definitions/bar"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "number is invalid",
+        "data": 1,
+        "valid": false
+      },
+      {
+        "description": "string is valid",
+        "data": "foo",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "remote HTTP ref with different URN id",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$ref": "http://localhost:1234/urn-ref-string.json"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/urn-ref-string.json": {
+        "id": "urn:uuid:feebdaed-ffff-0000-2020-1200deadbeef",
+        "definitions": {
+          "bar": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "bar": {
+            "$ref": "#/definitions/bar"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is invalid",
+        "data": {
+          "bar": 1
+        },
+        "valid": false
+      },
+      {
+        "description": "string is valid",
+        "data": {
+          "bar": "foo"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "remote HTTP ref with nested absolute ref",
+    "compatibility": "6,<=7",
+    "schema": {
+      "$ref": "http://localhost:1234/nested-absolute-ref-to-string.json"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/nested-absolute-ref-to-string.json": {
+        "definitions": {
+          "bar": {
+            "$id": "http://localhost:1234/the-nested-id.json",
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "http://localhost:1234/the-nested-id.json"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "number is invalid",
+        "data": 1,
+        "valid": false
+      },
+      {
+        "description": "string is valid",
+        "data": "foo",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "remote HTTP ref with nested absolute ref (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$ref": "http://localhost:1234/nested-absolute-ref-to-string.json"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/nested-absolute-ref-to-string.json": {
+        "definitions": {
+          "bar": {
+            "id": "http://localhost:1234/the-nested-id.json",
+            "type": "string"
+          }
+        },
+        "properties": {
+          "bar": {
+            "$ref": "http://localhost:1234/the-nested-id.json"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is invalid",
+        "data": {
+          "bar": 1
+        },
+        "valid": false
+      }
+    ]
+  }
+]

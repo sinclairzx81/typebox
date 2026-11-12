@@ -1,0 +1,69 @@
+[
+  {
+    "description": "disallow",
+    "compatibility": "<=3",
+    "schema": {
+      "disallow": "integer"
+    },
+    "tests": [
+      {
+        "description": "disallowed",
+        "data": 1,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "multiple disallow",
+    "compatibility": "<=3",
+    "schema": {
+      "disallow": [
+        "integer",
+        "boolean"
+      ]
+    },
+    "tests": [
+      {
+        "description": "mismatch",
+        "data": 1,
+        "valid": false
+      },
+      {
+        "description": "other mismatch",
+        "data": true,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "multiple disallow subschema",
+    "compatibility": "<=3",
+    "schema": {
+      "disallow": [
+        "string",
+        {
+          "type": "object",
+          "properties": {
+            "foo": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "mismatch",
+        "data": "foo",
+        "valid": false
+      },
+      {
+        "description": "other mismatch",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": false
+      }
+    ]
+  }
+]

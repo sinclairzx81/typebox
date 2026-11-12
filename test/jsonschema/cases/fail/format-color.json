@@ -1,0 +1,46 @@
+[
+  {
+    "description": "color format annotation",
+    "compatibility": "<=3",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "ipv4"
+    },
+    "tests": [
+      {
+        "description": "invalid color string is only an annotation by default",
+        "data": "#00332520",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of CSS colors",
+    "compatibility": "<=3",
+    "tags": [
+      "format-assertion"
+    ],
+    "schema": {
+      "format": "color"
+    },
+    "tests": [
+      {
+        "description": "an invalid CSS color code",
+        "data": "#00332520",
+        "valid": false
+      },
+      {
+        "description": "an invalid CSS color name",
+        "data": "puce",
+        "valid": false
+      },
+      {
+        "description": "a CSS color name containing invalid characters",
+        "data": "light_grayish_red-violet",
+        "valid": false
+      }
+    ]
+  }
+]

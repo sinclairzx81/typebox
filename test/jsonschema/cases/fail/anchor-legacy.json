@@ -1,0 +1,195 @@
+[
+  {
+    "description": "Location-independent identifier (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "properties": {
+        "foo": {
+          "$ref": "#foo"
+        }
+      },
+      "definitions": {
+        "A": {
+          "id": "#foo",
+          "type": "integer"
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": {
+          "foo": 1
+        },
+        "description": "match",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "Location-independent identifier with base URI change in subschema (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "http://localhost:1234/root",
+      "properties": {
+        "foo": {
+          "$ref": "http://localhost:1234/nested.json#foo"
+        }
+      },
+      "definitions": {
+        "A": {
+          "id": "nested.json",
+          "definitions": {
+            "B": {
+              "id": "#foo",
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": {
+          "foo": 1
+        },
+        "description": "match",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "Reference an anchor with a non-relative URI (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "https://example.com/schema-with-anchor",
+      "properties": {
+        "foo": {
+          "$ref": "https://example.com/schema-with-anchor#foo"
+        }
+      },
+      "definitions": {
+        "A": {
+          "id": "#foo",
+          "type": "integer"
+        }
+      }
+    },
+    "tests": [
+      {
+        "data": {
+          "foo": 1
+        },
+        "description": "match",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "URN base URI with URN and anchor ref (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "id": "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed",
+      "properties": {
+        "foo": {
+          "$ref": "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed#something"
+        }
+      },
+      "definitions": {
+        "bar": {
+          "id": "#something",
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "a string is valid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "anchor within remote ref (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$ref": "http://localhost:1234/locationIndependentIdentifier.json#foo"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/locationIndependentIdentifier.json": {
+        "definitions": {
+          "refToInteger": {
+            "$ref": "#foo"
+          },
+          "A": {
+            "id": "#foo",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "remote anchor valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "Location-independent identifier in remote ref (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$ref": "http://localhost:1234/locationIndependentIdentifier.json#/definitions/refToInteger"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/locationIndependentIdentifier.json": {
+        "definitions": {
+          "refToInteger": {
+            "$ref": "#foo"
+          },
+          "A": {
+            "id": "#foo",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "integer is valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$ref to $ref finds detached $anchor (id)",
+    "compatibility": "3,<=4",
+    "schema": {
+      "$ref": "http://localhost:1234/detached-ref.json#/definitions/foo"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/detached-ref.json": {
+        "definitions": {
+          "foo": {
+            "$ref": "#detached"
+          },
+          "detached": {
+            "id": "#detached",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  }
+]

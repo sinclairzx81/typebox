@@ -1,0 +1,98 @@
+[
+  {
+    "description": "extends",
+    "compatibility": "<=3",
+    "schema": {
+      "properties": {
+        "bar": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "extends": {
+        "properties": {
+          "foo": {
+            "type": "string",
+            "required": true
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "extends",
+        "data": {
+          "foo": "baz",
+          "bar": 2
+        },
+        "valid": true
+      },
+      {
+        "description": "wrong type",
+        "data": {
+          "foo": "baz",
+          "bar": "quux"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "multiple extends",
+    "compatibility": "<=3",
+    "schema": {
+      "properties": {
+        "bar": {
+          "type": "integer",
+          "required": true
+        }
+      },
+      "extends": [
+        {
+          "properties": {
+            "foo": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "properties": {
+            "baz": {
+              "type": "null",
+              "required": true
+            }
+          }
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": {
+          "foo": "quux",
+          "bar": 2,
+          "baz": null
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "extends simple types",
+    "compatibility": "<=3",
+    "schema": {
+      "minimum": 20,
+      "extends": {
+        "maximum": 30
+      }
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": 25,
+        "valid": true
+      }
+    ]
+  }
+]

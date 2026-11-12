@@ -1,0 +1,19 @@
+[
+  {
+    "description": "iri-reference format annotation",
+    "compatibility": "7",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "iri-reference"
+    },
+    "tests": [
+      {
+        "description": "invalid iri-reference string is only an annotation by default",
+        "data": "\\\\WINDOWS\\filëßåré",
+        "valid": true
+      }
+    ]
+  }
+]

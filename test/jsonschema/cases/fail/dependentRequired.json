@@ -1,0 +1,20 @@
+[
+  {
+    "description": "dependencies string",
+    "compatibility": "=3",
+    "schema": {
+      "dependencies": {
+        "bar": "foo"
+      }
+    },
+    "tests": [
+      {
+        "description": "missing dependency",
+        "data": {
+          "bar": 2
+        },
+        "valid": false
+      }
+    ]
+  }
+]

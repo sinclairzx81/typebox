@@ -1,0 +1,182 @@
+[
+  {
+    "description": "ipv4 format annotation",
+    "compatibility": "<=3",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "ipv4"
+    },
+    "tests": [
+      {
+        "description": "invalid ipv4 string is only an annotation by default",
+        "data": "127.0.0.0.1",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of IP addresses",
+    "compatibility": "<=3",
+    "tags": [
+      "format-assertion"
+    ],
+    "comment": "RFC 2673, Section 3.2: dotted-quad = decbyte \".\" decbyte \".\" decbyte \".\" decbyte. A 'decbyte' (1*3DIGIT) restricts semantic values to 0-255, allows leading zeros, and strictly forbids symbols, alpha/hex, whitespace, and non-ASCII characters.",
+    "schema": {
+      "format": "ip-address"
+    },
+    "tests": [
+      {
+        "description": "an IP address with too many components",
+        "data": "127.0.0.0.1",
+        "valid": false
+      },
+      {
+        "description": "an IP address with out-of-range values",
+        "data": "256.256.256.256",
+        "valid": false
+      },
+      {
+        "description": "an IP address without 4 components",
+        "data": "127.0",
+        "valid": false
+      },
+      {
+        "description": "a 2-part address resolving to a routable IP (inet_aton shorthand)",
+        "data": "127.1",
+        "valid": false
+      },
+      {
+        "description": "a 3-part address resolving to a routable IP (inet_aton shorthand)",
+        "data": "127.0.1",
+        "valid": false
+      },
+      {
+        "description": "an IP address as an integer",
+        "data": "0x7f000001",
+        "valid": false
+      },
+      {
+        "description": "an IP address as an integer (decimal)",
+        "data": "2130706433",
+        "valid": false
+      },
+      {
+        "description": "invalid non-ASCII '২' (a Bengali 2)",
+        "data": "1২7.0.0.1",
+        "valid": false
+      },
+      {
+        "description": "invalid fullwidth digits (non-ASCII)",
+        "data": "１９２.１６８.１.１",
+        "valid": false
+      },
+      {
+        "description": "invalid mathematical bold digits (non-ASCII)",
+        "data": "𝟏𝟗𝟐.𝟏𝟔𝟖.𝟏.𝟏",
+        "valid": false
+      },
+      {
+        "description": "netmask is not a part of ipv4 address",
+        "data": "192.168.1.0/24",
+        "valid": false
+      },
+      {
+        "description": "leading whitespace is invalid",
+        "data": " 192.168.0.1",
+        "valid": false
+      },
+      {
+        "description": "trailing whitespace is invalid",
+        "data": "192.168.0.1 ",
+        "valid": false
+      },
+      {
+        "description": "trailing newline is invalid",
+        "data": "192.168.0.1\n",
+        "valid": false
+      },
+      {
+        "description": "hexadecimal notation is invalid",
+        "data": "0x7f.0.0.1",
+        "valid": false
+      },
+      {
+        "description": "octal notation explicit is invalid",
+        "data": "0o10.0.0.1",
+        "valid": false
+      },
+      {
+        "description": "empty part (double dot) is invalid",
+        "data": "192.168..1",
+        "valid": false
+      },
+      {
+        "description": "leading dot is invalid",
+        "data": ".192.168.0.1",
+        "valid": false
+      },
+      {
+        "description": "trailing dot is invalid",
+        "data": "192.168.0.1.",
+        "valid": false
+      },
+      {
+        "description": "empty string is invalid",
+        "data": "",
+        "valid": false
+      },
+      {
+        "description": "plus sign is invalid",
+        "data": "+1.2.3.4",
+        "valid": false
+      },
+      {
+        "description": "negative sign is invalid",
+        "data": "-1.2.3.4",
+        "valid": false
+      },
+      {
+        "description": "exponential notation is invalid",
+        "data": "1e2.0.0.1",
+        "valid": false
+      },
+      {
+        "description": "alpha characters are invalid",
+        "data": "192.168.a.1",
+        "valid": false
+      },
+      {
+        "description": "internal whitespace is invalid",
+        "data": "192. 168.0.1",
+        "valid": false
+      },
+      {
+        "description": "tab character is invalid",
+        "data": "192.168.0.1\t",
+        "valid": false
+      },
+      {
+        "description": "additional content after an embedded NUL byte",
+        "data": "192.168.0.1\u0000.evil.com",
+        "valid": false
+      },
+      {
+        "description": "with port number is invalid",
+        "data": "192.168.0.1:80",
+        "valid": false
+      },
+      {
+        "description": "an IPv4-mapped IPv6 address is invalid",
+        "data": "::ffff:192.168.0.1",
+        "valid": false
+      },
+      {
+        "description": "single octet out of range in last position",
+        "data": "192.168.0.256",
+        "valid": false
+      }
+    ]
+  }
+]

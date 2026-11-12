@@ -1,0 +1,37 @@
+[
+  {
+    "description": "hostname format annotation",
+    "compatibility": "4",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "hostname"
+    },
+    "tests": [
+      {
+        "description": "invalid hostname string is only an annotation by default",
+        "data": "-a-host-name-that-starts-with--",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of host names without IDNA rules",
+    "comment": "draft-04, draft-06 and v1 define hostname without the IDNA A-label clause that draft-07 through 2020-12 add, so there is no reserved-LDH-label rule",
+    "compatibility": "4,<=6,9999",
+    "tags": [
+      "format-assertion"
+    ],
+    "schema": {
+      "format": "hostname"
+    },
+    "tests": [
+      {
+        "description": "\"--\" in the 3rd and 4th position is valid",
+        "data": "ab--cd.example",
+        "valid": true
+      }
+    ]
+  }
+]

@@ -214,7 +214,8 @@ function FindDeferredResourceLegacy(stack: Stack.XStack, ref: Schema.XRef, schem
 function FindDeferredResourceModern(stack: Stack.XStack, canonical: string, schema: Schema.XSchemaObject): XDeferredResource | undefined {
   const remoteRoot = stack.context[canonical]
   if (!Schema.IsSchemaObject(remoteRoot)) return undefined
-  return { target: schema, base: canonical, root: remoteRoot }
+  const base = RelativeBase(remoteRoot, new URL(canonical)).href
+  return { target: schema, base, root: remoteRoot }
 }
 function FindDeferredResource(stack: Stack.XStack, ref: Schema.XRef, schema: Schema.XSchemaObject, canonical: string, isRemote: boolean): XDeferredResource | undefined {
   const remote = isRemote ? FindDeferredResourceModern(stack, canonical, schema) : undefined
@@ -342,7 +343,9 @@ function DynamicRefFragment(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef)
   return Stack.NextUri(dynamicRef.$dynamicRef, AbsoluteBase(stack.lexicalBase).href).hash
 }
 function FindScopedDynamicAnchor(stack: Stack.XStack, name: string): Schema.XDynamicAnchor | undefined {
-  return stack.dynamicAnchors.find((anchor) => Guard.IsEqual(anchor.$dynamicAnchor, name)) ?? SearchDynamicAnchor(stack.schema, name)
+  return stack.dynamicAnchors.find((anchor) => Guard.IsEqual(anchor.$dynamicAnchor, name)) ??
+    SearchDynamicAnchor(stack.lexicalSchema, name) ??
+    SearchDynamicAnchor(stack.schema, name)
 }
 function DynamicRefWhenFound(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef, fragmentTarget: Schema.XSchema): Schema.XSchema | undefined {
   if (!Schema.IsSchemaObject(fragmentTarget) || !Schema.IsDynamicAnchor(fragmentTarget)) return fragmentTarget
@@ -356,6 +359,14 @@ function DynamicRefWhenNotFound(stack: Stack.XStack, dynamicRef: Schema.XDynamic
   return FindScopedDynamicAnchor(stack, decodeURIComponent(fragment.slice(1)))
 }
 export function DynamicRef(stack: Stack.XStack, dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
+  // (review): The JSON Schema Test Suite implies that $dynamicRef can target $dynamicAnchor
+  // without a leading #. However, to support this, we need to make a leading FindScopedDynamicAnchor
+  // call first, because subsequent logic depends on the fragmentRoot (making the hashless target
+  // somewhat ambiguous). We consider the following a special case for $dynamicRef.
+  if (!dynamicRef.$dynamicRef.startsWith('#')) {
+    const target = FindScopedDynamicAnchor(stack, dynamicRef.$dynamicRef)
+    if (target) return target
+  }
   const fragmentRoot = dynamicRef.$dynamicRef.startsWith('#') ? stack.lexicalSchema : stack.schema
   const fragmentTarget = RefInternal(stack.context, fragmentRoot, stack.lexicalBase, dynamicRef.$dynamicRef)
   return Guard.IsUndefined(fragmentTarget) ? DynamicRefWhenNotFound(stack, dynamicRef) : DynamicRefWhenFound(stack, dynamicRef, fragmentTarget)

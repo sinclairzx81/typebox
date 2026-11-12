@@ -1,0 +1,19 @@
+[
+  {
+    "description": "uri-reference format annotation",
+    "compatibility": "6",
+    "tags": [
+      "format-annotation"
+    ],
+    "schema": {
+      "format": "uri-reference"
+    },
+    "tests": [
+      {
+        "description": "invalid uri-reference string is only an annotation by default",
+        "data": "\\\\WINDOWS\\fileshare",
+        "valid": true
+      }
+    ]
+  }
+]

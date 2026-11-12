@@ -1,0 +1,514 @@
+[
+  {
+    "description": "relative pointer ref to array",
+    "compatibility": "3,<=2019",
+    "schema": {
+      "items": [
+        {
+          "type": "integer"
+        },
+        {
+          "$ref": "#/items/0"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "match array",
+        "data": [
+          1,
+          2
+        ],
+        "valid": true
+      },
+      {
+        "description": "mismatch array",
+        "data": [
+          1,
+          "foo"
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "escaped pointer ref",
+    "compatibility": "3,<=7",
+    "schema": {
+      "definitions": {
+        "tilde~field": {
+          "type": "integer"
+        },
+        "slash/field": {
+          "type": "integer"
+        },
+        "percent%field": {
+          "type": "integer"
+        }
+      },
+      "properties": {
+        "tilde": {
+          "$ref": "#/definitions/tilde~0field"
+        },
+        "slash": {
+          "$ref": "#/definitions/slash~1field"
+        },
+        "percent": {
+          "$ref": "#/definitions/percent%25field"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "slash invalid",
+        "data": {
+          "slash": "aoeu"
+        },
+        "valid": false
+      },
+      {
+        "description": "tilde invalid",
+        "data": {
+          "tilde": "aoeu"
+        },
+        "valid": false
+      },
+      {
+        "description": "percent invalid",
+        "data": {
+          "percent": "aoeu"
+        },
+        "valid": false
+      },
+      {
+        "description": "slash valid",
+        "data": {
+          "slash": 123
+        },
+        "valid": true
+      },
+      {
+        "description": "tilde valid",
+        "data": {
+          "tilde": 123
+        },
+        "valid": true
+      },
+      {
+        "description": "percent valid",
+        "data": {
+          "percent": 123
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "nested refs",
+    "compatibility": "3,<=7",
+    "schema": {
+      "definitions": {
+        "a": {
+          "type": "integer"
+        },
+        "b": {
+          "$ref": "#/definitions/a"
+        },
+        "c": {
+          "$ref": "#/definitions/b"
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/c"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "nested ref valid",
+        "data": {
+          "foo": 5
+        },
+        "valid": true
+      },
+      {
+        "description": "nested ref invalid",
+        "data": {
+          "foo": "a"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "ref overrides any sibling keywords",
+    "compatibility": "3,<=7",
+    "schema": {
+      "definitions": {
+        "reffed": {
+          "type": "array"
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/reffed",
+          "maxItems": 2
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "ref valid",
+        "data": {
+          "foo": []
+        },
+        "valid": true
+      },
+      {
+        "description": "ref invalid",
+        "data": {
+          "foo": "string"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "property named $ref, containing an actual $ref",
+    "compatibility": "3,<=7",
+    "schema": {
+      "properties": {
+        "$ref": {
+          "$ref": "#/definitions/is-string"
+        }
+      },
+      "definitions": {
+        "is-string": {
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "property named $ref valid",
+        "data": {
+          "$ref": "a"
+        },
+        "valid": true
+      },
+      {
+        "description": "property named $ref invalid",
+        "data": {
+          "$ref": 2
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "naive replacement of $ref with its destination is not correct",
+    "compatibility": "3,<=7",
+    "schema": {
+      "definitions": {
+        "a_string": {
+          "type": "string"
+        }
+      },
+      "enum": [
+        {
+          "$ref": "#/definitions/a_string"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "do not evaluate the $ref inside the enum, matching any string",
+        "data": "this is a string",
+        "valid": false
+      },
+      {
+        "description": "do not evaluate the $ref inside the enum, definition exact match",
+        "data": {
+          "type": "string"
+        },
+        "valid": false
+      },
+      {
+        "description": "match the enum exactly",
+        "data": {
+          "$ref": "#/definitions/a_string"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$ref to boolean schema true",
+    "compatibility": "6,<=7",
+    "schema": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/bool"
+        }
+      ],
+      "definitions": {
+        "bool": true
+      }
+    },
+    "tests": [
+      {
+        "description": "any value is valid",
+        "data": "foo",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$ref to boolean schema false",
+    "compatibility": "6,<=7",
+    "schema": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/bool"
+        }
+      ],
+      "definitions": {
+        "bool": false
+      }
+    },
+    "tests": [
+      {
+        "description": "any value is invalid",
+        "data": "foo",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "refs with quote",
+    "compatibility": "3,<=7",
+    "schema": {
+      "properties": {
+        "foo\"bar": {
+          "$ref": "#/definitions/foo%22bar"
+        }
+      },
+      "definitions": {
+        "foo\"bar": {
+          "type": "number"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "object with numbers is valid",
+        "data": {
+          "foo\"bar": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "object with strings is invalid",
+        "data": {
+          "foo\"bar": "1"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "empty tokens in $ref json-pointer",
+    "compatibility": "3,<=7",
+    "schema": {
+      "definitions": {
+        "": {
+          "definitions": {
+            "": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions//definitions/"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": {
+          "foo": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "non-number is invalid",
+        "data": {
+          "foo": "a"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "fragment within remote ref",
+    "compatibility": "3,<=7",
+    "schema": {
+      "$ref": "http://localhost:1234/subSchemas.json#/definitions/integer"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/subSchemas.json": {
+        "definitions": {
+          "integer": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "remote fragment valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "remote fragment invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "ref within remote ref",
+    "compatibility": "3,<=7",
+    "schema": {
+      "$ref": "http://localhost:1234/subSchemas.json#/definitions/refToInteger"
+    },
+    "externalSchemas": {
+      "http://localhost:1234/subSchemas.json": {
+        "definitions": {
+          "integer": {
+            "type": "integer"
+          },
+          "refToInteger": {
+            "$ref": "#/definitions/integer"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "ref within ref valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "ref within ref invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "root ref in remote ref",
+    "compatibility": "4,<=7",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "http://localhost:1234/name.json#/definitions/orNull"
+        }
+      }
+    },
+    "externalSchemas": {
+      "http://localhost:1234/name.json": {
+        "definitions": {
+          "orNull": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#"
+              }
+            ]
+          }
+        },
+        "type": "string"
+      }
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": {
+          "name": "foo"
+        },
+        "valid": true
+      },
+      {
+        "description": "null is valid",
+        "data": {
+          "name": null
+        },
+        "valid": true
+      },
+      {
+        "description": "object is invalid",
+        "data": {
+          "name": {
+            "name": null
+          }
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "remote ref with ref to definitions",
+    "compatibility": "4,<=7",
+    "schema": {
+      "allOf": [
+        {
+          "$ref": "http://localhost:1234/ref-and-definitions.json"
+        }
+      ]
+    },
+    "externalSchemas": {
+      "http://localhost:1234/ref-and-definitions.json": {
+        "definitions": {
+          "inner": {
+            "properties": {
+              "bar": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/definitions/inner"
+          }
+        ]
+      }
+    },
+    "tests": [
+      {
+        "description": "invalid",
+        "data": {
+          "bar": 1
+        },
+        "valid": false
+      },
+      {
+        "description": "valid",
+        "data": {
+          "bar": "a"
+        },
+        "valid": true
+      }
+    ]
+  }
+]
