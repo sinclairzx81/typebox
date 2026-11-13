@@ -38,11 +38,21 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
+// Each dependent schema is evaluated in its own context and its annotations are merged
+// into the parent only when it passes. This keeps keys evaluated by the enclosing schema
+// out of any unevaluated keywords nested inside the dependent schema.
+function BuildDependentSchema(stack: Stack.XStack, context: BuildContext, schema: Schema.XSchema, value: string): string {
+  if (!context.UseUnevaluated()) return BuildSchema(stack, context, schema, value)
+  const contextDependent = E.ConstDeclaration('context_dependent', E.New('CheckContext', []))
+  const isSchema = E.Call(E.ArrowFunction(['context'], BuildSchema(stack, context, schema, value)), ['context_dependent'])
+  const returns = E.Return(E.And(isSchema, context.Merge(E.ArrayLiteral(['context_dependent']))))
+  return E.Call(E.ArrowFunction([], E.Statements([contextDependent, returns])), [])
+}
 export function BuildDependentSchemas(stack: Stack.XStack, context: BuildContext, schema: Schema.XDependentSchemas, value: string): string {
   const isLength = E.IsEqual(E.Member(E.Keys(value), 'length'), E.Constant(0))
   const isEvery = E.ReduceAnd(G.Entries(schema.dependentSchemas).map(([key, schema]) => {
     const notKey = E.Not(E.HasPropertyKey(value, E.Constant(key)))
-    const isSchema = BuildSchema(stack, context, schema, value)
+    const isSchema = BuildDependentSchema(stack, context, schema, value)
     return E.Or(notKey, isSchema)
   }))
   return E.Or(isLength, isEvery)
@@ -53,8 +63,9 @@ export function BuildDependentSchemas(stack: Stack.XStack, context: BuildContext
 export function CheckDependentSchemas(stack: Stack.XStack, context: CheckContext, schema: Schema.XDependentSchemas, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
   const isEvery = G.Every(G.Entries(schema.dependentSchemas), 0, ([key, schema]) => {
+    const nextContext = new CheckContext()
     return !G.HasPropertyKey(value, key) ||
-      CheckSchema(stack, context, schema, value)
+      (CheckSchema(stack, nextContext, schema, value) && context.Merge([nextContext]))
   })
   return isLength || isEvery
 }
@@ -65,8 +76,10 @@ export function ErrorDependentSchemas(stack: Stack.XStack, context: ErrorContext
   const isLength = G.IsEqual(G.Keys(value).length, 0)
   const isEvery = G.EveryAll(G.Entries(schema.dependentSchemas), 0, ([key, schema]) => {
     const nextSchemaPath = `${schemaPath}/dependentSchemas/${Pointer.EncodeFragment(key)}`
-    return !G.HasPropertyKey(value, key) ||
-      ErrorSchema(stack, context, nextSchemaPath, instancePath, schema, value)
+    const nextContext = new ErrorContext()
+    if (!G.HasPropertyKey(value, key)) return true
+    const isSchema = ErrorSchema(stack, nextContext, nextSchemaPath, instancePath, schema, value)
+    return isSchema ? context.Merge([nextContext]) : context.AddErrors(nextContext.GetErrors())
   })
   return isLength || isEvery
 }

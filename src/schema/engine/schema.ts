@@ -174,7 +174,7 @@ function HasNumberKeywords(schema: Schema.XSchemaObject): boolean {
 // ----------------------------------------------------------------
 export function BuildSchemaPushStack(stack: Stack.XStack, context: BuildContext, schema: Schema.XSchema, value: string) {
   return context.UseUnevaluated()
-    ? E.And(E.And(context.Push(), BuildSchema(stack, context, schema, value)), context.Pop())
+    ? E.And(context.Push(), E.Ternary(BuildSchema(stack, context, schema, value), context.Pop(), E.Not(context.Pop())))
     : BuildSchema(stack, context, schema, value)
 }
 export function BuildSchema(stack: Stack.XStack, context: BuildContext, schema: Schema.XSchema, value: string): string {
@@ -245,7 +245,7 @@ export function BuildSchema(stack: Stack.XStack, context: BuildContext, schema: 
   if (Schema.IsAnyOf(schema)) conditions.push(BuildAnyOf(current, context, schema, value))
   if (Schema.IsOneOf(schema)) conditions.push(BuildOneOf(current, context, schema, value))
   if (Schema.IsUnevaluatedItems(schema)) conditions.push(E.Or(E.Not(E.IsArray(value)), BuildUnevaluatedItems(current, context, schema, value)))
-  if (Schema.IsUnevaluatedProperties(schema)) conditions.push(E.Or(E.Not(E.IsObject(value)), BuildUnevaluatedProperties(current, context, schema, value)))
+  if (Schema.IsUnevaluatedProperties(schema)) conditions.push(E.Or(E.Not(E.IsObjectNotArray(value)), BuildUnevaluatedProperties(current, context, schema, value)))
   if (Schema.IsRefine(schema)) conditions.push(BuildRefine(current, context, schema, value))
   const result = E.ReduceAnd(conditions)
   return result
@@ -254,7 +254,10 @@ export function BuildSchema(stack: Stack.XStack, context: BuildContext, schema: 
 // Check
 // ----------------------------------------------------------------
 export function CheckSchemaPushStack(stack: Stack.XStack, context: CheckContext, schema: Schema.XSchema, value: unknown): boolean {
-  return (context.Push() && CheckSchema(stack, context, schema, value)) && context.Pop()
+  context.Push()
+  const result = CheckSchema(stack, context, schema, value)
+  context.Pop()
+  return result
 }
 export function CheckSchema(stack: Stack.XStack, context: CheckContext, schema: Schema.XSchema, value: unknown): boolean {
   const current = Stack.NextStack(stack, schema)
@@ -307,7 +310,7 @@ export function CheckSchema(stack: Stack.XStack, context: CheckContext, schema: 
     (!Schema.IsAnyOf(schema) || CheckAnyOf(current, context, schema, value)) &&
     (!Schema.IsOneOf(schema) || CheckOneOf(current, context, schema, value)) &&
     (!Schema.IsUnevaluatedItems(schema) || (!G.IsArray(value) || CheckUnevaluatedItems(current, context, schema, value))) &&
-    (!Schema.IsUnevaluatedProperties(schema) || (!G.IsObject(value) || CheckUnevaluatedProperties(current, context, schema, value))) &&
+    (!Schema.IsUnevaluatedProperties(schema) || (!G.IsObjectNotArray(value) || CheckUnevaluatedProperties(current, context, schema, value))) &&
     (!Schema.IsRefine(schema) || CheckRefine(current, context, schema, value))
   )
   return result
@@ -316,7 +319,10 @@ export function CheckSchema(stack: Stack.XStack, context: CheckContext, schema: 
 // Error
 // ----------------------------------------------------------------
 export function ErrorSchemaPushStack(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
-  return (context.Push() && ErrorSchema(stack, context, schemaPath, instancePath, schema, value)) && context.Pop()
+  context.Push()
+  const result = ErrorSchema(stack, context, schemaPath, instancePath, schema, value)
+  context.Pop()
+  return result
 }
 export function ErrorSchema(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
   // Optimization: We can safely terminate here when the context is at capacity because we are unable to
@@ -375,7 +381,7 @@ export function ErrorSchema(stack: Stack.XStack, context: ErrorContext, schemaPa
       +(!Schema.IsAnyOf(schema) || ErrorAnyOf(current, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsOneOf(schema) || ErrorOneOf(current, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsUnevaluatedItems(schema) || (!G.IsArray(value) || ErrorUnevaluatedItems(current, context, schemaPath, instancePath, schema, value))) &
-      +(!Schema.IsUnevaluatedProperties(schema) || (!G.IsObject(value) || ErrorUnevaluatedProperties(current, context, schemaPath, instancePath, schema, value)))
+      +(!Schema.IsUnevaluatedProperties(schema) || (!G.IsObjectNotArray(value) || ErrorUnevaluatedProperties(current, context, schemaPath, instancePath, schema, value)))
     ) &&
     (!Schema.IsRefine(schema) || ErrorRefine(current, context, schemaPath, instancePath, schema, value))
   )
