@@ -202,3 +202,84 @@ Test('Should Coverage 18', () => {
   Assert.IsFalse(Schema.Check(schema, 1))
   Assert.IsFalse(Schema.Errors(schema, 1)[0])
 })
+// ------------------------------------------------------------------
+// Annotation Scope: Keys and indices evaluated by one schema must only
+// be visible to unevaluatedProperties and unevaluatedItems in that
+// schema (or a parent), and only when the evaluating subschema passes.
+// Each case is asserted across Build, Check and Errors.
+// ------------------------------------------------------------------
+function AssertScope(schema: object, value: unknown, expect: boolean) {
+  Assert.IsEqual(Schema.Build(schema).Evaluate().Check(value), expect)
+  Assert.IsEqual(Schema.Check(schema, value), expect)
+  const [valid, errors] = Schema.Errors(schema, value)
+  Assert.IsEqual(valid, expect)
+  Assert.IsEqual(errors.length === 0, expect)
+}
+Test('Should Scope Annotations 1', () => {
+  // parent properties are not visible to unevaluatedProperties in then
+  const schema = { properties: { a: true }, if: true, then: { unevaluatedProperties: false } }
+  AssertScope(schema, { a: 1 }, false)
+  AssertScope(schema, {}, true)
+})
+Test('Should Scope Annotations 2', () => {
+  // if annotations are not visible to unevaluatedItems in then
+  const schema = { if: { unevaluatedItems: true }, then: { unevaluatedItems: false } }
+  AssertScope(schema, [1], false)
+  AssertScope(schema, [], true)
+})
+Test('Should Scope Annotations 3', () => {
+  // annotations from a failing if do not reach the parent
+  const schema = { if: { properties: { a: true, b: true }, required: ['b'] }, unevaluatedProperties: false }
+  AssertScope(schema, { a: 1 }, false)
+  AssertScope(schema, { a: 1, b: 1 }, true)
+})
+Test('Should Scope Annotations 4', () => {
+  // annotations from a passing if and then reach the parent
+  const schema = {
+    if: { properties: { a: { const: 1 } } },
+    then: { properties: { b: true } },
+    else: { properties: { a: true, c: true } },
+    unevaluatedProperties: false
+  }
+  AssertScope(schema, { a: 1, b: 1 }, true)
+  AssertScope(schema, { a: 1, c: 1 }, false)
+  AssertScope(schema, { a: 2, c: 1 }, true)
+  AssertScope(schema, { a: 2, b: 1 }, false)
+})
+Test('Should Scope Annotations 5', () => {
+  // parent properties are not visible to unevaluatedProperties in dependentSchemas
+  const schema = { additionalProperties: true, dependentSchemas: { a: { unevaluatedProperties: false } } }
+  AssertScope(schema, { a: 1 }, false)
+  AssertScope(schema, { b: 1 }, true)
+})
+Test('Should Scope Annotations 6', () => {
+  // annotations from dependentSchemas reach the parent
+  const schema = { properties: { a: true }, dependentSchemas: { a: { properties: { b: true } } }, unevaluatedProperties: false }
+  AssertScope(schema, { a: 1, b: 1 }, true)
+  AssertScope(schema, { b: 1 }, false)
+})
+Test('Should Scope Annotations 7', () => {
+  // annotations from a failing not subschema do not reach the parent
+  const schema = { not: { properties: { a: true }, minProperties: 2 }, unevaluatedProperties: false }
+  AssertScope(schema, { a: 1 }, false)
+  AssertScope(schema, {}, true)
+})
+Test('Should Scope Annotations 8', () => {
+  // unevaluatedItems and unevaluatedProperties evaluate items in their own scope
+  AssertScope({ unevaluatedItems: { unevaluatedItems: false } }, [1, ['a']], false)
+  AssertScope({ unevaluatedItems: { unevaluatedItems: false } }, [1, []], true)
+  AssertScope({ properties: { x: true }, unevaluatedProperties: { properties: { y: true }, unevaluatedProperties: false } }, { z: { x: 1 } }, false)
+  AssertScope({ properties: { x: true }, unevaluatedProperties: { properties: { y: true }, unevaluatedProperties: false } }, { z: { y: 1 } }, true)
+})
+Test('Should Scope Annotations 9', () => {
+  // contains evaluates items in their own scope
+  const schema = { contains: { unevaluatedItems: false }, unevaluatedItems: false }
+  AssertScope(schema, [[], [1]], false)
+  AssertScope(schema, [[], []], true)
+})
+Test('Should Scope Annotations 10', () => {
+  // unevaluatedProperties does not apply to arrays
+  AssertScope({ unevaluatedProperties: false }, [1, 2], true)
+  AssertScope({ anyOf: [{ type: 'array' }, { type: 'object' }], unevaluatedProperties: false }, ['a'], true)
+  AssertScope({ anyOf: [{ type: 'array' }, { type: 'object' }], unevaluatedProperties: false }, { a: 1 }, false)
+})

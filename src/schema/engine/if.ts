@@ -37,12 +37,45 @@ import { EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildIf(stack: Stack.XStack, context: BuildContext, schema: Schema.XIf, value: string): string {
-  const thenSchema = Schema.IsThen(schema) ? schema.then : true
-  const elseSchema = Schema.IsElse(schema) ? schema.else : true
+//
+// When unevaluated keywords are in use, `if`, `then` and `else` are
+// each evaluated in their own context. Annotations from `if` are only
+// kept when `if` passes and `then` passes, and annotations from the
+// branch are only kept when the branch passes. This prevents keys or
+// indices evaluated by the enclosing schema leaking into the branches,
+// and prevents annotations from a failed `if` leaking into the parent.
+//
+// (() => {
+//   const context_if = new CheckContext()
+//   const context_branch = new CheckContext()
+//   return ((context) => <if>)(context_if)
+//     ? (((context) => <then>)(context_branch) && context.Merge([context_if, context_branch]))
+//     : (((context) => <else>)(context_branch) && context.Merge([context_branch]))
+// })()
+//
+// ------------------------------------------------------------------
+function BuildIfStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XIf, thenSchema: Schema.XSchema, elseSchema: Schema.XSchema, value: string): string {
+  const contextIf = E.ConstDeclaration('context_if', E.New('CheckContext', []))
+  const contextBranch = E.ConstDeclaration('context_branch', E.New('CheckContext', []))
+  const isIf = E.Call(E.ArrowFunction(['context'], BuildSchema(stack, context, schema.if, value)), ['context_if'])
+  const isThen = E.Call(E.ArrowFunction(['context'], BuildSchema(stack, context, thenSchema, value)), ['context_branch'])
+  const isElse = E.Call(E.ArrowFunction(['context'], BuildSchema(stack, context, elseSchema, value)), ['context_branch'])
+  const returns = E.Return(E.Ternary(isIf,
+    E.And(isThen, context.Merge(E.ArrayLiteral(['context_if', 'context_branch']))),
+    E.And(isElse, context.Merge(E.ArrayLiteral(['context_branch'])))))
+  return E.Call(E.ArrowFunction([], E.Statements([contextIf, contextBranch, returns])), [])
+}
+function BuildIfFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XIf, thenSchema: Schema.XSchema, elseSchema: Schema.XSchema, value: string): string {
   return E.Ternary(BuildSchema(stack, context, schema.if, value),
     BuildSchema(stack, context, thenSchema, value),
     BuildSchema(stack, context, elseSchema, value))
+}
+export function BuildIf(stack: Stack.XStack, context: BuildContext, schema: Schema.XIf, value: string): string {
+  const thenSchema = Schema.IsThen(schema) ? schema.then : true
+  const elseSchema = Schema.IsElse(schema) ? schema.else : true
+  return context.UseUnevaluated()
+    ? BuildIfStandard(stack, context, schema, thenSchema, elseSchema, value)
+    : BuildIfFast(stack, context, schema, thenSchema, elseSchema, value)
 }
 // ------------------------------------------------------------------
 // Check
@@ -50,9 +83,11 @@ export function BuildIf(stack: Stack.XStack, context: BuildContext, schema: Sche
 export function CheckIf(stack: Stack.XStack, context: CheckContext, schema: Schema.XIf, value: unknown): boolean {
   const thenSchema = Schema.IsThen(schema) ? schema.then : true
   const elseSchema = Schema.IsElse(schema) ? schema.else : true
-  return CheckSchema(stack, context, schema.if, value)
-    ? CheckSchema(stack, context, thenSchema, value)
-    : CheckSchema(stack, context, elseSchema, value)
+  const ifContext = new CheckContext()
+  const branchContext = new CheckContext()
+  return CheckSchema(stack, ifContext, schema.if, value)
+    ? CheckSchema(stack, branchContext, thenSchema, value) && context.Merge([ifContext, branchContext])
+    : CheckSchema(stack, branchContext, elseSchema, value) && context.Merge([branchContext])
 }
 // ------------------------------------------------------------------
 // Error
@@ -60,12 +95,13 @@ export function CheckIf(stack: Stack.XStack, context: CheckContext, schema: Sche
 export function ErrorIf(stack: Stack.XStack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XIf, value: unknown): boolean {
   const thenSchema = Schema.IsThen(schema) ? schema.then : true
   const elseSchema = Schema.IsElse(schema) ? schema.else : true
-  const trueContext = new ErrorContext()
-  const isIf = ErrorSchema(stack, trueContext, `${schemaPath}/if`, instancePath, schema.if, value)
-    ? ErrorSchema(stack, trueContext, `${schemaPath}/then`, instancePath, thenSchema, value) ||
-    context.AddError('if', schemaPath, instancePath, { failingKeyword: 'then' })
-    : ErrorSchema(stack, context, `${schemaPath}/else`, instancePath, elseSchema, value) ||
-    context.AddError('if', schemaPath, instancePath, { failingKeyword: 'else' })
-  if (isIf) context.Merge([trueContext])
-  return isIf
-} 
+  const ifContext = new ErrorContext()
+  const branchContext = new ErrorContext()
+  const isIf = ErrorSchema(stack, ifContext, `${schemaPath}/if`, instancePath, schema.if, value)
+  const isBranch = isIf
+    ? ErrorSchema(stack, branchContext, `${schemaPath}/then`, instancePath, thenSchema, value)
+    : ErrorSchema(stack, branchContext, `${schemaPath}/else`, instancePath, elseSchema, value)
+  if (isBranch) return context.Merge(isIf ? [ifContext, branchContext] : [branchContext])
+  if (!isIf) context.AddErrors(branchContext.GetErrors())
+  return context.AddError('if', schemaPath, instancePath, { failingKeyword: isIf ? 'then' : 'else' })
+}

@@ -32,7 +32,7 @@ import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
 import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchema } from './schema.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
@@ -42,7 +42,7 @@ export function BuildUnevaluatedItems(stack: Stack.XStack, context: BuildContext
   const [index, item] = [Unique.CreateUnique(), Unique.CreateUnique()]
   const indices = E.Call(E.Member('context', 'GetIndices'), [])
   const hasIndex = E.Call(E.Member('indices', 'has'), [index])
-  const isSchema = BuildSchema(stack, context, schema.unevaluatedItems, item)
+  const isSchema = BuildSchemaPushStack(stack, context, schema.unevaluatedItems, item)
   const addIndex = E.Call(E.Member('context', 'AddIndex'), [index])
   const isEvery = E.Every(value, E.Constant(0), [item, index], E.And(E.Or(hasIndex, isSchema), addIndex))
   return E.Call(E.ArrowFunction(['context'], E.Statements([
@@ -56,7 +56,7 @@ export function BuildUnevaluatedItems(stack: Stack.XStack, context: BuildContext
 export function CheckUnevaluatedItems(stack: Stack.XStack, context: CheckContext, schema: Schema.XUnevaluatedItems, value: unknown[]): boolean {
   const indices = context.GetIndices()
   return G.Every(value, 0, (item, index) => {
-    return (indices.has(index) || CheckSchema(stack, context, schema.unevaluatedItems, item))
+    return (indices.has(index) || CheckSchemaPushStack(stack, context, schema.unevaluatedItems, item))
       && context.AddIndex(index)
   })
 }
