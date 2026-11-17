@@ -52,11 +52,9 @@ export function BuildNot(stack: Stack.XStack, context: BuildContext, schema: Sch
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckNot(stack: Stack.XStack, context: CheckContext, schema: Schema.XNot, value: unknown): boolean {
-  const nextContext = new CheckContext()
-  const isSchema = !CheckSchema(stack, nextContext, schema.not, value)
-  const isNot = isSchema && context.Merge([nextContext])
-  return isNot
+export function CheckNot(stack: Stack.XStack, _context: CheckContext, schema: Schema.XNot, value: unknown): boolean {
+  // annotations produced under `not` are never visible to the parent
+  return !CheckSchema(stack, new CheckContext(), schema.not, value)
 }
 // ------------------------------------------------------------------
 // Error

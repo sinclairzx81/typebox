@@ -32,7 +32,7 @@ import * as Schema from '../types/index.ts'
 import * as Stack from './_stack.ts'
 import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchema } from './schema.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
@@ -43,7 +43,7 @@ export function BuildUnevaluatedProperties(stack: Stack.XStack, context: BuildCo
   const keys = E.Call(E.Member('context', 'GetKeys'), [])
   const hasKey = E.Call(E.Member('keys', 'has'), [key])
   const addKey = E.Call(E.Member('context', 'AddKey'), [key])
-  const isSchema = BuildSchema(stack, context, schema.unevaluatedProperties, prop)
+  const isSchema = BuildSchemaPushStack(stack, context, schema.unevaluatedProperties, prop)
   const isEvery = E.Every(E.Entries(value), E.Constant(0), [`[${key}, ${prop}]`, '_'], E.Or(hasKey, E.And(isSchema, addKey)))
   return E.Call(E.ArrowFunction(['context'], E.Statements([
     E.ConstDeclaration('keys', keys),
@@ -57,7 +57,7 @@ export function CheckUnevaluatedProperties(stack: Stack.XStack, context: CheckCo
   const keys = context.GetKeys()
   return G.Every(G.Entries(value), 0, ([key, prop]) => {
     return keys.has(key)
-      || (CheckSchema(stack, context, schema.unevaluatedProperties, prop) && context.AddKey(key))
+      || (CheckSchemaPushStack(stack, context, schema.unevaluatedProperties, prop) && context.AddKey(key))
   })
 }
 // ------------------------------------------------------------------

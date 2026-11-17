@@ -33,7 +33,7 @@ import * as Stack from './_stack.ts'
 import * as Unique from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
-import { BuildSchema, CheckSchema } from './schema.ts'
+import { BuildSchema, BuildSchemaPushStack, CheckSchemaPushStack } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Invalid
@@ -47,7 +47,7 @@ function IsValid(schema: Schema.XContains): boolean {
 function BuildContainsStandard(stack: Stack.XStack, context: BuildContext, schema: Schema.XContains, value: string): string {
   const [item, index] = [Unique.CreateUnique(), Unique.CreateUnique()]
   const isLength = E.Not(E.IsEqual(E.Member(value, 'length'), E.Constant(0)))
-  const isSome = E.SomeAll(value, [item, index], E.And(BuildSchema(stack, context, schema.contains, item), context.AddIndex(index)))
+  const isSome = E.SomeAll(value, [item, index], E.And(BuildSchemaPushStack(stack, context, schema.contains, item), context.AddIndex(index)))
   return E.And(isLength, isSome)
 }
 function BuildContainsFast(stack: Stack.XStack, context: BuildContext, schema: Schema.XContains, value: string): string {
@@ -68,7 +68,7 @@ export function BuildContains(stack: Stack.XStack, context: BuildContext, schema
 export function CheckContains(stack: Stack.XStack, context: CheckContext, schema: Schema.XContains, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
   return !G.IsEqual(value.length, 0) && G.SomeAll(value, (item, index) => {
-    return CheckSchema(stack, context, schema.contains, item) && context.AddIndex(index)
+    return CheckSchemaPushStack(stack, context, schema.contains, item) && context.AddIndex(index)
   })
 }
 // ------------------------------------------------------------------
