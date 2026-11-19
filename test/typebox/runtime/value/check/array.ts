@@ -86,6 +86,15 @@ Test('Should not validate array with non uniqueItems', () => {
   const T = Type.Array(Type.Number(), { uniqueItems: true })
   Fail(T, [0, 0])
 })
+Test('Should validate array with uniqueItems when items are distinct nested arrays', () => {
+  const T = Type.Array(Type.Unknown(), { uniqueItems: true })
+  Ok(T, [[[1], 2], [[1, 2]]])
+  Ok(T, [['a', 'b'], ['a\nb']])
+})
+Test('Should validate array with uniqueItems when items are distinct nested objects', () => {
+  const T = Type.Array(Type.Unknown(), { uniqueItems: true })
+  Ok(T, [{ x: { y: 1 }, z: 2 }, { x: { y: 1, z: 2 } }])
+})
 // ---------------------------------------------------------
 // Contains
 // ---------------------------------------------------------
