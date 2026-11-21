@@ -53,6 +53,21 @@ Test('Should hash array', () => {
   const B = Hashing.Hash([0, 2, 2, 3])
   Assert.NotEqual(A, B)
 })
+Test('Should hash array 2', () => {
+  const A = Hashing.Hash([[1], 2])
+  const B = Hashing.Hash([[1, 2]])
+  Assert.NotEqual(A, B)
+})
+Test('Should hash array 3', () => {
+  const A = Hashing.Hash(['a', 'b'])
+  const B = Hashing.Hash(['a\nb'])
+  Assert.NotEqual(A, B)
+})
+Test('Should hash array 4', () => {
+  const A = Hashing.Hash([new Uint8Array([1]), new Uint8Array([2])])
+  Assert.NotEqual(A, Hashing.Hash([new Uint8Array([1, 0x0C, 2])]))
+  Assert.NotEqual(A, Hashing.Hash([new Uint8Array([1, 0xFF, 0x0C, 2])]))
+})
 Test('Should hash object 1', () => {
   Assert.IsEqual('string', typeof Hashing.Hash({ x: 1, y: 2 }))
   const A = Hashing.Hash({ x: 1, y: 2 })
@@ -77,6 +92,16 @@ Test('Should hash object 4', () => {
 Test('Should hash object 5', () => {
   const A = Hashing.Hash({ x: 1, y: undefined })
   const B = Hashing.Hash({ x: 2, y: undefined })
+  Assert.NotEqual(A, B)
+})
+Test('Should hash object 6', () => {
+  const A = Hashing.Hash({ x: { y: 1 }, z: 2 })
+  const B = Hashing.Hash({ x: { y: 1, z: 2 } })
+  Assert.NotEqual(A, B)
+})
+Test('Should hash object 7', () => {
+  const A = Hashing.Hash({ x: 'y\u0006' })
+  const B = Hashing.Hash({ 'x\ny': null })
   Assert.NotEqual(A, B)
 })
 Test('Should hash Date', () => {
@@ -349,7 +374,7 @@ Test('Should hash misc 4', () => {
 // Ref: https://github.com/sinclairzx81/typebox/pull/1713
 // ----------------------------------------------------------------
 Test('Should Preserve 1', () => {
-  Assert.IsEqual(Hashing.Hash([1, 2, 3]), '2feaa6aae3cb8d3b')
+  Assert.IsEqual(Hashing.Hash([1, 2, 3]), 'bc478931cbbc6ae2')
 })
 Test('Should Preserve 2', () => {
   Assert.IsEqual(Hashing.Hash(1n), '529a2ddc8ff5355f')
@@ -367,7 +392,7 @@ Test('Should Preserve 6', () => {
   Assert.IsEqual(Hashing.Hash(1), '2e887d21691806b7')
 })
 Test('Should Preserve 7', () => {
-  Assert.IsEqual(Hashing.Hash({ x: 1 }), '7acebb980eaf6d3f')
+  Assert.IsEqual(Hashing.Hash({ x: 1 }), 'fbffe3d4cb818c9f')
 })
 Test('Should Preserve 8', () => {
   Assert.IsEqual(Hashing.Hash(/abc/), '0bc2b641b2cbf23a')
@@ -382,7 +407,7 @@ Test('Should Preserve 11', () => {
   Assert.IsEqual(Hashing.Hash(Symbol('example')), '894e05c505af23f9')
 })
 Test('Should Preserve 12', () => {
-  Assert.IsEqual(Hashing.Hash(new Uint8Array([0, 1, 2, 3])), '0ed52c83158758cf')
+  Assert.IsEqual(Hashing.Hash(new Uint8Array([0, 1, 2, 3])), 'c9fad51e3940ab14')
 })
 Test('Should Preserve 13', () => {
   Assert.IsEqual(Hashing.Hash(undefined), 'af63c04c8601bcf8')
@@ -397,5 +422,5 @@ Test('Should hash code string', () => {
   Assert.IsEqual(Hashing.HashCode('안녕'), 0x3278a4c33f1cb9d1n)
 })
 Test('Should hash code object', () => {
-  Assert.IsEqual(Hashing.HashCode({ x: 1 }), 0x7acebb980eaf6d3fn)
+  Assert.IsEqual(Hashing.HashCode({ x: 1 }), 0xfbffe3d4cb818c9fn)
 })

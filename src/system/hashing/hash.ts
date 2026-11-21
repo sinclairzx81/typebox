@@ -83,7 +83,8 @@ const ByteMarker = {
   String: 0xA,
   Symbol: 0xB,
   TypeArray: 0xC,
-  Undefined: 0xD
+  Undefined: 0xD,
+  Terminator: 0xFF
 } as const
 // ------------------------------------------------------------------
 // State
@@ -129,6 +130,7 @@ function FromArray(value: unknown[]): void {
   FNV1A64_OP(ByteMarker.Array)
   for (const item of value) {
     FromValue(item)
+    FNV1A64_OP(ByteMarker.Terminator)
   }
 }
 // ------------------------------------------------------------------
@@ -192,7 +194,9 @@ function FromObject(value: Record<PropertyKey, unknown>): void {
   FNV1A64_OP(ByteMarker.Object)
   for (const key of InstanceKeys(value).sort()) {
     FromValue(key)
+    FNV1A64_OP(ByteMarker.Terminator)
     FromValue(value[key])
+    FNV1A64_OP(ByteMarker.Terminator)
   }
 }
 // ------------------------------------------------------------------
@@ -232,6 +236,7 @@ function FromSymbol(value: symbol): void {
 function FromTypeArray(value: GlobalsGuard.TTypeArray): void {
   FNV1A64_OP(ByteMarker.TypeArray)
   const buffer = new Uint8Array(value.buffer)
+  FromValue(buffer.length)
   for (let i = 0; i < buffer.length; i++) {
     FNV1A64_OP(buffer[i])
   }
