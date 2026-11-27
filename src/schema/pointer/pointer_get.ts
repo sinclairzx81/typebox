@@ -31,9 +31,10 @@ THE SOFTWARE.
 // ------------------------------------------------------------------
 // TEscape
 // ------------------------------------------------------------------
-type TEscape0<Index extends string> = Index extends `${infer Left}~0${infer Right}` ? `${Left}~${TEscape<Right>}` : Index
-type TEscape1<Index extends string> = Index extends `${infer Left}~1${infer Right}` ? `${Left}/${TEscape<Right>}` : Index
-type TEscape<Index extends string, Escaped0 extends string = TEscape0<Index>, Escaped1 extends string = TEscape1<Escaped0>> = Escaped1
+// RFC 6901 section 4: decode '~1' to '/' first, then '~0' to '~', so that '~01' becomes '~1' and not '/'
+type TEscape1<Index extends string> = Index extends `${infer Left}~1${infer Right}` ? `${Left}/${TEscape1<Right>}` : Index
+type TEscape0<Index extends string> = Index extends `${infer Left}~0${infer Right}` ? `${Left}~${TEscape0<Right>}` : Index
+type TEscape<Index extends string, Escaped1 extends string = TEscape1<Index>, Escaped0 extends string = TEscape0<Escaped1>> = Escaped0
 // ------------------------------------------------------------------
 // TIndices
 // ------------------------------------------------------------------

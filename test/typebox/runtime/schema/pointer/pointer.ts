@@ -83,6 +83,15 @@ Test('Should Indices 20', () => {
   const R = [...Schema.Pointer.Fragments('/x/a~1b///')]
   Assert.IsEqual(R, ['x', 'a/b', '', '', ''])
 })
+Test('Should Indices 21', () => {
+  // RFC 6901 section 4: '~1' is decoded before '~0', so '~01' is '~1', not '/'
+  const R = [...Schema.Pointer.Fragments('/x/~01')]
+  Assert.IsEqual(R, ['x', '~1'])
+})
+Test('Should Indices 22', () => {
+  const R = [...Schema.Pointer.Fragments('/x/a~01b~10')]
+  Assert.IsEqual(R, ['x', 'a~1b/0'])
+})
 //-------------------------------------------------------------------
 // Get
 //-------------------------------------------------------------------
