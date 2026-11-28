@@ -51,7 +51,7 @@ export const Update: T.TObject<{
   type: T.TLiteral<'update'>
   path: T.TString
   value: T.TUnknown
-}> = Object({
+}> = T.Object({
   type: T.Literal('update'),
   path: T.String(),
   value: T.Unknown(),

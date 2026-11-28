@@ -76,7 +76,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   for (const key of leftKeys) {
     if (!Guard.HasPropertyKey(right, key)) continue
     if (Guard.IsUnsafePropertyKey(key)) continue
-    if (Equal(left, right)) continue
+    if (Equal(left[key], right[key])) continue
     yield* FromValue(`${path}/${Pointer.EncodeFragment(key)}`, left[key], right[key])
   }
   // ----------------------------------------------------------------
